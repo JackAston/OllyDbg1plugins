@@ -1,0 +1,1749 @@
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0000
+Start 005A478D End 005A4795 (Size 0008)
+005A478E    AC    LODS BYTE PTR [ESI]
+005A4791    0FB6C0    MOVZX EAX,AL
+005A4794    8D0487    LEA EAX,[EDI+EAX*4]
+005A4795    50    PUSH EAX
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0001
+Start 005A4795 End 005A4796 (Size 0001)
+005A4796    5A    POP EDX
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0002
+Start 005A4796 End 005A479C (Size 0006)
+005A4797    AC    LODS BYTE PTR [ESI]
+005A479A    0FB6C0    MOVZX EAX,AL
+005A479C    66:50    PUSH AX
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0003
+Start 005A479C End 005A47A3 (Size 0007)
+005A479E    66:AD    LODS WORD PTR [ESI]
+005A47A1    0FB7C0    MOVZX EAX,AX
+005A47A3    66:50    PUSH AX
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0004
+Start 005A47A3 End 005A47A5 (Size 0002)
+005A47A4    AD    LODS DWORD PTR [ESI]
+005A47A5    50    PUSH EAX
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0006
+Start 005A47A5 End 005A47A9 (Size 0004)
+005A47A6    58    POP EAX
+005A47A9    010424    ADD [ESP],EAX
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0007
+Start 005A47AD End 005A47B4 (Size 0007)
+005A47AE    AC    LODS BYTE PTR [ESI]
+005A47B1    0FB6C0    MOVZX EAX,AL
+005A47B4    FF3487    PUSH DWORD PTR [EDI+EAX*4]
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0009
+Start 005A47B4 End 005A47B5 (Size 0001)
+005A47B5    52    PUSH EDX
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 000A
+Start 005A47B5 End 005A47BB (Size 0006)
+005A47B9    66:0FB602    MOVZX AX,BYTE PTR [EDX]
+005A47BB    66:50    PUSH AX
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 000B
+Start 005A47BB End 005A47BE (Size 0003)
+005A47BE    66:FF32    PUSH WORD PTR [EDX]
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 000C
+Start 005A47BE End 005A47C0 (Size 0002)
+005A47C0    FF32    PUSH DWORD PTR [EDX]
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 000E
+Start 005A47C0 End 005A47CD (Size 000D)
+005A47C1    AC    LODS BYTE PTR [ESI]
+005A47C4    0FB6C0    MOVZX EAX,AL
+005A47C7    8B0487    MOV EAX,[EDI+EAX*4]
+005A47CB    66:0FB600    MOVZX AX,BYTE PTR [EAX]
+005A47CD    66:50    PUSH AX
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 000F
+Start 005A47CD End 005A47D7 (Size 000A)
+005A47CE    AC    LODS BYTE PTR [ESI]
+005A47D1    0FB6C0    MOVZX EAX,AL
+005A47D4    8B0487    MOV EAX,[EDI+EAX*4]
+005A47D7    66:FF30    PUSH WORD PTR [EAX]
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0165
+Start 005A47D7 End 005A47DC (Size 0005)
+005A47D9    66:58    POP AX
+005A47DC    64:8802    MOV FS:[EDX],AL
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0166
+Start 005A47DC End 005A47E2 (Size 0006)
+005A47DE    66:58    POP AX
+005A47E2    66:64:8902    MOV FS:[EDX],AX
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0167
+Start 005A47E2 End 005A47E5 (Size 0003)
+005A47E5    64:8F02    POP DWORD PTR FS:[EDX]
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0162
+Start 005A47E5 End 005A47EC (Size 0007)
+005A47EA    66:64:0FB602    MOVZX AX,BYTE PTR FS:[EDX]
+005A47EC    66:50    PUSH AX
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0163
+Start 005A47EC End 005A47F2 (Size 0006)
+005A47F0    66:64:8B02    MOV AX,FS:[EDX]
+005A47F2    66:50    PUSH AX
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0164
+Start 005A47F2 End 005A47F5 (Size 0003)
+005A47F5    64:FF32    PUSH DWORD PTR FS:[EDX]
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0011
+Start 005A47F5 End 005A47FC (Size 0007)
+005A47F6    AD    LODS DWORD PTR [ESI]
+005A47FA    66:0FB600    MOVZX AX,BYTE PTR [EAX]
+005A47FC    66:50    PUSH AX
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0012
+Start 005A47FC End 005A4800 (Size 0004)
+005A47FD    AD    LODS DWORD PTR [ESI]
+005A4800    66:FF30    PUSH WORD PTR [EAX]
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0013
+Start 005A4800 End 005A4803 (Size 0003)
+005A4801    AD    LODS DWORD PTR [ESI]
+005A4803    FF30    PUSH DWORD PTR [EAX]
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0015
+Start 005A4803 End 005A4804 (Size 0001)
+005A4804    5A    POP EDX
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0016
+Start 005A4804 End 005A4808 (Size 0004)
+005A4806    66:58    POP AX
+005A4808    8802    MOV [EDX],AL
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0017
+Start 005A4808 End 005A480B (Size 0003)
+005A480B    66:8F02    POP WORD PTR [EDX]
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0018
+Start 005A480B End 005A480D (Size 0002)
+005A480D    8F02    POP DWORD PTR [EDX]
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0019
+Start 005A480B End 005A480D (Size 0002)
+005A480D    8F02    POP DWORD PTR [EDX]
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 001A
+Start 005A4817 End 005A4820 (Size 0009)
+005A4818    AC    LODS BYTE PTR [ESI]
+005A481B    0FB6C0    MOVZX EAX,AL
+005A481D    66:5A    POP DX
+005A4820    881487    MOV [EDI+EAX*4],DL
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0158
+Start 005A480D End 005A4817 (Size 000A)
+005A480E    AC    LODS BYTE PTR [ESI]
+005A4811    0FB6C0    MOVZX EAX,AL
+005A4813    66:5A    POP DX
+005A4817    885487 01    MOV [EDI+EAX*4+1],DL
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 001B
+Start 005A4820 End 005A4828 (Size 0008)
+005A4821    AC    LODS BYTE PTR [ESI]
+005A4824    0FB6C0    MOVZX EAX,AL
+005A4828    66:8F0487    POP WORD PTR [EDI+EAX*4]
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 001C
+Start 005A4828 End 005A482F (Size 0007)
+005A4829    AC    LODS BYTE PTR [ESI]
+005A482C    0FB6C0    MOVZX EAX,AL
+005A482F    8F0487    POP DWORD PTR [EDI+EAX*4]
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 001E
+Start 005A482F End 005A4834 (Size 0005)
+005A4830    AD    LODS DWORD PTR [ESI]
+005A4832    66:5A    POP DX
+005A4834    8810    MOV [EAX],DL
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 001F
+Start 005A4834 End 005A4838 (Size 0004)
+005A4835    AD    LODS DWORD PTR [ESI]
+005A4838    66:8F00    POP WORD PTR [EAX]
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0020
+Start 005A4838 End 005A483B (Size 0003)
+005A4839    AD    LODS DWORD PTR [ESI]
+005A483B    8F00    POP DWORD PTR [EAX]
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0022
+Start 005A483B End 005A4841 (Size 0006)
+005A483D    66:58    POP AX
+005A4840    000424    ADD [ESP],AL
+005A4841    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0023
+Start 005A4841 End 005A4848 (Size 0007)
+005A4843    66:58    POP AX
+005A4847    66:010424    ADD [ESP],AX
+005A4848    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0024
+Start 005A4848 End 005A484D (Size 0005)
+005A4849    58    POP EAX
+005A484C    010424    ADD [ESP],EAX
+005A484D    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0026
+Start 005A484D End 005A4851 (Size 0004)
+005A484E    58    POP EAX
+005A4851    290424    SUB [ESP],EAX
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0027
+Start 005A4851 End 005A4857 (Size 0006)
+005A4853    66:58    POP AX
+005A4856    280424    SUB [ESP],AL
+005A4857    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0028
+Start 005A4857 End 005A485E (Size 0007)
+005A4859    66:58    POP AX
+005A485D    66:290424    SUB [ESP],AX
+005A485E    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0029
+Start 005A485E End 005A4863 (Size 0005)
+005A485F    58    POP EAX
+005A4862    290424    SUB [ESP],EAX
+005A4863    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 002C
+Start 005A4863 End 005A486E (Size 000B)
+005A4865    66:58    POP AX
+005A4867    66:59    POP CX
+005A486B    66:0FAFC8    IMUL CX,AX
+005A486D    66:51    PUSH CX
+005A486E    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 002D
+Start 005A486E End 005A4875 (Size 0007)
+005A486F    58    POP EAX
+005A4870    59    POP ECX
+005A4873    0FAFC8    IMUL ECX,EAX
+005A4874    51    PUSH ECX
+005A4875    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 002F
+Start 005A4875 End 005A4883 (Size 000E)
+005A4876    90    NOP
+005A4877    90    NOP
+005A487A    FF77 1C    PUSH DWORD PTR [EDI+1C]
+005A487B    9D    POPFD
+005A487D    66:58    POP AX
+005A4880    100424    ADC [ESP],AL
+005A4881    90    NOP
+005A4882    90    NOP
+005A4883    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0030
+Start 005A4883 End 005A4892 (Size 000F)
+005A4884    90    NOP
+005A4885    90    NOP
+005A4888    FF77 1C    PUSH DWORD PTR [EDI+1C]
+005A4889    9D    POPFD
+005A488B    66:58    POP AX
+005A488F    66:110424    ADC [ESP],AX
+005A4890    90    NOP
+005A4891    90    NOP
+005A4892    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0031
+Start 005A4892 End 005A489F (Size 000D)
+005A4893    90    NOP
+005A4894    90    NOP
+005A4897    FF77 1C    PUSH DWORD PTR [EDI+1C]
+005A4898    9D    POPFD
+005A4899    58    POP EAX
+005A489C    110424    ADC [ESP],EAX
+005A489D    90    NOP
+005A489E    90    NOP
+005A489F    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0033
+Start 005A489F End 005A48A5 (Size 0006)
+005A48A1    66:58    POP AX
+005A48A4    200424    AND [ESP],AL
+005A48A5    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0034
+Start 005A48A5 End 005A48AC (Size 0007)
+005A48A7    66:58    POP AX
+005A48AB    66:210424    AND [ESP],AX
+005A48AC    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0035
+Start 005A48AC End 005A48B1 (Size 0005)
+005A48AD    58    POP EAX
+005A48B0    210424    AND [ESP],EAX
+005A48B1    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0037
+Start 005A48B1 End 005A48B8 (Size 0007)
+005A48B3    66:58    POP AX
+005A48B5    66:59    POP CX
+005A48B7    38C1    CMP CL,AL
+005A48B8    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0038
+Start 005A48B8 End 005A48C0 (Size 0008)
+005A48BA    66:58    POP AX
+005A48BC    66:59    POP CX
+005A48BF    66:3BC8    CMP CX,AX
+005A48C0    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0039
+Start 005A48C0 End 005A48C5 (Size 0005)
+005A48C1    58    POP EAX
+005A48C2    59    POP ECX
+005A48C4    3BC8    CMP ECX,EAX
+005A48C5    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 003B
+Start 005A48C5 End 005A48CB (Size 0006)
+005A48C7    66:58    POP AX
+005A48CA    300424    XOR [ESP],AL
+005A48CB    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 003C
+Start 005A48CB End 005A48D2 (Size 0007)
+005A48CD    66:58    POP AX
+005A48D1    66:310424    XOR [ESP],AX
+005A48D2    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 003D
+Start 005A48D2 End 005A48D7 (Size 0005)
+005A48D3    58    POP EAX
+005A48D6    310424    XOR [ESP],EAX
+005A48D7    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 003F
+Start 005A48D7 End 005A48DD (Size 0006)
+005A48D9    66:58    POP AX
+005A48DC    080424    OR [ESP],AL
+005A48DD    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0040
+Start 005A48DD End 005A48E4 (Size 0007)
+005A48DF    66:58    POP AX
+005A48E3    66:090424    OR [ESP],AX
+005A48E4    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0041
+Start 005A48E4 End 005A48E9 (Size 0005)
+005A48E5    58    POP EAX
+005A48E8    090424    OR [ESP],EAX
+005A48E9    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0043
+Start 005A48E9 End 005A48F0 (Size 0007)
+005A48EB    66:58    POP AX
+005A48ED    66:59    POP CX
+005A48EF    84C8    TEST AL,CL
+005A48F0    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0044
+Start 005A48F0 End 005A48F8 (Size 0008)
+005A48F2    66:58    POP AX
+005A48F4    66:59    POP CX
+005A48F7    66:85C8    TEST AX,CX
+005A48F8    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0045
+Start 005A48F8 End 005A48FD (Size 0005)
+005A48F9    58    POP EAX
+005A48FA    59    POP ECX
+005A48FC    85C8    TEST EAX,ECX
+005A48FD    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0048
+Start 005A48FD End 005A4907 (Size 000A)
+005A48FF    66:59    POP CX
+005A4901    66:58    POP AX
+005A4905    66:0FB6C8    MOVZX CX,AL
+005A4907    66:51    PUSH CX
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0049
+Start 005A4907 End 005A490D (Size 0006)
+005A4908    59    POP ECX
+005A4909    58    POP EAX
+005A490C    0FB6C8    MOVZX ECX,AL
+005A490D    51    PUSH ECX
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 004D
+Start 005A490D End 005A4913 (Size 0006)
+005A490E    59    POP ECX
+005A490F    58    POP EAX
+005A4912    0FB7C8    MOVZX ECX,AX
+005A4913    51    PUSH ECX
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0053
+Start 005A4913 End 005A4919 (Size 0006)
+005A4915    66:58    POP AX
+005A4918    FE0424    INC BYTE PTR [ESP]
+005A4919    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0054
+Start 005A4919 End 005A4920 (Size 0007)
+005A491B    66:58    POP AX
+005A491F    66:FF0424    INC WORD PTR [ESP]
+005A4920    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0055
+Start 005A4920 End 005A4925 (Size 0005)
+005A4921    58    POP EAX
+005A4924    FF0424    INC DWORD PTR [ESP]
+005A4925    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0057
+Start 005A4925 End 005A4933 (Size 000E)
+005A4926    90    NOP
+005A4927    90    NOP
+005A492A    FF77 1C    PUSH DWORD PTR [EDI+1C]
+005A492B    9D    POPFD
+005A492D    66:59    POP CX
+005A4930    D21424    RCL BYTE PTR [ESP],CL
+005A4931    90    NOP
+005A4932    90    NOP
+005A4933    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0058
+Start 005A4933 End 005A4942 (Size 000F)
+005A4934    90    NOP
+005A4935    90    NOP
+005A4938    FF77 1C    PUSH DWORD PTR [EDI+1C]
+005A4939    9D    POPFD
+005A493B    66:59    POP CX
+005A493F    66:D31424    RCL WORD PTR [ESP],CL
+005A4940    90    NOP
+005A4941    90    NOP
+005A4942    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0059
+Start 005A4942 End 005A4950 (Size 000E)
+005A4943    90    NOP
+005A4944    90    NOP
+005A4947    FF77 1C    PUSH DWORD PTR [EDI+1C]
+005A4948    9D    POPFD
+005A494A    66:59    POP CX
+005A494D    D31424    RCL DWORD PTR [ESP],CL
+005A494E    90    NOP
+005A494F    90    NOP
+005A4950    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 005B
+Start 005A4950 End 005A495E (Size 000E)
+005A4951    90    NOP
+005A4952    90    NOP
+005A4955    FF77 1C    PUSH DWORD PTR [EDI+1C]
+005A4956    9D    POPFD
+005A4958    66:59    POP CX
+005A495B    D21C24    RCR BYTE PTR [ESP],CL
+005A495C    90    NOP
+005A495D    90    NOP
+005A495E    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 016F
+Start 005A4B99 End 005A4B9C (Size 0003)
+005A4B9A    AD    LODS DWORD PTR [ESI]
+005A4B9C    8BD0    MOV EDX,EAX
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0170
+Start 005A4B9C End 005A4BA0 (Size 0004)
+005A4B9D    58    POP EAX
+005A4B9E    52    PUSH EDX
+005A4BA0    8BD0    MOV EDX,EAX
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 005C
+Start 005A495E End 005A496D (Size 000F)
+005A495F    90    NOP
+005A4960    90    NOP
+005A4963    FF77 1C    PUSH DWORD PTR [EDI+1C]
+005A4964    9D    POPFD
+005A4966    66:59    POP CX
+005A496A    66:D31C24    RCR WORD PTR [ESP],CL
+005A496B    90    NOP
+005A496C    90    NOP
+005A496D    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 005D
+Start 005A496D End 005A497B (Size 000E)
+005A496E    90    NOP
+005A496F    90    NOP
+005A4972    FF77 1C    PUSH DWORD PTR [EDI+1C]
+005A4973    9D    POPFD
+005A4975    66:59    POP CX
+005A4978    D31C24    RCR DWORD PTR [ESP],CL
+005A4979    90    NOP
+005A497A    90    NOP
+005A497B    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 005F
+Start 005A497B End 005A4981 (Size 0006)
+005A497D    66:59    POP CX
+005A4980    D20424    ROL BYTE PTR [ESP],CL
+005A4981    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0060
+Start 005A4981 End 005A4988 (Size 0007)
+005A4983    66:59    POP CX
+005A4987    66:D30424    ROL WORD PTR [ESP],CL
+005A4988    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0061
+Start 005A4988 End 005A498E (Size 0006)
+005A498A    66:59    POP CX
+005A498D    D30424    ROL DWORD PTR [ESP],CL
+005A498E    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0063
+Start 005A498E End 005A4994 (Size 0006)
+005A4990    66:59    POP CX
+005A4993    D20C24    ROR BYTE PTR [ESP],CL
+005A4994    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0064
+Start 005A4994 End 005A499B (Size 0007)
+005A4996    66:59    POP CX
+005A499A    66:D30C24    ROR WORD PTR [ESP],CL
+005A499B    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0065
+Start 005A499B End 005A49A1 (Size 0006)
+005A499D    66:59    POP CX
+005A49A0    D30C24    ROR DWORD PTR [ESP],CL
+005A49A1    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0067
+Start 005A49A1 End 005A49A7 (Size 0006)
+005A49A3    66:59    POP CX
+005A49A6    D22424    SHL BYTE PTR [ESP],CL
+005A49A7    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0068
+Start 005A49A7 End 005A49AE (Size 0007)
+005A49A9    66:59    POP CX
+005A49AD    66:D32424    SHL WORD PTR [ESP],CL
+005A49AE    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0069
+Start 005A49AE End 005A49B4 (Size 0006)
+005A49B0    66:59    POP CX
+005A49B3    D32424    SHL DWORD PTR [ESP],CL
+005A49B4    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 006B
+Start 005A49B4 End 005A49BA (Size 0006)
+005A49B6    66:59    POP CX
+005A49B9    D23C24    SAR BYTE PTR [ESP],CL
+005A49BA    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 006C
+Start 005A49BA End 005A49C1 (Size 0007)
+005A49BC    66:59    POP CX
+005A49C0    66:D33C24    SAR WORD PTR [ESP],CL
+005A49C1    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 006D
+Start 005A49C1 End 005A49C7 (Size 0006)
+005A49C3    66:59    POP CX
+005A49C6    D33C24    SAR DWORD PTR [ESP],CL
+005A49C7    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 006F
+Start 005A49C7 End 005A49CD (Size 0006)
+005A49C9    66:59    POP CX
+005A49CC    D22424    SHL BYTE PTR [ESP],CL
+005A49CD    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0070
+Start 005A49CD End 005A49D4 (Size 0007)
+005A49CF    66:59    POP CX
+005A49D3    66:D32424    SHL WORD PTR [ESP],CL
+005A49D4    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0071
+Start 005A49D4 End 005A49DA (Size 0006)
+005A49D6    66:59    POP CX
+005A49D9    D32424    SHL DWORD PTR [ESP],CL
+005A49DA    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0073
+Start 005A49DA End 005A49E0 (Size 0006)
+005A49DC    66:59    POP CX
+005A49DF    D22C24    SHR BYTE PTR [ESP],CL
+005A49E0    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0074
+Start 005A49E0 End 005A49E7 (Size 0007)
+005A49E2    66:59    POP CX
+005A49E6    66:D32C24    SHR WORD PTR [ESP],CL
+005A49E7    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0075
+Start 005A49E7 End 005A49ED (Size 0006)
+005A49E9    66:59    POP CX
+005A49EC    D32C24    SHR DWORD PTR [ESP],CL
+005A49ED    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0077
+Start 005A49ED End 005A49F3 (Size 0006)
+005A49EF    66:58    POP AX
+005A49F2    FE0C24    DEC BYTE PTR [ESP]
+005A49F3    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0078
+Start 005A49F3 End 005A49FA (Size 0007)
+005A49F5    66:58    POP AX
+005A49F9    66:FF0C24    DEC WORD PTR [ESP]
+005A49FA    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0079
+Start 005A49FA End 005A49FF (Size 0005)
+005A49FB    58    POP EAX
+005A49FE    FF0C24    DEC DWORD PTR [ESP]
+005A49FF    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 007B
+Start 005A49FF End 005A4A01 (Size 0002)
+005A4A01    8BC0    MOV EAX,EAX
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0080
+Start 005A4A01 End 005A4A0B (Size 000A)
+005A4A03    66:59    POP CX
+005A4A05    66:58    POP AX
+005A4A09    66:0FBEC8    MOVSX CX,AL
+005A4A0B    66:51    PUSH CX
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0081
+Start 005A4A0B End 005A4A11 (Size 0006)
+005A4A0C    59    POP ECX
+005A4A0D    58    POP EAX
+005A4A10    0FBEC8    MOVSX ECX,AL
+005A4A11    51    PUSH ECX
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0085
+Start 005A4A11 End 005A4A17 (Size 0006)
+005A4A12    59    POP ECX
+005A4A13    58    POP EAX
+005A4A16    0FBFC8    MOVSX ECX,AX
+005A4A17    51    PUSH ECX
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0087
+Start 005A4A1B End 005A4A1F (Size 0004)
+005A4A1F    8367 1C FE    AND DWORD PTR [EDI+1C],FFFFFFFE
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 008B
+Start 005A4A1F End 005A4A26 (Size 0007)
+005A4A26    8167 1C FFFBFFFF    AND DWORD PTR [EDI+1C],FFFFFBFF
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 008F
+Start 005A4A26 End 005A4A2B (Size 0005)
+005A4A2B    B8 47390500    MOV EAX,53947
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0093
+Start 005A4A2B End 005A4A41 (Size 0016)
+005A4A2E    8B47 1C    MOV EAX,[EDI+1C]
+005A4A31    83E0 01    AND EAX,1
+005A4A33    0BC0    OR EAX,EAX
+005A4A35    74 06    JE SHORT 005A4A3B
+005A4A39    8367 1C FE    AND DWORD PTR [EDI+1C],FFFFFFFE
+005A4A3B    EB 04    JMP SHORT 005A4A3F
+005A4A3F    834F 1C 01    OR DWORD PTR [EDI+1C],1
+005A4A41    8BDB    MOV EBX,EBX
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0097
+Start 005A4A17 End 005A4A1B (Size 0004)
+005A4A1B    834F 1C 01    OR DWORD PTR [EDI+1C],1
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 009B
+Start 005A4A41 End 005A4A48 (Size 0007)
+005A4A48    814F 1C 00040000    OR DWORD PTR [EDI+1C],400
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 009F
+Start 005A4A48 End 005A4A4F (Size 0007)
+005A4A4F    814F 1C 00020000    OR DWORD PTR [EDI+1C],200
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 00A3
+Start 005A4A4F End 005A4A52 (Size 0003)
+005A4A52    FF77 2C    PUSH DWORD PTR [EDI+2C]
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 00A8
+Start 005A4A52 End 005A4A5A (Size 0008)
+005A4A54    66:58    POP AX
+005A4A59    66:0FA30424    BT WORD PTR [ESP],AX
+005A4A5A    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 00A9
+Start 005A4A5A End 005A4A60 (Size 0006)
+005A4A5B    58    POP EAX
+005A4A5F    0FA30424    BT DWORD PTR [ESP],EAX
+005A4A60    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 00AB
+Start 005A4A60 End 005A4A68 (Size 0008)
+005A4A62    66:58    POP AX
+005A4A67    66:0FBB0424    BTC WORD PTR [ESP],AX
+005A4A68    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 00AC
+Start 005A4A68 End 005A4A70 (Size 0008)
+005A4A6A    66:58    POP AX
+005A4A6F    66:0FBB0424    BTC WORD PTR [ESP],AX
+005A4A70    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 00AF
+Start 005A4A70 End 005A4A78 (Size 0008)
+005A4A72    66:58    POP AX
+005A4A77    66:0FB30424    BTR WORD PTR [ESP],AX
+005A4A78    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 00B0
+Start 005A4A78 End 005A4A80 (Size 0008)
+005A4A7A    66:58    POP AX
+005A4A7F    66:0FB30424    BTR WORD PTR [ESP],AX
+005A4A80    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 00B3
+Start 005A4A80 End 005A4A88 (Size 0008)
+005A4A82    66:58    POP AX
+005A4A87    66:0FAB0424    BTS WORD PTR [ESP],AX
+005A4A88    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 00B4
+Start 005A4A88 End 005A4A90 (Size 0008)
+005A4A8A    66:58    POP AX
+005A4A8F    66:0FAB0424    BTS WORD PTR [ESP],AX
+005A4A90    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 00B7
+Start 005A4A90 End 005A4A9E (Size 000E)
+005A4A91    90    NOP
+005A4A92    90    NOP
+005A4A95    FF77 1C    PUSH DWORD PTR [EDI+1C]
+005A4A96    9D    POPFD
+005A4A98    66:58    POP AX
+005A4A9B    180424    SBB [ESP],AL
+005A4A9C    90    NOP
+005A4A9D    90    NOP
+005A4A9E    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 00B8
+Start 005A4A9E End 005A4AAD (Size 000F)
+005A4A9F    90    NOP
+005A4AA0    90    NOP
+005A4AA3    FF77 1C    PUSH DWORD PTR [EDI+1C]
+005A4AA4    9D    POPFD
+005A4AA6    66:58    POP AX
+005A4AAA    66:190424    SBB [ESP],AX
+005A4AAB    90    NOP
+005A4AAC    90    NOP
+005A4AAD    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 00B9
+Start 005A4AAD End 005A4ABA (Size 000D)
+005A4AAE    90    NOP
+005A4AAF    90    NOP
+005A4AB2    FF77 1C    PUSH DWORD PTR [EDI+1C]
+005A4AB3    9D    POPFD
+005A4AB4    58    POP EAX
+005A4AB7    190424    SBB [ESP],EAX
+005A4AB8    90    NOP
+005A4AB9    90    NOP
+005A4ABA    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 00BB
+Start 005A4ABA End 005A4ACD (Size 0013)
+005A4ABC    66:59    POP CX
+005A4ABE    66:58    POP AX
+005A4AC0    F6E1    MUL CL
+005A4AC4    66:0FB6CC    MOVZX CX,AH
+005A4AC6    66:51    PUSH CX
+005A4ACA    66:0FB6C8    MOVZX CX,AL
+005A4ACC    66:51    PUSH CX
+005A4ACD    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 00BC
+Start 005A4ACD End 005A4AD9 (Size 000C)
+005A4ACF    66:59    POP CX
+005A4AD1    66:58    POP AX
+005A4AD4    66:F7E1    MUL CX
+005A4AD6    66:52    PUSH DX
+005A4AD8    66:50    PUSH AX
+005A4AD9    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 00BD
+Start 005A4AD9 End 005A4AE0 (Size 0007)
+005A4ADA    59    POP ECX
+005A4ADB    58    POP EAX
+005A4ADD    F7E1    MUL ECX
+005A4ADE    52    PUSH EDX
+005A4ADF    50    PUSH EAX
+005A4AE0    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 00BF
+Start 005A4AE0 End 005A4AF3 (Size 0013)
+005A4AE2    66:59    POP CX
+005A4AE4    66:58    POP AX
+005A4AE6    F6E9    IMUL CL
+005A4AEA    66:0FB6CC    MOVZX CX,AH
+005A4AEC    66:51    PUSH CX
+005A4AF0    66:0FB6C8    MOVZX CX,AL
+005A4AF2    66:51    PUSH CX
+005A4AF3    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 00C0
+Start 005A4AF3 End 005A4AFF (Size 000C)
+005A4AF5    66:59    POP CX
+005A4AF7    66:58    POP AX
+005A4AFA    66:F7E9    IMUL CX
+005A4AFC    66:52    PUSH DX
+005A4AFE    66:50    PUSH AX
+005A4AFF    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 00C1
+Start 005A4AFF End 005A4B06 (Size 0007)
+005A4B00    59    POP ECX
+005A4B01    58    POP EAX
+005A4B03    F7E9    IMUL ECX
+005A4B04    52    PUSH EDX
+005A4B05    50    PUSH EAX
+005A4B06    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 00C3
+Start 005A4B06 End 005A4B19 (Size 0013)
+005A4B08    66:59    POP CX
+005A4B0A    66:58    POP AX
+005A4B0C    F6F1    DIV CL
+005A4B10    66:0FB6CC    MOVZX CX,AH
+005A4B12    66:51    PUSH CX
+005A4B16    66:0FB6C8    MOVZX CX,AL
+005A4B18    66:51    PUSH CX
+005A4B19    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 00C4
+Start 005A4B19 End 005A4B27 (Size 000E)
+005A4B1B    66:59    POP CX
+005A4B1D    66:58    POP AX
+005A4B1F    66:58    POP AX
+005A4B22    66:F7F1    DIV CX
+005A4B24    66:52    PUSH DX
+005A4B26    66:50    PUSH AX
+005A4B27    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 00C5
+Start 005A4B27 End 005A4B2F (Size 0008)
+005A4B28    59    POP ECX
+005A4B29    58    POP EAX
+005A4B2A    5A    POP EDX
+005A4B2C    F7F1    DIV ECX
+005A4B2D    52    PUSH EDX
+005A4B2E    50    PUSH EAX
+005A4B2F    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 00C7
+Start 005A4B2F End 005A4B42 (Size 0013)
+005A4B31    66:59    POP CX
+005A4B33    66:58    POP AX
+005A4B35    F6F9    IDIV CL
+005A4B39    66:0FB6CC    MOVZX CX,AH
+005A4B3B    66:51    PUSH CX
+005A4B3F    66:0FB6C8    MOVZX CX,AL
+005A4B41    66:51    PUSH CX
+005A4B42    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 00C8
+Start 005A4B42 End 005A4B50 (Size 000E)
+005A4B44    66:59    POP CX
+005A4B46    66:58    POP AX
+005A4B48    66:5A    POP DX
+005A4B4B    66:F7F9    IDIV CX
+005A4B4D    66:52    PUSH DX
+005A4B4F    66:50    PUSH AX
+005A4B50    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 00C9
+Start 005A4B50 End 005A4B58 (Size 0008)
+005A4B51    59    POP ECX
+005A4B52    58    POP EAX
+005A4B53    5A    POP EDX
+005A4B55    F7F9    IDIV ECX
+005A4B56    52    PUSH EDX
+005A4B57    50    PUSH EAX
+005A4B58    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 00CD
+Start 005A4B58 End 005A4B5C (Size 0004)
+005A4B59    58    POP EAX
+005A4B5B    0FC8    BSWAP EAX
+005A4B5C    50    PUSH EAX
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 00CF
+Start 005A4B5C End 005A4B60 (Size 0004)
+005A4B5F    F61C24    NEG BYTE PTR [ESP]
+005A4B60    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 00D0
+Start 005A4B60 End 005A4B65 (Size 0005)
+005A4B64    66:F71C24    NEG WORD PTR [ESP]
+005A4B65    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 00D1
+Start 005A4B65 End 005A4B69 (Size 0004)
+005A4B68    F71C24    NEG DWORD PTR [ESP]
+005A4B69    9C    PUSHFD
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 00D3
+Start 005A4B69 End 005A4B6C (Size 0003)
+005A4B6C    F61424    NOT BYTE PTR [ESP]
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 00D4
+Start 005A4B6C End 005A4B70 (Size 0004)
+005A4B70    66:F71424    NOT WORD PTR [ESP]
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 00D5
+Start 005A4B70 End 005A4B73 (Size 0003)
+005A4B73    F71424    NOT DWORD PTR [ESP]
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0169
+Start 005A4B77 End 005A4B7A (Size 0003)
+005A4B78    AD    LODS DWORD PTR [ESI]
+005A4B7A    2BD0    SUB EDX,EAX
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 016A
+Start 005A4B7D End 005A4B80 (Size 0003)
+005A4B7E    AD    LODS DWORD PTR [ESI]
+005A4B80    03D0    ADD EDX,EAX
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 016B
+Start 005A4B7A End 005A4B7D (Size 0003)
+005A4B7B    AD    LODS DWORD PTR [ESI]
+005A4B7D    33D0    XOR EDX,EAX
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 016C
+Start 005A4B80 End 005A4B83 (Size 0003)
+005A4B83    FF77 40    PUSH DWORD PTR [EDI+40]
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 016E
+Start 005A4B83 End 005A4B86 (Size 0003)
+005A4B86    8F47 40    POP DWORD PTR [EDI+40]
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 016D
+Start 005A4B86 End 005A4B92 (Size 000C)
+005A4B8A    8B4424 04    MOV EAX,[ESP+4]
+005A4B8D    8947 40    MOV [EDI+40],EAX
+005A4B8E    58    POP EAX
+005A4B91    83C4 04    ADD ESP,4
+005A4B92    50    PUSH EAX
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0171
+Start 005A4B92 End 005A4B96 (Size 0004)
+005A4B93    58    POP EAX
+005A4B94    59    POP ECX
+005A4B96    8908    MOV [EAX],ECX
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0172
+Start 005A4B96 End 005A4B99 (Size 0003)
+005A4B97    58    POP EAX
+005A4B99    FF30    PUSH DWORD PTR [EAX]
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0168
+Start 005A4B73 End 005A4B77 (Size 0004)
+005A4B74    AC    LODS BYTE PTR [ESI]
+005A4B77    8847 38    MOV [EDI+38],AL
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 014A
+Start 005A4BA0 End 005A4BCE (Size 002E)
+005A4BA3    8B4F 38    MOV ECX,[EDI+38]
+005A4BA5    8BD7    MOV EDX,EDI
+005A4BA7    0BC9    OR ECX,ECX
+005A4BA9    74 1B    JE SHORT 005A4BC4
+005A4BAB    8BF4    MOV ESI,ESP
+005A4BAE    83C6 24    ADD ESI,24
+005A4BB0    8BFE    MOV EDI,ESI
+005A4BB2    03F9    ADD EDI,ECX
+005A4BB3    FD    STD
+005A4BB8    B9 0A000000    MOV ECX,A
+005A4BBA    F3:A5    REP MOVS DWORD PTR ES:[EDI],DWORD PTR [ESI]
+005A4BBD    0362 38    ADD ESP,[EDX+38]
+005A4BC4    C742 38 00000000    MOV DWORD PTR [EDX+38],0
+005A4BCB    C742 30 00000000    MOV DWORD PTR [EDX+30],0
+005A4BCC    61    POPAD
+005A4BCD    9D    POPFD
+005A4BCE    C3    RETN
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 014B
+Start 005A4BCE End 005A4BE2 (Size 0014)
+005A4BCF    AC    LODS BYTE PTR [ESI]
+005A4BD5    81C7 FC030000    ADD EDI,3FC
+005A4BD8    0FB6C0    MOVZX EAX,AL
+005A4BDB    FF3487    PUSH DWORD PTR [EDI+EAX*4]
+005A4BE1    81EF FC030000    SUB EDI,3FC
+005A4BE2    C3    RETN
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 014C
+Start 005A4BE2 End 005A4BE3 (Size 0001)
+005A4BE3    54    PUSH ESP
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 014D
+Start 005A4BE3 End 005A4BE4 (Size 0001)
+005A4BE4    5C    POP ESP
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 014E
+Start 005A4BE4 End 005A4BE6 (Size 0002)
+005A4BE6    8BD4    MOV EDX,ESP
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 014F
+Start 005A4BE6 End 005A4BE8 (Size 0002)
+005A4BE8    66:54    PUSH SP
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0150
+Start 005A4BE8 End 005A4BE9 (Size 0001)
+005A4BE9    54    PUSH ESP
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0151
+Start 005A4BE9 End 005A4BEB (Size 0002)
+005A4BEB    66:5C    POP SP
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0152
+Start 005A4BEB End 005A4BEC (Size 0001)
+005A4BEC    5C    POP ESP
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0153
+Start 005A4BEC End 005A4BFE (Size 0012)
+005A4BED    AC    LODS BYTE PTR [ESI]
+005A4BF0    0FB6C0    MOVZX EAX,AL
+005A4BF3    83F8 07    CMP EAX,7
+005A4BF5    74 05    JE SHORT 005A4BFA
+005A4BF8    8B0487    MOV EAX,[EDI+EAX*4]
+005A4BFA    EB 02    JMP SHORT 005A4BFC
+005A4BFC    8BC4    MOV EAX,ESP
+005A4BFE    03D0    ADD EDX,EAX
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0154
+Start 005A4BFE End 005A4C06 (Size 0008)
+005A4BFF    AD    LODS DWORD PTR [ESI]
+005A4C01    03F0    ADD ESI,EAX
+005A4C06    BB 00000000    MOV EBX,0
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0155
+Start 005A4C06 End 005A4DC4 (Size 01BE)
+005A4C07    AD    LODS DWORD PTR [ESI]
+005A4C09    24 7F    AND AL,7F
+005A4C0A    53    PUSH EBX
+005A4C0C    8BD8    MOV EBX,EAX
+005A4C13    C747 20 01000000    MOV DWORD PTR [EDI+20],1
+005A4C1A    C747 24 00000000    MOV DWORD PTR [EDI+24],0
+005A4C1C    33D2    XOR EDX,EDX
+005A4C1E    8BC3    MOV EAX,EBX
+005A4C23    25 00020000    AND EAX,200
+005A4C26    8B4F 1C    MOV ECX,[EDI+1C]
+005A4C29    83E1 01    AND ECX,1
+005A4C2C    C1E9 00    SHR ECX,0
+005A4C2E    0BC0    OR EAX,EAX
+005A4C30    74 18    JE SHORT 005A4C48
+005A4C32    8BC3    MOV EAX,EBX
+005A4C37    25 00010000    AND EAX,100
+005A4C3A    C1E8 08    SHR EAX,8
+005A4C3C    33C1    XOR EAX,ECX
+005A4C3E    F7D0    NOT EAX
+005A4C41    83E0 01    AND EAX,1
+005A4C43    0BD0    OR EDX,EAX
+005A4C45    D1E2    SHL EDX,1
+005A4C48    FF47 24    INC DWORD PTR [EDI+24]
+005A4C4A    8BC3    MOV EAX,EBX
+005A4C4F    25 00080000    AND EAX,800
+005A4C51    0BC0    OR EAX,EAX
+005A4C53    74 21    JE SHORT 005A4C74
+005A4C56    8B4F 1C    MOV ECX,[EDI+1C]
+005A4C59    83E1 40    AND ECX,40
+005A4C5C    C1E9 06    SHR ECX,6
+005A4C5E    8BC3    MOV EAX,EBX
+005A4C63    25 00040000    AND EAX,400
+005A4C66    C1E8 0A    SHR EAX,A
+005A4C68    33C1    XOR EAX,ECX
+005A4C6A    F7D0    NOT EAX
+005A4C6D    83E0 01    AND EAX,1
+005A4C6F    0BD0    OR EDX,EAX
+005A4C71    D1E2    SHL EDX,1
+005A4C74    FF47 24    INC DWORD PTR [EDI+24]
+005A4C76    8BC3    MOV EAX,EBX
+005A4C7B    25 00000002    AND EAX,2000000
+005A4C7D    0BC0    OR EAX,EAX
+005A4C7F    74 21    JE SHORT 005A4CA0
+005A4C82    8B4F 1C    MOV ECX,[EDI+1C]
+005A4C85    83E1 04    AND ECX,4
+005A4C88    C1E9 0A    SHR ECX,A
+005A4C8A    8BC3    MOV EAX,EBX
+005A4C8F    25 00000001    AND EAX,1000000
+005A4C92    C1E8 18    SHR EAX,18
+005A4C94    33C1    XOR EAX,ECX
+005A4C96    F7D0    NOT EAX
+005A4C99    83E0 01    AND EAX,1
+005A4C9B    0BD0    OR EDX,EAX
+005A4C9D    D1E2    SHL EDX,1
+005A4CA0    FF47 24    INC DWORD PTR [EDI+24]
+005A4CA2    8BC3    MOV EAX,EBX
+005A4CA7    25 00200000    AND EAX,2000
+005A4CA9    0BC0    OR EAX,EAX
+005A4CAB    74 24    JE SHORT 005A4CCF
+005A4CAE    8B4F 1C    MOV ECX,[EDI+1C]
+005A4CB4    81E1 80000000    AND ECX,80
+005A4CB7    C1E9 07    SHR ECX,7
+005A4CB9    8BC3    MOV EAX,EBX
+005A4CBE    25 00100000    AND EAX,1000
+005A4CC1    C1E8 0C    SHR EAX,C
+005A4CC3    33C1    XOR EAX,ECX
+005A4CC5    F7D0    NOT EAX
+005A4CC8    83E0 01    AND EAX,1
+005A4CCA    0BD0    OR EDX,EAX
+005A4CCC    D1E2    SHL EDX,1
+005A4CCF    FF47 24    INC DWORD PTR [EDI+24]
+005A4CD1    8BC3    MOV EAX,EBX
+005A4CD6    25 00800000    AND EAX,8000
+005A4CD8    0BC0    OR EAX,EAX
+005A4CDA    74 24    JE SHORT 005A4CFE
+005A4CDD    8B4F 1C    MOV ECX,[EDI+1C]
+005A4CE3    81E1 00080000    AND ECX,800
+005A4CE6    C1E9 0B    SHR ECX,B
+005A4CE8    8BC3    MOV EAX,EBX
+005A4CED    25 00400000    AND EAX,4000
+005A4CF0    C1E8 0E    SHR EAX,E
+005A4CF2    33C1    XOR EAX,ECX
+005A4CF4    F7D0    NOT EAX
+005A4CF7    83E0 01    AND EAX,1
+005A4CF9    0BD0    OR EDX,EAX
+005A4CFB    D1E2    SHL EDX,1
+005A4CFE    FF47 24    INC DWORD PTR [EDI+24]
+005A4D00    8BC3    MOV EAX,EBX
+005A4D05    25 00000200    AND EAX,20000
+005A4D07    0BC0    OR EAX,EAX
+005A4D09    74 21    JE SHORT 005A4D2A
+005A4D0C    8B4F 1C    MOV ECX,[EDI+1C]
+005A4D0F    83E1 04    AND ECX,4
+005A4D12    C1E9 02    SHR ECX,2
+005A4D14    8BC3    MOV EAX,EBX
+005A4D19    25 00000100    AND EAX,10000
+005A4D1C    C1E8 10    SHR EAX,10
+005A4D1E    33C1    XOR EAX,ECX
+005A4D20    F7D0    NOT EAX
+005A4D23    83E0 01    AND EAX,1
+005A4D25    0BD0    OR EDX,EAX
+005A4D27    D1E2    SHL EDX,1
+005A4D2A    FF47 24    INC DWORD PTR [EDI+24]
+005A4D2C    8BC3    MOV EAX,EBX
+005A4D31    25 00000800    AND EAX,80000
+005A4D33    0BC0    OR EAX,EAX
+005A4D35    74 31    JE SHORT 005A4D66
+005A4D38    8B4F 1C    MOV ECX,[EDI+1C]
+005A4D3E    81E1 80000000    AND ECX,80
+005A4D41    C1E9 07    SHR ECX,7
+005A4D44    8B47 1C    MOV EAX,[EDI+1C]
+005A4D49    25 00080000    AND EAX,800
+005A4D4C    C1E8 0B    SHR EAX,B
+005A4D4E    33C8    XOR ECX,EAX
+005A4D50    8BC3    MOV EAX,EBX
+005A4D55    25 00000400    AND EAX,40000
+005A4D58    C1E8 12    SHR EAX,12
+005A4D5A    33C1    XOR EAX,ECX
+005A4D5C    F7D0    NOT EAX
+005A4D5F    83E0 01    AND EAX,1
+005A4D61    0BD0    OR EDX,EAX
+005A4D63    D1E2    SHL EDX,1
+005A4D66    FF47 24    INC DWORD PTR [EDI+24]
+005A4D68    8BC3    MOV EAX,EBX
+005A4D6D    25 00002000    AND EAX,200000
+005A4D6F    0BC0    OR EAX,EAX
+005A4D71    74 14    JE SHORT 005A4D85
+005A4D74    8B47 28    MOV EAX,[EDI+28]
+005A4D77    8B0487    MOV EAX,[EDI+EAX*4]
+005A4D7C    25 FFFF0000    AND EAX,FFFF
+005A4D7E    0BC0    OR EAX,EAX
+005A4D80    75 05    JNZ SHORT 005A4D85
+005A4D85    BA 01000000    MOV EDX,1
+005A4D87    8BC3    MOV EAX,EBX
+005A4D8C    25 00008000    AND EAX,800000
+005A4D8E    0BC0    OR EAX,EAX
+005A4D90    74 0F    JE SHORT 005A4D9F
+005A4D93    8B47 28    MOV EAX,[EDI+28]
+005A4D96    8B0487    MOV EAX,[EDI+EAX*4]
+005A4D98    0BC0    OR EAX,EAX
+005A4D9A    75 05    JNZ SHORT 005A4D9F
+005A4D9F    BA 01000000    MOV EDX,1
+005A4DA2    8B4F 24    MOV ECX,[EDI+24]
+005A4DA7    B8 01000000    MOV EAX,1
+005A4DA9    D3E0    SHL EAX,CL
+005A4DAA    48    DEC EAX
+005A4DAD    83E3 10    AND EBX,10
+005A4DAF    0BDB    OR EBX,EBX
+005A4DB1    75 05    JNZ SHORT 005A4DB6
+005A4DB4    8957 20    MOV [EDI+20],EDX
+005A4DB6    EB 0D    JMP SHORT 005A4DC3
+005A4DB8    D1EA    SHR EDX,1
+005A4DBA    3BC2    CMP EAX,EDX
+005A4DBC    74 07    JE SHORT 005A4DC3
+005A4DC3    C747 20 00000000    MOV DWORD PTR [EDI+20],0
+005A4DC4    5B    POP EBX
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0156
+Start 005A4DC4 End 005A4DD4 (Size 0010)
+005A4DC5    AD    LODS DWORD PTR [ESI]
+005A4DC9    837F 20 00    CMP DWORD PTR [EDI+20],0
+005A4DCB    74 07    JE SHORT 005A4DD2
+005A4DCD    03F0    ADD ESI,EAX
+005A4DD2    BB 00000000    MOV EBX,0
+005A4DD4    8BC0    MOV EAX,EAX
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0157
+Start 005A4DD4 End 005A4DD8 (Size 0004)
+005A4DD5    AC    LODS BYTE PTR [ESI]
+005A4DD8    8847 28    MOV [EDI+28],AL
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 015A
+Start 005A4DD8 End 005A4DDD (Size 0005)
+005A4DD9    AD    LODS DWORD PTR [ESI]
+005A4DDC    0347 2C    ADD EAX,[EDI+2C]
+005A4DDD    50    PUSH EAX
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 015D
+Start 005A4DDD End 005A4DE3 (Size 0006)
+005A4DE0    8B47 3C    MOV EAX,[EDI+3C]
+005A4DE3    010424    ADD [ESP],EAX
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 015E
+Start 005A4DE3 End 005A4DE8 (Size 0005)
+005A4DE6    8B47 3C    MOV EAX,[EDI+3C]
+005A4DE8    03D0    ADD EDX,EAX
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 015F
+Start 005A47A9 End 005A47AD (Size 0004)
+005A47AA    59    POP ECX
+005A47AD    D32424    SHL DWORD PTR [ESP],CL
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0160
+Start 005A4DEB End 005A4DEF (Size 0004)
+005A4DEC    58    POP EAX
+005A4DEF    310424    XOR [ESP],EAX
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0173
+Start 005A4DE8 End 005A4DEB (Size 0003)
+005A4DEB    8F47 1C    POP DWORD PTR [EDI+1C]
+
+
+
+////////////////////////////////////////////////////////////
+Virtual Code Handler 0161
+Start 005A4DEF End 005A4DF4 (Size 0005)
+005A4DF4    BB 00000000    MOV EBX,0
+
+
+
+

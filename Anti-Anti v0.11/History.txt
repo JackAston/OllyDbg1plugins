@@ -1,0 +1,38 @@
+antiAnti history /kongfoo
+
+================
+something
+================
+1)If u feel the MessageBox after clicking some item is bored, u can
+  click 'Show or not show the MessageBox'.
+2)The action will be log into the log window, so c the log window if
+  u forgot what have u did.
+
+================
+history
+================
+
+2005.12.15 v0.11
+
+patch PEB done.
+ IsDebuggerPresent,ProcessHeap(GetProcessHeap) and NtGlobalFlag are
+ gets values from PEB to check debugger at the same way, so I patch 
+ for the same way.
+ After click this item, plugin will alloc a 1024b memory and 
+ will not free it, this thing is happen because the characteristic 
+ of OllyDBG, so, don't worry about it:)
+
+ban EnableWindow done.
+ hehe,just made it 'retn 8'. Click to ban and to restore.
+
+2005.12.14  v0.1
+
+DontChangeDRx done.
+ DontChangeDRx will set OllyDBG can/or cannot change DRx.
+ 
+ban ZwSetInformationThread done.
+ Made the ZwSetInformationThread just 'retn 10'. 
+
+ban ZwQueryInformationProcess done.
+ Make the return value of ZwQueryInformationProcess always be 
+ 0.

@@ -1,0 +1,200 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<!--
+
+Generated from index.tex by tex2page, v 2004-09-11
+(running on MzScheme 205, windows), 
+(c) Dorai Sitaram, 
+http://www.ccs.neu.edu/~dorai/tex2page/tex2page-doc.html
+
+-->
+<head>
+<title>
+OllyMachine Manual
+</title>
+<link rel="stylesheet" type="text/css" href="css/main.css" title=default>
+<link rel="stylesheet" type="text/css" href="index-Z-S.css" title=default>
+<meta name=robots content="noindex,follow">
+</head>
+<body>
+<div align=right class=navigation><i>[Go to <span><a href="index.htm">first</a>, <a href="index-Z-H-2.htm">previous</a></span><span>, <a href="index-Z-H-4.htm">next</a></span> page<span>; &nbsp;&nbsp;</span><span><a href="index-Z-H-1.htm#node_toc_start">contents</a></span>]</i></div><p></p>
+<a name="node_chap_2"></a>
+<h1 class=chapter>
+<div class=chapterheading><a href="index-Z-H-1.htm#node_toc_node_chap_2">Chapter2</a></div><br>
+<a href="index-Z-H-1.htm#node_toc_node_chap_2">OllyMachine Architecture</a></h1>
+<p></p>
+<a name="node_sec_2.1"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_2.1">2.1&nbsp;&nbsp;Kernel</a></h2>
+<p>OllyMachine is made up of an assembler and a 32-bit Virtual Machine. Its kernel is a Register-Machine, provided with stack, register structure and corresponding addressing method, is similar with x86 CPU.</p>
+<p>
+</p>
+<a name="node_sec_2.1.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_2.1.1">2.1.1&nbsp;&nbsp;Addressing space</a></h3>
+<p>OllyMachine is a 32-bit Virtual Machine, so its valid addressing space is:</p>
+<p>
+</p>
+<ul>
+<li><p>signed num value : -2GB to +2GB
+</p>
+<li><p>unsigned num value : 0 to 4GB
+</p>
+</ul><p></p>
+<p>
+But of course, we are in the real world! :-) Most of us do not have so many physical memory, so this is only a theoretics value.</p>
+<p>
+</p>
+<a name="node_sec_2.1.2"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_2.1.2">2.1.2&nbsp;&nbsp;Register</a></h3>
+<p>In the OllyMachine Virtual Machine, there're 83 general registers and 3 hidden registers. Thereinto:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=variable>reg02</span> ... <span class=variable>reg64</span><span class=keyword>,</span> <span class=variable>FreeBufferReg</span><span class=keyword>,</span> <span class=variable>FreeBufferSizeReg</span>
+</pre><p></p>
+<p>
+The 67 registers above could be used freely by programmers. FreeBufferReg and FreeBufferSizeReg have their particular usages, we leave them to say in the future.</p>
+<p>
+Another 9 registers are:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>eax</span><span class=keyword>,</span> <span class=variable>ecx</span><span class=keyword>,</span> <span class=variable>edx</span><span class=keyword>,</span> <span class=variable>ebx</span><span class=keyword>,</span> <span class=variable>esp</span><span class=keyword>,</span> <span class=variable>ebp</span><span class=keyword>,</span> <span class=variable>esi</span><span class=keyword>,</span> <span class=variable>edi</span><span class=keyword>,</span> <span class=variable>eip</span>
+</pre><p></p>
+<p>
+These 9 registers are a little particularly. They're here because when I decided OllyMachine, I felt that there must be a much more easier way for programmers to alternate between OllyMachine and OllyDbg, so I declared these 9 registers which have the same naming to x86 CPU, all operations on them are equal to what you do on the OllyDbg's current debugging process.</p>
+<p>
+Rest 7 registers are:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>CF</span><span class=keyword>,</span> <span class=variable>PF</span><span class=keyword>,</span> <span class=variable>AF</span><span class=keyword>,</span> <span class=variable>ZF</span><span class=keyword>,</span> <span class=variable>SF</span><span class=keyword>,</span> <span class=variable>DF</span><span class=keyword>,</span> <span class=variable>OF</span>
+</pre><p></p>
+<p>
+These 7 registers are for OllyDbg's eflags register. For example:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>not</span> <span class=variable>cf</span>
+<span class=variable>mov</span> <span class=variable>zf</span><span class=keyword>,</span> <span class=selfeval>0</span>
+<span class=variable>mov</span> <span class=variable>pf</span><span class=keyword>,</span> <span class=selfeval>1</span>
+</pre><p> </p>
+<p>
+In addition, there're 2 hidden registers for OllyMachine internal CPU: eip and esp. Eip is the instruction pointer register, Esp is the stack pointer register. But DO NOT confuse these 2 register with the 9 registers above! They're for the OllyMachine's internal CPU! I choose the name just because my favor of the x86 CPU's architecture.</p>
+<p>
+</p>
+<a name="node_sec_2.1.3"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_2.1.3">2.1.3&nbsp;&nbsp;Flags</a></h3>
+<p>There's still a hidden flags registers called EFlags in the OllyMachine internal CPU. Two flags in it:</p>
+<p>
+</p>
+<ul>
+<li><p>CF (Carry Flag) : Set if an arithmetic operation generates a carry or a borrow out of the most-significant bit of the resul; cleared otherwise. This flag indicates an overflow condition for unsigned-integer arithmetic.
+</p>
+<li><p>ZF (Zero Flag) : Set if the result is zero; cleared otherwise.
+</p>
+</ul><p></p>
+<p>
+</p>
+<a name="node_sec_2.2"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_2.2">2.2&nbsp;&nbsp;Working flow</a></h2>
+<p>OllyMachine has a suit of its own opcodes, its interface to the programmers is an assembly-like language which called OllyMachine Script.</p>
+<p>
+Before running the opcodes, OllyMachine will firstly use its internal assembler to assemble source codes into bytecodes, here's its working flow:</p>
+<p>
+</p>
+<a name="node_fig_Temp_2"></a>
+<div class=figure align=center><table width=100%><tr><td align=center><div align=center><table><tr><td>
+
+<img src="images/assembler.png">
+</td></tr>
+<tr><td align=center><b>Figure 1:</b>&nbsp;&nbsp;Assembler's working flow</td></tr>
+<tr><td>
+</td></tr></table></div>
+
+</td></tr></table></div><p></p>
+<p>
+After generated bytecodes by assembler, the bytecodes can now be sent to Virtual Machine to run.</p>
+<p>
+So, actually OllyMachine's working flow is seperated into two steps:</p>
+<p>
+</p>
+<ul>
+<li><p>Assemble source codes to bytecodes
+</p>
+<li><p>Run bytecodes in Virtual Machine
+</p>
+</ul><p></p>
+<p>
+Therefore, we can assemble source codes beforehand, after that it is faster to use OllyMachine to run this bytecode file without assembling source codes again.</p>
+<p>
+</p>
+<a name="node_sec_2.3"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_2.3">2.3&nbsp;&nbsp;Compiling Error</a></h2>
+<p>OllyMachine has an internal two-by pass LL(1) assembler. If the source code has errors, will be found and prompted like the following example:</p>
+<p>
+Source:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>mov</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>reg73</span>    <span class=variable>//</span> <span class=variable>Error:</span> <span class=selfeval>&quot;reg73&quot;</span> <span class=variable>is</span> <span class=variable>invalid</span>
+<span class=variable>inc</span> <span class=variable>reg00</span>
+<span class=variable>inc</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>1</span>        <span class=variable>//</span> <span class=variable>Error:</span> <span class=selfeval>&quot;inc&quot;</span> <span class=variable>doesn</span><span class=keyword>'</span><span class=variable>t</span> <span class=variable>need</span> <span class=variable>second</span> <span class=variable>operand</span>
+
+<span class=variable>exit:</span>               <span class=variable>//</span> <span class=variable>Warning:</span> <span class=variable>unreferenced</span> <span class=variable>label</span>
+</pre><p></p>
+<p>
+OllyMachine's internal assembler will tell us:</p>
+<p>
+</p>
+<a name="node_fig_Temp_3"></a>
+<div class=figure align=center><table width=100%><tr><td align=center><div align=center><table><tr><td>
+
+<img src="images/compileerror.png">
+</td></tr>
+<tr><td align=center><b>Figure 2:</b>&nbsp;&nbsp;Compiling Error</td></tr>
+<tr><td>
+</td></tr></table></div>
+
+</td></tr></table></div><p></p>
+<p>
+We'll see, errors and warnings have been found in line 1, 1, 3, 5, and the error or warning reasons will be given to you.</p>
+<p>
+</p>
+<a name="node_sec_2.4"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_2.4">2.4&nbsp;&nbsp;Running Exception</a></h2>
+<p>If exceptions occured during the running time, they will be captured. (i.e. divided by 0)</p>
+<p>
+Let's see an example:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>mov</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>9</span>
+<span class=variable>mov</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=selfeval>3</span>
+<span class=variable>sub</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=selfeval>3</span>        <span class=variable>//</span> <span class=variable>now</span> <span class=variable>reg01</span> <span class=variable>is</span> <span class=selfeval>0</span>
+<span class=variable>div</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>reg01</span>    <span class=variable>//</span> <span class=variable>oh</span> <span class=variable>shit!</span>
+</pre><p></p>
+<p>
+Holy...!!!</p>
+<p>
+</p>
+<a name="node_fig_Temp_4"></a>
+<div class=figure align=center><table width=100%><tr><td align=center><div align=center><table><tr><td>
+
+<img src="images/exception1.png">
+</td></tr>
+<tr><td align=center><b>Figure 3:</b>&nbsp;&nbsp;Running exception 1</td></tr>
+<tr><td>
+</td></tr></table></div>
+
+</td></tr></table></div><p></p>
+<p>
+</p>
+<a name="node_fig_Temp_5"></a>
+<div class=figure align=center><table width=100%><tr><td align=center><div align=center><table><tr><td>
+
+<img src="images/exception2.png">
+</td></tr>
+<tr><td align=center><b>Figure 4:</b>&nbsp;&nbsp;Running exception 2</td></tr>
+<tr><td>
+</td></tr></table></div>
+
+</td></tr></table></div><p>
+
+</p>
+<div align=right class=navigation><i>[Go to <span><a href="index.htm">first</a>, <a href="index-Z-H-2.htm">previous</a></span><span>, <a href="index-Z-H-4.htm">next</a></span> page<span>; &nbsp;&nbsp;</span><span><a href="index-Z-H-1.htm#node_toc_start">contents</a></span>]</i></div><p></p>
+</body>
+</html>

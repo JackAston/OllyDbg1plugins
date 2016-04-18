@@ -1,0 +1,41 @@
+////////////////////////////////////////////////////////////////////////////////////
+//
+//  FileName    :   JmpECode.oms（直接转跳到易格式可执行文件的原体起始代码）
+//  Author      :   monkeycz
+//  Date        :   2004-11-28 23:16
+//  Comment     :   搜索易格式所在的节，找到易格式数据头信息，取m_nStartCodeOffset，
+//                  计算出易格式代码的起始位置，下断点。
+//
+////////////////////////////////////////////////////////////////////////////////////
+
+EOB Break1
+
+mov reg04,0x400000                        //ImageBase，需要自行修改
+invoke Search, reg04, "2E65636F64"        //查找易格式所在节
+cmp reg00,-1
+je nofind                                 //没有找到:(
+mov reg01,reg00
+
+add reg01,0x0C                            //到VirtualAddress处
+invoke ReadMemLong,reg01,0x04             //读取易格式的VirtualAddress
+mov reg05,reg00
+add reg05,reg04                           //当前易格式所在的节内存中的偏移
+mov reg03,reg05
+add reg03,60                              //到m_nStartCodeOffset处
+invoke ReadMemLong,reg03,0x04             
+add reg05,reg00                           //计算出易格式代码的起始位置
+invoke bp,reg05
+run
+halt
+
+Break1:
+invoke bc, eip
+jmp target
+
+nofind:
+invoke msg,"No find the E code!"
+halt
+
+target:
+invoke msg,"Look,this is target:)"
+halt

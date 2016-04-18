@@ -1,0 +1,249 @@
+body {
+	font: 14px/1.2 Verdana, Arial, Helvetica, sans-serif, 宋体;
+	background:#ffffff;
+	padding: 10%;
+	padding-top: 5%;
+	margin:0px;
+}
+a {
+	FONT-WEIGHT: bold;
+	COLOR: #cc6666;
+	FONT-FAMILY: tahoma, verdana, arial, 宋体;
+	TEXT-DECORATION: none;
+}
+a:hover {
+	FONT-WEIGHT: bold;
+	BACKGROUND: #000000;
+	COLOR: #ffffff;
+	FONT-FAMILY: tahoma, verdana, arial, 宋体;
+	TEXT-DECORATION: none
+}
+.active {
+	COLOR: gray
+}
+h1 { 
+	FONT-SIZE: 40px;
+	COLOR:#666;
+	BORDER-BOTTOM: 5px solid #000;
+	PADDING: 2px;
+	MARGIN: 0px;
+	MARGIN-BOTTOM: 8px;
+}
+h2 { 
+	MARGIN-TOP: 30px;
+	BORDER-LEFT-COLOR: #bababa;
+	MARGIN-BOTTOM: 5px;
+	COLOR: #666;
+	BORDER-BOTTOM: #000000 1px solid;
+	TEXT-ALIGN: left;
+	BORDER-RIGHT-COLOR: #bababa
+}
+h3 {
+     color:#666;
+     font-size: 16px;
+     border-left: solid black 1px;
+     border-bottom: solid black 1px;
+     padding: 0.1em;
+     padding-top: 0.1em;
+     padding-left: 0.3em;
+     padding-bottom: 0.3em;
+}
+h4 { 
+	FONT-WEIGHT: bold;
+	FONT-SIZE: 14px;
+	COLOR: #666;
+	LINE-HEIGHT: 17px;
+	FONT-FAMILY: tahoma, arial, 宋体;
+	LETTER-SPACING: 0px;
+	PADDING: 2px;
+	MARGIN-TOP: 5px;
+}
+HR {
+	HEIGHT: 1px
+}
+IMG {
+	BORDER-TOP-WIDTH: 0px;
+	BORDER-LEFT-WIDTH: 0px;
+	BORDER-BOTTOM-WIDTH: 0px;
+	MARGIN: 4pt;
+	BORDER-RIGHT-WIDTH: 0px
+}
+IMG.formula {
+	BORDER-RIGHT: blue thin solid;
+	BORDER-TOP: blue thin solid;
+	BORDER-LEFT: blue thin solid;
+	BORDER-BOTTOM: blue thin solid
+}
+#IM { 
+    clear: right;
+}
+PRE {
+	BORDER-RIGHT: #333333 1px solid;
+	PADDING-RIGHT: 0.5em;
+	BORDER-TOP: #333333 1px solid;
+	PADDING-LEFT: 0.5em;
+	FONT-SIZE: 90%;
+	PADDING-BOTTOM: 0.5em;
+	MARGIN-LEFT: 1em;
+	BORDER-LEFT: #333333 1px solid;
+	COLOR: green;
+	MARGIN-RIGHT: 2em;
+	PADDING-TOP: 0.5em;
+	BORDER-BOTTOM: #333333 1px solid;
+	FONT-FAMILY: Courier New, Monospace, sans-serif, 宋体;
+	WHITE-SPACE: pre;
+	BACKGROUND: snow;
+}
+PRE.syntax {
+	BACKGROUND: lightblue
+}
+PRE.error {
+	BACKGROUND-COLOR: pink
+}
+PRE.url {
+	BACKGROUND: bisque
+}
+PRE.verse {
+	BACKGROUND: pink
+}
+.VERSE {
+    white-space: pre;
+    margin-left: 1em;
+}
+DT { 
+     font-weight: bold;
+}
+LI {
+     margin-bottom: 0.9ex;
+}
+EM {
+	COLOR: #666699;
+	FONT-STYLE: normal;
+	TEXT-DECORATION: none
+}
+EM.phrase {
+	COLOR: blue;
+	FONT-STYLE: normal;
+	TEXT-DECORATION: none
+}
+P.banner {
+	TEXT-ALIGN: center
+}
+P.mmix {
+	FONT-SIZE: medium; TEXT-INDENT: 0px
+}
+P.tip {
+	COLOR: blue
+}
+DIV.tl {
+	PADDING-RIGHT: 5px;
+	PADDING-LEFT: 5px;
+	FONT-SIZE: 28px;
+	RIGHT: 0px;
+	LEFT: 0.4cm;
+	PADDING-BOTTOM: 5px;
+	MARGIN: 0px 0px 8px;
+	WIDTH: 7%;
+	COLOR: #666;
+	BOTTOM: auto;
+	PADDING-TOP: 5px;
+	BORDER-BOTTOM: #000 5px solid;
+	POSITION: fixed;
+	TOP: 0.4cm;
+}
+.caption {
+	FONT-SIZE: small; TEXT-ALIGN: center
+}
+.bluetext {
+	FONT-WEIGHT: bold;
+	FONT-SIZE: 11px;
+	COLOR: #0066cc;
+	LINE-HEIGHT: 17px;
+	FONT-FAMILY: tahoma, arial, 宋体;
+	LETTER-SPACING: 0px;
+}
+.orangetext {
+	FONT-WEIGHT: bold;
+	FONT-SIZE: 11px;
+	COLOR: #ff6600;
+	LINE-HEIGHT: 17px;
+	FONT-FAMILY: tahoma, arial, 宋体;
+	LETTER-SPACING: 0px;
+}
+.floatme {
+	
+}
+.floatme {
+	BORDER-RIGHT: black 2px solid;
+	BORDER-TOP: black 2px solid;
+	FLOAT: left;
+	MARGIN-BOTTOM: 20px;
+	MARGIN-LEFT: 10px;
+	BORDER-LEFT: black 2px solid;
+	MARGIN-RIGHT: 30px;
+	BORDER-BOTTOM: black 2px solid;
+	moz-opacity: 25%;
+}
+.shotrow {
+	WIDTH: 100%;
+	TEXT-ALIGN: center;
+	border-spacing: 50px 0px;
+}
+.shottable {
+	BORDER-TOP-WIDTH: 0px;
+	BORDER-LEFT-WIDTH: 0px;
+	BORDER-BOTTOM-WIDTH: 0px;
+	BORDER-RIGHT-WIDTH: 0px;
+}
+.attrib {
+	MARGIN-TOP: 1cm;
+	COLOR: #666666;
+}
+.tbl {
+	BORDER-TOP: 2px solid;
+	BORDER-LEFT-WIDTH: 0px;
+	BORDER-BOTTOM: 2px solid;
+	BORDER-RIGHT-WIDTH: 0px;
+}
+.t_link:active {
+	COLOR: #ddaa11;
+	TEXT-DECORATION: none;
+}
+.footdate {
+	FONT-WEIGHT: bold;
+	FONT-SIZE: 12px;
+	COLOR: #0066cc;
+	LINE-HEIGHT: 17px;
+	FONT-FAMILY: tahoma, arial, 宋体;
+	LETTER-SPACING: 0px;
+}
+.foothome {
+	FONT-WEIGHT: bold;
+	FONT-SIZE: 12px;
+	COLOR: #000000;
+	LINE-HEIGHT: 17px;
+	FONT-FAMILY: tahoma, arial, 宋体;
+	LETTER-SPACING: 0px;
+}
+.footfeed {
+	FONT-WEIGHT: bold;
+	FONT-SIZE: 12px;
+	COLOR: #000000;
+	LINE-HEIGHT: 17px;
+	FONT-FAMILY: tahoma, arial, 宋体;
+	LETTER-SPACING: 0px;
+}
+TABLE {
+	FONT-SIZE: 14px;
+	BORDER-COLLAPSE: collapse;
+}
+P.article_content {
+	TEXT-INDENT: 0em;
+}
+.huge {
+        font-size: 300%;
+        }
+.title {
+         font-size: 200%;
+         font-weight: normal;
+         }        

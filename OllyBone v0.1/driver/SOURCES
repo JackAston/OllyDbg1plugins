@@ -1,0 +1,4 @@
+TARGETNAME=ollybone
+TARGETPATH=..
+TARGETTYPE=DRIVER
+SOURCES= ollybone.c multicpu.c

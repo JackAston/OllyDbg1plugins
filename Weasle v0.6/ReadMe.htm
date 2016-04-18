@@ -1,0 +1,128 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>RL!Weasle</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body link="#000000" vlink="#000000" alink="#000000" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+<table width="100%" border="0" cellpadding="0" cellspacing="1" bgcolor="#000000">
+  <tr>
+    <td><div align="right"><font color="#FFFFFF" size="2" face="Verdana, Arial, Helvetica, sans-serif"><strong>::</strong></font><strong><font color="#FF9900" size="2" face="Verdana, Arial, Helvetica, sans-serif"> 
+        RL!Weasle - Manual&nbsp;&nbsp;</font></strong></div></td>
+  </tr>
+</table>
+<p align="justify"> <font size="2" face="Verdana, Arial, Helvetica, sans-serif"><strong>&nbsp;<font color="#FF9900">::</font> 
+  What it is?</strong></font><br>
+  <font size="2" face="Verdana, Arial, Helvetica, sans-serif">&nbsp;&nbsp;&nbsp;RL!Weasle 
+  is an OllyDBG plugin that can help you reslove invalid ImpRec imports. It feautures 
+  unique specialized tracers and several different generic tracer levels for protections 
+  that copy data from dlls and store them to allocated space. This is done by 
+  obfuscation skipping and hashing correct instructions that are then compared 
+  to original .dll ones.</font></p>
+<p align="justify"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><strong>&nbsp;<font color="#FF9900">::</font> 
+  How to install?<br>
+  </strong>&nbsp;If you have original and unmodified version of OllyDBG.exe just 
+  copy RL!Weasle.dll and Importer.dll (ImporterEngine and deroko`s lenght disassm 
+  engine) to OllyDBG plugin folder. If you use modified OllyDBG version (like 
+  OllyICE or OllyShadow) then unpack weasle.dll file with upx -d (UPX 2.0 is used) 
+  option and then copy .dll files to OllyDBG plugin folder.<br>
+  &nbsp;If you get the message that Importer.dll is not found extract it to the 
+  same folder OllyDBG.exe is in!</font></p>
+<p align="justify"><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><strong>&nbsp;<font color="#FF9900">:: 
+  </font>How to use it?<br>
+  </strong></font><font size="2" face="Verdana, Arial, Helvetica, sans-serif"> 
+  &nbsp;In Search filed enter the address which contains the API pointers (eg. 
+  77xxxxxx</font><font size="2" face="Verdana, Arial, Helvetica, sans-serif">) 
+  and the size of searching. Then press Search (+Search adds new APIs to the list 
+  and Search makes a new list). If API redirection is used use Trace Levels (from 
+  1 to 3) and if it is a special API redirection you can use specialized tracers. 
+  <br>
+  <br>
+  &nbsp;Trace Level 1 - traces until a long jump, or PUSH then RET, or until 0x00<br>
+  &nbsp;Trace Level 2 - traces until a long jump, or PUSH then RET, or until 0x00, 
+  or until RETx<br>
+  &nbsp;Trace Level 3 - traces until a long jump, or PUSH, or until 0x00, or until 
+  RETx (ignores <strong>nil</strong> instuctions NOP, etc.)<br>
+  <br>
+  &nbsp;Resolve by address option can be used when you know any address in selected 
+  .dll file (select it in top .dll list) that you get by traceing. This address 
+  can be any address in that API range. If you enter it and select proper .dll 
+  file RL!Weasle will find the API in question, and if you select API in APIs 
+  list RL!Weasle will resolve the API. For example when you enter VA of MessageBoxA 
+  + 5, API resolver will return MessageBoxA API.<br>
+  <br>
+  &nbsp;Tutorial on plugin using: <a href="http://ap0x.jezgra.net/download/UnpackingPESpin1304.rar"><strong>Unpacking 
+  PESpin 1.304</strong></a><br>
+  &nbsp;Tutorial on plugin using: <a href="http://ap0x.jezgra.net/download/UnpackingSLVc0deProtector.rar"><strong>Unpacking 
+  SLVc0deProtector 1.11</strong></a> <br>
+  </font><br>
+  <font size="2" face="Verdana, Arial, Helvetica, sans-serif"> </font><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><em><em> 
+  </em></em><strong>&nbsp;<font color="#FF9900">::</font> Can I report a bug or 
+  contact the autor?<br>
+  </strong>&nbsp;&nbsp;&nbsp;Here is the contact information which you can use 
+  to contact me:<br>
+  </font><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><em><em>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</em></em><strong>Handle:</strong> 
+  &nbsp;&nbsp;&nbsp;&nbsp;ap0x<br>
+  <em><em>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</em></em><strong>WebSite:</strong>&nbsp;&nbsp; 
+  <a href="http://ap0x.jezgra.net" target="_blank">http://ap0x.jezgra.net</a><br>
+  <em><em>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</em></em><strong>Email:</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+  <a href="mailto:ap0x.rce@gmail.com">ap0x.rce(at)gmail(dot)(com)</a></font></p>
+<p><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><strong>&nbsp;<font color="#FF9900">::</font> 
+  History:</strong></font></p>
+<table width="95%" border="0" align="center" cellpadding="0" cellspacing="0">
+  <tr>
+    <td><p><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><strong>v.0.6 
+        beta</strong><br>
+        + Public release<br>
+        + Released on: 07/14/2006<br>
+        - Fixed NTImageSize in AddNewSection function<br>
+        - Renamed Read import table button to Read IAT<br>
+        - Renamed Save list button to Save settings<br>
+        - Added ImporterEngine to handle IAT table fixing via Fix Dump option<br>
+        <strong><br>
+        v.0.5 beta</strong><br>
+        + Public release<br>
+        + Released on: 05/08/2006<br>
+        - Added manipulate threads option [<font size="1"><strong>handy for ASProtect 
+        SKE import fixing</strong></font>]<br>
+        - Added Run ImpRec option<br>
+        - Added keyboard shortcuts<br>
+        &nbsp;&nbsp;<strong>{+}</strong> = Add new API<br>
+        <strong>&nbsp;&nbsp;&nbsp;{*}</strong> = Run ImpRec</font><font size="2" face="Verdana, Arial, Helvetica, sans-serif"> 
+        [<font size="1"><strong>settings are saved with Save list top button</strong></font>] 
+        <br>
+        - Added Fix dumped IAT option [<font size="1"><strong>for Win2k </strong></font><font size="2" face="Verdana, Arial, Helvetica, sans-serif"><font size="1"><strong>dump</strong></font></font> 
+        <font size="1"><strong>compatibility</strong></font>]<br>
+        - Added Fix dump option<br>
+        <strong><br>
+        v.0.4 beta</strong><br>
+        + Public release<br>
+        + Released on: 04/30/2006<br>
+        - Updated documentation<br>
+        - Added Read Import table option<br>
+        - Added Tracer depth option<br>
+        - Added keyboard shortcuts<br>
+        &nbsp;&nbsp;<strong>{Space}</strong> = Go to address pointer<br>
+        &nbsp;&nbsp;<strong>{Enter}</strong> = Edit import<br>
+        &nbsp;&nbsp;<strong>{BackSpace}</strong> = Delete trunks<br>
+        &nbsp;&nbsp;<strong>{Delete}</strong> = Delete selected imports<br>
+        - Added Resolve by address option<br>
+        <strong><br>
+        v.0.3 beta</strong><br>
+        + Public release<br>
+        - Added Set API breakpoint option<br>
+        - Added Select menu<br>
+        - Added Go to menu<br>
+        - Added Specialized tracer<br>
+        - Added TraceLevel 1-3<br>
+        <br>
+        <strong>v.0.2 beta</strong><br>
+        + Public release <br>
+        - Basic API traceing<br>
+        </font></p>
+      </td>
+  </tr>
+</table>
+<p>&nbsp;</p></body>
+</html>

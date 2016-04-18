@@ -1,0 +1,4 @@
+V1.4
+! crash when nothing loaded fixed
++ new loading detection. Now, if exe isn't fully loaded, it sleep again.
+  You can use it with small sleep time value (500 ms).

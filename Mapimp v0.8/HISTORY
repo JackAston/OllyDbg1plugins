@@ -1,0 +1,90 @@
+Version info:
+	+ added
+	* fixed
+	- removed
+
+ 0.8:
+	* fixed memory leak in mask_apply function
+	* finally fixed quantifiers' deadlock bug. Match limit modification partially solved
+	  the problem, but the actual reason was in the filtering behaviour (or rather my
+	  crooked hands)
+	* former dontreadme said that the order of mask applying is undefined which wasn't
+	  actually true: they were applied in the order of appearance in the list. Now list
+	  sorting is disabled which allows you to build mask chains. Intersection is no more
+	  a problem
+	+ added "Insert" function for mask manager
+	+ now you can move masks through the list. Use Ctrl + Up/Ctrl + Down for moving Up/Down
+	  and Ctrl + PgUp/Ctrl + PgDown for moving to the beginning/to the end respectively
+	* recompiled using static rtl. It doesn't have redistrubutable package dependency anymore
+	* pcre library updated to 8.02. See http://www.pcre.org/changelog.txt
+	* fixed some minor gui bugs
+	* improved stability
+
+ 0.7:
+	- removed "Add, "Edit" and "Delete" buttons and implemented context menu for mask
+	  manager
+	+ now it is possible to save/load mask list alone. Availible from context menu and
+	  with key shortcuts Ctrl + S/Ctrl + L for "save" and "load" operations respectively
+	  (thanks to Jupiter for the idea)
+	* fixed a bug in mask_filter function. Local buffers were too short to hold
+	  some names' parts. That caused stack corruption and thus crash
+	* pcre library updated to 8.01. See http://www.pcre.org/changelog.txt
+	* recompiled pcre with PCRE_MATCH_LIMIT set to MAXBUFLEN which default value of
+	  10000000 or something like that caused a deadlock while using assertions, strong
+	  quantifiers like * and so on. Now all regular expressions seem to be working ok
+
+ 0.6: (contributed by BoRoV/TSRh)
+	+ now doubleclick on a mask opens edit dialog
+	* better solution for preventing autoimport feature to ask to load/load map file
+	  every session. Now it makes corresponding record in the udd
+	* fixed a bug in autoimport which made OllyDbg crash while trying to debug files
+	  with no extension (spotted by sendersu, thanks)
+
+ 0.5:
+	+ added name demangling feature
+	+ now it is possible to choose whether to apply names to debugged module or
+	  currently viewed module
+	* map file parsing routine was a hack and so rewriten. Should now support IDA,
+	  DeDe, IDR, Microsoft and Borland (thanks to void and awerto for CodeGear tests)
+	  linkers' map files and handle names longer than 235 characters (string buffer is
+	  now 1kb long)
+	* pcre library updated to 8.0. See http://www.pcre.org/changelog.txt
+	* fixed a bug when mapimp broke import procedure while trying to import a name to a
+	  module with less number of segments than the name's segment addressed
+	* fixed a bug when OllyDbg crashed while displaying format containing names in the
+	  progress bar
+	* fixed a bug with an accelerators when it was unable to check\uncheck checkboxes
+	  using a mouse click. The winner of "The stupidest bug of a year" award
+	* fixed a bug in autoimport feature which made it search for the map file every
+	  int3 break event including step over (thanks to 9999 for the report)
+	* fixed "Options" window look with Windows themes (thanks to BoRoV for the report)
+	* config file moved to plugins folder
+
+ 0.4:
+	* fixed map file parsing routine. Now you can load some
+	  structure-incorrect map files like those which Interactive Delphi
+	  Reconstructor exports
+	* fixed a bug with global shortcuts. ODBG_Pluginshortcut callback
+	  works reeeally weird. Now press Ctrl + Shift + I to import
+	  and Ctrl + Shift + M to open options window
+
+ 0.3:
+	+ added keyboard shortcuts
+	* fixed memory leak in mask_filter function
+	* fixed mask manager's focus and selection behaviour
+	* fixed a bug when being closed "Options" window did not return focus
+	  to OllyDbg's main window if it temporarily lost activity
+	* now autoimport does not search for the map file until debugee changes
+	* code refactored
+
+ 0.2:
+	+ added autoimport feature (thanks to Jupiter for the idea)
+	+ added "Edit" button for mask manager
+	* more informative regular expression error messages
+	* fixed a bug when mapimp did not make the "Options" window modal while
+	  inputing masks. So if you closed the options window with active input
+	  box it caused a deadlock
+	* some interface changes
+
+ 0.1:
+	+ first release

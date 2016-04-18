@@ -1,0 +1,3 @@
+Here is the source for a plugin, I have decided to write a new one from scratch with completely custom code.. Its has fixes for stuff like IsDebuggerPresent, HeapFlags, and shows hooks for stuff like ZwQueryProcessInformation. Show how to apply fixes to ollydbg itself, remove ep breakpoint and break on tls. Hope this helps someone. Originally I used a thread on restart of plugin but it was kinda annoying, so I hooked ollydbg later on where all the fixes would work right, took forever to find a good spot.
+
+What

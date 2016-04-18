@@ -1,0 +1,7 @@
+; OllyTiper.def : Declares the module parameters for the DLL.
+
+LIBRARY      "OllyTiper"
+DESCRIPTION  'OllyTiper Windows Dynamic Link Library'
+
+EXPORTS
+    ; Explicit exports can go here

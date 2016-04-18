@@ -1,0 +1,12 @@
+I've coded a small plugin to replace the standard bookmarks plugin, you can set custom hotkeys to toggle bookmark, navigate backward/forward.
+
+The plugin will try to load the bookmarks set using the Bookmarks plugin that comes with Ollydbg (if any) to prevent that add these lines to ollydbg.ini
+
+[Plugin OllyBkmrX]
+Load Old bookmarks=0
+
+If you don't like to show plugin window at Ollydbg startup then add these lines to ollydbg.ini
+
+[Plugin OllyBkmrX]
+Auto show=0
+

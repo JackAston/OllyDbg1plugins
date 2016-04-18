@@ -1,0 +1,21 @@
+NAME         loaddll
+
+CODE         PRELOAD MOVEABLE DISCARDABLE
+DATA         PRELOAD MOVEABLE MULTIPLE
+
+EXPORTS      WndProc
+EXPORTS      Firstbp
+EXPORTS      Prepatch
+EXPORTS      CallDLL
+EXPORTS      Finished
+EXPORTS      Patcharea
+EXPORTS      Arg1
+EXPORTS      Arg2
+EXPORTS      Arg3
+EXPORTS      Arg4
+EXPORTS      Arg5
+EXPORTS      Arg6
+EXPORTS      Arg7
+EXPORTS      Arg8
+EXPORTS      Arg9
+EXPORTS      Arg10

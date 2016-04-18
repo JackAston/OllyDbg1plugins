@@ -1,0 +1,922 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<!--
+
+Generated from index.tex by tex2page, v 2004-09-11
+(running on MzScheme 205, windows), 
+(c) Dorai Sitaram, 
+http://www.ccs.neu.edu/~dorai/tex2page/tex2page-doc.html
+
+-->
+<head>
+<title>
+OllyMachine Manual
+</title>
+<link rel="stylesheet" type="text/css" href="css/main.css" title=default>
+<link rel="stylesheet" type="text/css" href="index-Z-S.css" title=default>
+<meta name=robots content="noindex,follow">
+</head>
+<body>
+<div align=right class=navigation><i>[Go to <span><a href="index.htm">first</a>, <a href="index-Z-H-3.htm">previous</a></span><span>, <a href="index-Z-H-5.htm">next</a></span> page<span>; &nbsp;&nbsp;</span><span><a href="index-Z-H-1.htm#node_toc_start">contents</a></span>]</i></div><p></p>
+<a name="node_chap_3"></a>
+<h1 class=chapter>
+<div class=chapterheading><a href="index-Z-H-1.htm#node_toc_node_chap_3">Chapter3</a></div><br>
+<a href="index-Z-H-1.htm#node_toc_node_chap_3">OllyMachine Assembly Language</a></h1>
+<p>Welcome to the real world!!!</p>
+<p>
+OllyMachine Script is an assembly-like language, it's the most important interface between the OllyMachine and the programmers. Of course, you could directly write bytecodes, but I don't think it's worth to do that. ^_^ Actually, writing an assembler is much more harder than writing a Virtual Machine, I spent more than two weeks on this assembler.</p>
+<p>
+</p>
+<a name="node_sec_3.1"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_3.1">3.1&nbsp;&nbsp;Basic element</a></h2>
+<p>Every OllyMachine assembly source code can be separated into a series of statements. Every statement will engross a whole line, and there's no maximum length to the line. Statement has two forms:</p>
+<p>
+</p>
+<ul>
+<li><p>Instruction
+</p>
+<li><p>Comment
+</p>
+</ul><p></p>
+<p>
+Attention please: all instructions in OllyMachine assembly language are <strong>case-insensitive</strong>.</p>
+<p>
+</p>
+<a name="node_sec_3.1.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_3.1.1">3.1.1&nbsp;&nbsp;Instruction</a></h3>
+<p>An instruction is formed by an opcode and zero or multi-operands.</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Instruction</span> <span class=variable>=</span> <span class=variable>Opcode</span> [ <span class=variable>Operand1</span> [<span class=variable>Operand2</span> ... ] ]
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_3.1.1.1"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.1.1.1">3.1.1.1&nbsp;&nbsp;Opcode</a></h4>
+<p>An opcode is a symbol, it defines the instruction's operation and the format of the whold instruction. The opcode I defined for OllyMachine assembly-language can fully decide its number of operands and the type of these operands.</p>
+<p>
+Please see the two instructions below:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>add</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>0x1234</span>
+<span class=variable>add</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=variable>reg00</span>
+</pre><p></p>
+<p>
+Opcode of &quot;add&quot; requires a general-register, a comma, and an immediate digit or another general-register following. Meanwhile, it also defines the operation: put 0x1234 to reg00, or put value in reg00 to reg01. So, opcode of &quot;add&quot; not only gives the instruction's operation, but also gives the whole format of the instruction.</p>
+<p>
+</p>
+<a name="node_sec_3.1.1.2"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.1.1.2">3.1.1.2&nbsp;&nbsp;Operand</a></h4>
+<p>An Operand gives the instruction's operating data. OllyMachine assembly-language can recognize three different forms of instruction operand. These operands's forms are shown following:</p>
+<p>
+</p>
+<a name="node_fig_Temp_6"></a>
+<div class=figure align=center><table width=100%><tr><td align=center><div align=center><table><tr><td>
+
+<table width=100% border=1><tr><td valign=top align=center ><strong>Operand Form</strong> </td><td valign=top align=center ><strong>Example</strong> </td></tr>
+<tr><td valign=top align=center>Register </td><td valign=top align=center >reg00、eax </td></tr>
+<tr><td valign=top align=center>Identifier </td><td valign=top align=center >loop1、_continue </td></tr>
+<tr><td valign=top align=center>Digit </td><td valign=top align=center >-100、0x100
+</td></tr></table>
+</td></tr>
+<tr><td align=center><b>Figure 5:</b>&nbsp;&nbsp;OllyMachine assembly-language's operand forms</td></tr>
+<tr><td>
+</td></tr></table></div>
+
+</td></tr></table></div><p></p>
+<p>
+</p>
+<a name="node_sec_Temp_7"></a>
+<h5><a href="index-Z-H-1.htm#node_toc_node_sec_Temp_7">Register</a></h5>
+<p>In the OllyMachine Virtual Machine, there're 83 general registers and 3 hidden registers. Thereinto:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=variable>reg02</span> ... <span class=variable>reg64</span><span class=keyword>,</span> <span class=variable>FreeBufferReg</span><span class=keyword>,</span> <span class=variable>FreeBufferSizeReg</span>
+</pre><p></p>
+<p>
+The 67 registers above could be used freely by programmers. FreeBufferReg and FreeBufferSizeReg have their particular usages:</p>
+<p>
+FreeBufferReg points to a 4k length buffer area, which is for script's decoding and data temporarily storing. FreeBufferSizeReg indicates the current size of FreeBuffer. If you want to get a string, these two registers will be very useful.</p>
+<p>
+<strong>Attention!</strong></p>
+<p>
+Programmers should try their best to avoid directly operating on FreeBufferReg and FreeBufferSizeReg, because they're generally handles by corresponding API. If programmers directly modify their value, may probably cause some strange result.</p>
+<p>
+Another 9 registers are:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>eax</span><span class=keyword>,</span> <span class=variable>ecx</span><span class=keyword>,</span> <span class=variable>edx</span><span class=keyword>,</span> <span class=variable>ebx</span><span class=keyword>,</span> <span class=variable>esp</span><span class=keyword>,</span> <span class=variable>ebp</span><span class=keyword>,</span> <span class=variable>esi</span><span class=keyword>,</span> <span class=variable>edi</span><span class=keyword>,</span> <span class=variable>eip</span>
+</pre><p></p>
+<p>
+Programmers should be very carefully operate these nine registers, because all operations on them are equal to what you do on the OllyDbg's current debugging process. For example:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>mov</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>eax</span>
+</pre><p></p>
+<p>
+Will put value of the current debugging process's eax register to reg00.</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>mov</span> <span class=variable>eax</span><span class=keyword>,</span> <span class=variable>0x12345678</span>
+</pre><p></p>
+<p>
+Will put 0x12345678 to current debugging process's eax register.</p>
+<p>
+Rest 7 registers are:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>CF</span><span class=keyword>,</span> <span class=variable>PF</span><span class=keyword>,</span> <span class=variable>AF</span><span class=keyword>,</span> <span class=variable>ZF</span><span class=keyword>,</span> <span class=variable>SF</span><span class=keyword>,</span> <span class=variable>DF</span><span class=keyword>,</span> <span class=variable>OF</span>
+</pre><p></p>
+<p>
+These 7 registers are for OllyDbg's eflags register. For example:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>not</span> <span class=variable>cf</span>
+<span class=variable>mov</span> <span class=variable>zf</span><span class=keyword>,</span> <span class=selfeval>0</span>
+<span class=variable>mov</span> <span class=variable>pf</span><span class=keyword>,</span> <span class=selfeval>1</span>
+</pre><p> </p>
+<p>
+</p>
+<a name="node_sec_Temp_8"></a>
+<h5><a href="index-Z-H-1.htm#node_toc_node_sec_Temp_8">Identifier</a></h5>
+<p>Identifier is made up of a sequence of characters. Identifier's purpose is to naming LABEL. The first byte of identifier must be a letter(a-z and A-Z), or an underline(&quot;_&quot;). The second byte and following bytes can be letters, underline or digits:</p>
+<p>
+</p>
+<ul>
+<li><p>First byte: a-z, A-Z, _
+</p>
+<li><p>Following bytes��a-z, A-Z, _, 0-9
+</p>
+</ul><p></p>
+<p>
+Here are some valid identifiers:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>_1continue</span>
+<span class=variable>exit0</span>
+<span class=variable>loop1</span>
+</pre><p></p>
+<p>
+Here are some invalid identifiers:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>1continue</span>
+<span class=variable>.exit0</span>
+<span class=variable>my_#_loop2</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_Temp_9"></a>
+<h5><a href="index-Z-H-1.htm#node_toc_node_sec_Temp_9">Digit</a></h5>
+<p>There are two forms of digit: decimal and hex.</p>
+<p>
+Decimal digits needn't have any prefixes. For example:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>100、-1234</span>
+</pre><p></p>
+<p>
+Hex digits must have prefix &quot;0x&quot; or &quot;0X&quot;. For example:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>0x100、-0x1234</span>
+</pre><p></p>
+<p>
+Both dicimal and hex digits can be positive or negative. Positive needn't have prefix &quot;+&quot; (if have, it will be failed to pass the assembler), negative needs to have prefix &quot;-&quot;. Attention, digits could not greater than 0xFFFFFFFF.</p>
+<p>
+</p>
+<a name="node_sec_3.1.2"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_3.1.2">3.1.2&nbsp;&nbsp;Comment</a></h3>
+<p>Comment is some text that will be ignored by assembler. We could write comment to make the source code more readable. Two forms of comment:</p>
+<p>
+Line comment:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>line</span> <span class=variable>comment</span> <span class=selfeval>1.</span>
+<span class=comment>; line comment 2.</span>
+</pre><p></p>
+<p>
+Block comment:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>/*</span>
+   <span class=variable>this</span> <span class=variable>is</span> <span class=variable>a</span> <span class=variable>block</span> <span class=variable>comment.</span>
+<span class=variable>*/</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_3.2"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_3.2">3.2&nbsp;&nbsp;LABEL</a></h2>
+<p>The format of a LABEL name is a colon following the identifier, for example:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Error0:</span>
+</pre><p></p>
+<p>
+After defination, we could use jump instructions to control the program's flow, for example:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>jmp</span> <span class=variable>Error0</span>
+<span class=variable>//</span> <span class=variable>instructions</span> ...
+<span class=variable>Error0:</span>
+<span class=variable>//</span> <span class=variable>other</span> <span class=variable>instructions</span> ...
+</pre><p></p>
+<p>
+One thing we should know: if a LABEL is not referenced by any instructions, the assembler will give you a warning.</p>
+<p>
+</p>
+<a name="node_sec_3.3"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_3.3">3.3&nbsp;&nbsp;Data Transfer instructions</a></h2>
+<p>The data transfer instructions move data between memory and the general-purpose and segment registers. They also perform specific operations such as conditional moves, stack access, and data conversion.</p>
+<p>
+</p>
+<ul>
+<li><p>MOV (Move)
+</p>
+<li><p>XCHG (Exchange)
+</p>
+<li><p>LDS (Load String)
+</p>
+<li><p>PUSH (Push onto the stack)
+</p>
+<li><p>POP (Pop from the stack)
+</p>
+</ul><p></p>
+<p>
+</p>
+<a name="node_sec_3.3.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_3.3.1">3.3.1&nbsp;&nbsp;MOV</a></h3>
+<p>Format: MOV DST, SRC<br>
+Operation: (DST) &lt;- (SRC)</p>
+<p>
+Two forms:</p>
+<p>
+</p>
+<ul>
+<li><p>MOV reg, imm
+</p>
+<li><p>MOV reg, reg
+</p>
+</ul><p></p>
+<p>
+Example��</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>MOV</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>0x100</span>
+<span class=variable>MOV</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>reg01</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_3.3.2"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_3.3.2">3.3.2&nbsp;&nbsp;XCHG</a></h3>
+<p>Format: XCHG OPR1, OPR2<br>
+Operation: (OPR1) &lt;-&gt; (OPR2)</p>
+<p>
+Only one form:</p>
+<p>
+</p>
+<ul>
+<li><p>XCHG reg, reg
+</p>
+</ul><p></p>
+<p>
+Example:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>mov</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=selfeval>1</span>
+<span class=variable>mov</span> <span class=variable>reg02</span><span class=keyword>,</span> <span class=selfeval>2</span>
+<span class=variable>XCHG</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=variable>reg02</span>   <span class=variable>//</span> <span class=variable>now</span> <span class=variable>reg01</span> <span class=variable>==</span> <span class=selfeval>2</span><span class=keyword>,</span> <span class=variable>reg02</span> <span class=variable>==</span> <span class=selfeval>1</span>
+</pre><p></p>
+<p>
+XCHG instruction will not affect eflags.</p>
+<p>
+</p>
+<a name="node_sec_3.3.3"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_3.3.3">3.3.3&nbsp;&nbsp;LDS</a></h3>
+<p>Format: LDS reg, &quot;string&quot;</p>
+<p>
+Example:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>LDS</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>&quot;Hello World!&quot;</span>
+</pre><p></p>
+<p>
+We can remember LDS as &quot;LoaD String&quot;, is it much easier now? ^_^</p>
+<p>
+</p>
+<a name="node_sec_3.3.4"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_3.3.4">3.3.4&nbsp;&nbsp;PUSH</a></h3>
+<p>Format: PUSH SRC<br>
+Operation: (ESP) &lt;- (ESP) - 4<br>
+　　　　　((ESP) + 4, (ESP)) &lt;- (SRC)</p>
+<p>
+Two forms:</p>
+<p>
+</p>
+<ul>
+<li><p>PUSH imm
+</p>
+<li><p>PUSH reg
+</p>
+</ul><p></p>
+<p>
+Example:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>PUSH</span> <span class=variable>0x100</span>
+<span class=variable>PUSH</span> <span class=variable>reg00</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_3.3.5"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_3.3.5">3.3.5&nbsp;&nbsp;POP</a></h3>
+<p>Format: POP DST<br>
+Operation: (DST) &lt;- ((ESP) + 4, (ESP))<br>
+　　　　　(ESP) &lt;- (ESP) + 4</p>
+<p>
+Only one form:</p>
+<p>
+</p>
+<ul>
+<li><p>POP reg
+</p>
+</ul><p></p>
+<p>
+Example:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>POP</span> <span class=variable>reg00</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_3.4"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_3.4">3.4&nbsp;&nbsp;Arithmetic Instructions</a></h2>
+<p>The arithmetic instructions perform basic binary integer computations on byte, word and doubleword integers located in memory and/or the general purpose registers.</p>
+<p>
+</p>
+<a name="node_sec_3.4.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_3.4.1">3.4.1&nbsp;&nbsp;Addition Instructions</a></h3>
+<p></p>
+<ul>
+<li><p>ADD (add)
+</p>
+<li><p>INC (increment)
+</p>
+</ul><p></p>
+<p>
+</p>
+<a name="node_sec_3.4.1.1"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.4.1.1">3.4.1.1&nbsp;&nbsp;ADD</a></h4>
+<p>Format: ADD DST, SRC<br>
+Operation: (DST) &lt;- (SRC) + (DST)</p>
+<p>
+Two forms:</p>
+<p>
+</p>
+<ul>
+<li><p>ADD reg, imm
+</p>
+<li><p>ADD reg, reg
+</p>
+</ul><p></p>
+<p>
+Example:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>ADD</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>0x100</span>
+<span class=variable>ADD</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>reg01</span>
+</pre><p></p>
+<p>
+Attention: ADD instruction will affect CF flag.</p>
+<p>
+</p>
+<a name="node_sec_3.4.1.2"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.4.1.2">3.4.1.2&nbsp;&nbsp;INC</a></h4>
+<p>Format: INC DST<br>
+Operation: (DST) &lt;- (DST) + 1</p>
+<p>
+Only one form:</p>
+<p>
+</p>
+<ul>
+<li><p>INC reg
+</p>
+</ul><p></p>
+<p>
+Example:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>INC</span> <span class=variable>reg00</span>
+</pre><p></p>
+<p>
+INC instruction will not affect eflags.</p>
+<p>
+</p>
+<a name="node_sec_3.4.2"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_3.4.2">3.4.2&nbsp;&nbsp;Subtraction Instructions</a></h3>
+<p></p>
+<ul>
+<li><p>SUB (subtract)
+</p>
+<li><p>DEC (increment)
+</p>
+<li><p>CMP (Compare)
+</p>
+</ul><p></p>
+<p>
+</p>
+<a name="node_sec_3.4.2.1"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.4.2.1">3.4.2.1&nbsp;&nbsp;SUB</a></h4>
+<p>Format: SUB DST, SRC<br>
+Operation: (DST) &lt;- (DST) - (SRC)</p>
+<p>
+Two forms:</p>
+<p>
+</p>
+<ul>
+<li><p>SUB reg, imm
+</p>
+<li><p>SUB reg, reg
+</p>
+</ul><p></p>
+<p>
+Example:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>SUB</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>0x100</span>
+<span class=variable>SUB</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>reg01</span>
+</pre><p></p>
+<p>
+Attention: SUB instruction will affect CF and ZF flag.</p>
+<p>
+</p>
+<a name="node_sec_3.4.2.2"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.4.2.2">3.4.2.2&nbsp;&nbsp;DEC</a></h4>
+<p>Format: DEC DST<br>
+Operation: (DST) &lt;- (DST) �� 1</p>
+<p>
+Only one form:</p>
+<p>
+</p>
+<ul>
+<li><p>DEC reg
+</p>
+</ul><p></p>
+<p>
+Example:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>DEC</span> <span class=variable>reg00</span>
+</pre><p></p>
+<p>
+DEC instruction will not affect CF flag, but will affect ZF flag.</p>
+<p>
+</p>
+<a name="node_sec_3.4.2.3"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.4.2.3">3.4.2.3&nbsp;&nbsp;CMP</a></h4>
+<p>Format: CMP OPR1, OPR2<br>
+Operation: (OPR1) - (OPR2)</p>
+<p>
+Two forms:</p>
+<p>
+</p>
+<ul>
+<li><p>CMP reg, imm
+</p>
+<li><p>CMP reg, reg
+</p>
+</ul><p></p>
+<p>
+Example:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>CMP</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>0x100</span>
+<span class=variable>CMP</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>reg01</span>
+</pre><p></p>
+<p>
+Attention: the CMP instruction computes the difference between two integer operands and updates the CF and ZF flags according to the result. The source operands are not modified, nor is the result saved. The CMP instruction is commonly used in conjunction with a Jcc(jump) instruction, with the latter instructions performing an action based on the result of a CMP instruction.</p>
+<p>
+</p>
+<a name="node_sec_3.4.3"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_3.4.3">3.4.3&nbsp;&nbsp;Multiplication Instructions</a></h3>
+<p></p>
+<ul>
+<li><p>MUL (multiple)
+</p>
+</ul><p></p>
+<p>
+</p>
+<a name="node_sec_3.4.3.1"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.4.3.1">3.4.3.1&nbsp;&nbsp;MUL</a></h4>
+<p>Format: MUL DST, SRC<br>
+Operation: (DST) &lt;- (DST) * (SRC)</p>
+<p>
+Two forms:</p>
+<p>
+</p>
+<ul>
+<li><p>MUL reg, imm
+</p>
+<li><p>MUL reg, reg
+</p>
+</ul><p></p>
+<p>
+Example:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>MUL</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>0x100</span>
+<span class=variable>MUL</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>reg01</span>
+</pre><p></p>
+<p>
+MUL instruction will not affect eflags.</p>
+<p>
+</p>
+<a name="node_sec_3.4.4"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_3.4.4">3.4.4&nbsp;&nbsp;Division Instructions</a></h3>
+<p></p>
+<ul>
+<li><p>DIV (divide)
+</p>
+</ul><p></p>
+<p>
+</p>
+<a name="node_sec_3.4.4.1"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.4.4.1">3.4.4.1&nbsp;&nbsp;MUL</a></h4>
+<p>Format: DIV DST, SRC<br>
+Operation: (DST) &lt;- (DST) / (SRC)</p>
+<p>
+Two forms:</p>
+<p>
+</p>
+<ul>
+<li><p>DIV reg, imm
+</p>
+<li><p>DIV reg, reg
+</p>
+</ul><p></p>
+<p>
+Example:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>DIV</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>0x100</span>
+<span class=variable>DIV</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>reg01</span>
+</pre><p></p>
+<p>
+DIV instruction will not affect eflags.</p>
+<p>
+Attention: could not divided by ZERO!!!</p>
+<p>
+</p>
+<a name="node_sec_3.5"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_3.5">3.5&nbsp;&nbsp;Logical Instructions</a></h2>
+<p>The logical instructions AND, OR, XOR(exclusive or), and NOT perform the standard Boolean operations for which they are named. The AND, OR, and XOR instructions require two operands; the NOT instruction operates on a single operand.</p>
+<p>
+</p>
+<a name="node_sec_3.5.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_3.5.1">3.5.1&nbsp;&nbsp;Logical Operatioin Instructions</a></h3>
+<p></p>
+<ul>
+<li><p>AND (and)
+</p>
+<li><p>OR (or)
+</p>
+<li><p>NOT (not)
+</p>
+<li><p>XOR (exclusive or)
+</p>
+</ul><p></p>
+<p>
+</p>
+<a name="node_sec_3.5.1.1"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.5.1.1">3.5.1.1&nbsp;&nbsp;AND</a></h4>
+<p>Format: AND DST, SRC<br>
+Operation: (DST) &lt;- (DST) &amp; (SRC)</p>
+<p>
+Two forms:</p>
+<p>
+</p>
+<ul>
+<li><p>AND reg, imm
+</p>
+<li><p>AND reg, reg
+</p>
+</ul><p></p>
+<p>
+Example:</p>
+<p>
+</p>
+<pre class=scheme><span class=keyword>AND</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>0x100</span>
+<span class=keyword>AND</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>reg01</span>
+</pre><p></p>
+<p>
+Attention: AND instruction will affect ZF flag, and set 0 to CF flag.</p>
+<p>
+</p>
+<a name="node_sec_3.5.1.2"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.5.1.2">3.5.1.2&nbsp;&nbsp;OR</a></h4>
+<p>Format: OR DST, SRC<br>
+Operation: (DST) &lt;- (DST) | (SRC)</p>
+<p>
+Two forms:</p>
+<p>
+</p>
+<ul>
+<li><p>OR reg, imm
+</p>
+<li><p>OR reg, reg
+</p>
+</ul><p></p>
+<p>
+Example:</p>
+<p>
+</p>
+<pre class=scheme><span class=keyword>OR</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>0x100</span>
+<span class=keyword>OR</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>reg01</span>
+</pre><p></p>
+<p>
+Attention: OR instruction will affect ZF flag, and set 0 to CF flag.</p>
+<p>
+</p>
+<a name="node_sec_3.5.1.3"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.5.1.3">3.5.1.3&nbsp;&nbsp;NOT</a></h4>
+<p>Format: NOT DST<br>
+Operation: (DST) &lt;- !(DST)</p>
+<p>
+Only one form:</p>
+<p>
+</p>
+<ul>
+<li><p>NOT reg
+</p>
+</ul><p></p>
+<p>
+Example:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>NOT</span> <span class=variable>reg00</span>
+</pre><p></p>
+<p>
+NOT instruction will not affect eflags.</p>
+<p>
+</p>
+<a name="node_sec_3.5.1.4"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.5.1.4">3.5.1.4&nbsp;&nbsp;XOR</a></h4>
+<p>Format: XOR DST, SRC<br>
+Operation: (DST) &lt;- (DST) ^ (SRC)</p>
+<p>
+Two forms:</p>
+<p>
+</p>
+<ul>
+<li><p>XOR reg, imm
+</p>
+<li><p>XOR reg, reg
+</p>
+</ul><p></p>
+<p>
+Example:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>XOR</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>0x100</span>
+<span class=variable>XOR</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>reg01</span>
+</pre><p></p>
+<p>
+Attention: XOR instruction will affect ZF flag, and set 0 to CF flag.</p>
+<p>
+</p>
+<a name="node_sec_3.5.2"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_3.5.2">3.5.2&nbsp;&nbsp;Shift Instructions</a></h3>
+<p>The SHL(shift logical left), SHR(shift logical right) instructions perform a logical shift of the bits.</p>
+<p>
+</p>
+<ul>
+<li><p>SHL (shift left)
+</p>
+<li><p>SHR (shift right)
+</p>
+</ul><p></p>
+<p>
+</p>
+<a name="node_sec_3.5.2.1"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.5.2.1">3.5.2.1&nbsp;&nbsp;SHL</a></h4>
+<p>Format: SHL DST, SRC<br>
+</p>
+<p>
+Two forms:</p>
+<p>
+</p>
+<ul>
+<li><p>SHL reg, imm
+</p>
+<li><p>SHL reg, reg
+</p>
+</ul><p></p>
+<p>
+Example:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>MOV</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>0x10</span>
+<span class=variable>SHL</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>8</span>        <span class=variable>//</span> <span class=variable>reg00</span> <span class=variable>is</span> <span class=variable>now</span> <span class=variable>0x1000</span>
+
+<span class=variable>MOV</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>0x10</span>
+<span class=variable>MOV</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=selfeval>8</span>
+<span class=variable>SHL</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>reg01</span>    <span class=variable>//</span> <span class=variable>reg00</span> <span class=variable>is</span> <span class=variable>now</span> <span class=variable>0x1000</span>
+</pre><p></p>
+<p>
+SHL instruction will not affect eflags.</p>
+<p>
+</p>
+<a name="node_sec_3.5.2.2"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.5.2.2">3.5.2.2&nbsp;&nbsp;SHR</a></h4>
+<p>Format: SHR DST, SRC<br>
+</p>
+<p>
+Two forms:</p>
+<p>
+</p>
+<ul>
+<li><p>SHR reg, imm
+</p>
+<li><p>SHR reg, reg
+</p>
+</ul><p></p>
+<p>
+Example:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>MOV</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>0x1000</span>
+<span class=variable>SHR</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>8</span>        <span class=variable>//</span> <span class=variable>reg00</span> <span class=variable>is</span> <span class=variable>now</span> <span class=variable>0x10</span>
+
+<span class=variable>MOV</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>0x1000</span>
+<span class=variable>MOV</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=selfeval>8</span>
+<span class=variable>SHR</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>reg01</span>    <span class=variable>//</span> <span class=variable>reg00</span> <span class=variable>is</span> <span class=variable>now</span> <span class=variable>0x10</span>
+</pre><p></p>
+<p>
+SHR instruction will not affect eflags.</p>
+<p>
+</p>
+<a name="node_sec_3.6"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_3.6">3.6&nbsp;&nbsp;Control Transfer Instructions</a></h2>
+<p>The processor provides both conditional and unconditional control transfer instructions to direct the flow of program execution. Conditional transfers are taken only for specified states of the status flags in the EFLAGS register. Unconditional control transfers are always executed.</p>
+<p>
+</p>
+<a name="node_sec_3.6.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_3.6.1">3.6.1&nbsp;&nbsp;Unconditional Transfer Instructions</a></h3>
+<p>The unconditional transfer instructions transfer program control to another location(destination address) in the instruction stream.</p>
+<p>
+</p>
+<ul>
+<li><p>JMP (Jump)
+</p>
+</ul><p></p>
+<p>
+</p>
+<a name="node_sec_3.6.1.1"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.6.1.1">3.6.1.1&nbsp;&nbsp;JMP</a></h4>
+<p>Format: JMP label<br>
+Operation: (EIP) &lt;- (EIP) + 32-bit offset</p>
+<p>
+Example:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>jmp</span> <span class=variable>Error0</span>
+<span class=variable>mov</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=variable>0x200</span>
+<span class=variable>Error0:</span>
+<span class=variable>mov</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>0x100</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_3.6.2"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_3.6.2">3.6.2&nbsp;&nbsp;Conditional Transfer Instructions</a></h3>
+<p>The conditional transfer insructions execute jumps or loops that transfer program control to another instruction in the instruction stream if specified conditions are met. The conditions for control transfer are specified with a set of condition codes that define various states of the status flags(CF, ZF) in the EFLAGS register.</p>
+<p>
+</p>
+<ul>
+<li><p>JE (Jump if equal)
+</p>
+<li><p>JNE (Jump if not equal)
+</p>
+<li><p>JB (Jump if below)
+</p>
+<li><p>JNAE (Jump if not above or equal)
+</p>
+<li><p>JNB (Jump if not below)
+</p>
+<li><p>JAE (Jump if above or equal)
+</p>
+<li><p>JBE (Jump if below or equal)
+</p>
+<li><p>JNA (Jump if not above)
+</p>
+<li><p>JNBE (Jump if not below or equal)
+</p>
+<li><p>JA (Jump if above)
+</p>
+</ul><p></p>
+<p>
+</p>
+<a name="node_sec_3.6.2.1"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.6.2.1">3.6.2.1&nbsp;&nbsp;JE</a></h4>
+<p>Equal/zero then transfer.</p>
+<p>
+Condition: ZF = 1</p>
+<p>
+</p>
+<a name="node_sec_3.6.2.2"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.6.2.2">3.6.2.2&nbsp;&nbsp;JNE</a></h4>
+<p>Not euqal/not zero then transfer.</p>
+<p>
+Condition: ZF = 0</p>
+<p>
+</p>
+<a name="node_sec_3.6.2.3"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.6.2.3">3.6.2.3&nbsp;&nbsp;JB</a></h4>
+<p>Below/not above or equal then transfer.</p>
+<p>
+Condition: CF = 1</p>
+<p>
+</p>
+<a name="node_sec_3.6.2.4"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.6.2.4">3.6.2.4&nbsp;&nbsp;JNAE</a></h4>
+<p>The same as JB.</p>
+<p>
+</p>
+<a name="node_sec_3.6.2.5"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.6.2.5">3.6.2.5&nbsp;&nbsp;JNB</a></h4>
+<p>Above or equal/not below then transfer.</p>
+<p>
+Condition: CF = 0</p>
+<p>
+</p>
+<a name="node_sec_3.6.2.6"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.6.2.6">3.6.2.6&nbsp;&nbsp;JAE</a></h4>
+<p>The same as JNB.</p>
+<p>
+</p>
+<a name="node_sec_3.6.2.7"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.6.2.7">3.6.2.7&nbsp;&nbsp;JBE</a></h4>
+<p>Below or equal/not above then transfer.</p>
+<p>
+Condition: CF = 1 or ZF = 1</p>
+<p>
+</p>
+<a name="node_sec_3.6.2.8"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.6.2.8">3.6.2.8&nbsp;&nbsp;JNA</a></h4>
+<p>The same as JBE.</p>
+<p>
+</p>
+<a name="node_sec_3.6.2.9"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.6.2.9">3.6.2.9&nbsp;&nbsp;JNBE</a></h4>
+<p>Above/not below or equal then transfer.</p>
+<p>
+Condition: CF = 0 and ZF = 0</p>
+<p>
+</p>
+<a name="node_sec_3.6.2.10"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.6.2.10">3.6.2.10&nbsp;&nbsp;JA</a></h4>
+<p>The same as JNBE.</p>
+<p>
+</p>
+<a name="node_sec_3.7"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_3.7">3.7&nbsp;&nbsp;Misc Instructions</a></h2>
+<p>Misc instructions, because I don't know which group to put them in:</p>
+<p>
+</p>
+<a name="node_sec_3.7.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_3.7.1">3.7.1&nbsp;&nbsp;INCLUDE</a></h3>
+<p>Format: INCLUDE &quot;filename.oms&quot;</p>
+<p>
+Includes another source file to the current source file to assemble together.</p>
+<p>
+</p>
+<a name="node_sec_3.7.2"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_3.7.2">3.7.2&nbsp;&nbsp;NOP</a></h3>
+<p>Format: NOP</p>
+<p>
+NOP instruction performs no operation. This instruction is a one-byte instruction that takes up space in the instruction stream but does not affect the machine context, except the EIP register.</p>
+<p>
+</p>
+<a name="node_sec_3.7.3"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_3.7.3">3.7.3&nbsp;&nbsp;PAUSE</a></h3>
+<p>Format:PAUSE</p>
+<p>
+PAUSE instruction will make Virtual Machine pause, if you want to make Virtual Machine continue running, please choose plugins menu &quot;OllyMachine -&gt; Resume&quot;.</p>
+<p>
+</p>
+<a name="node_sec_3.7.4"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_3.7.4">3.7.4&nbsp;&nbsp;HALT</a></h3>
+<p>Format: HALT</p>
+<p>
+HALT instruction will make the machine halt... all over.</p>
+<p>
+</p>
+<a name="node_sec_3.7.5"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_3.7.5">3.7.5&nbsp;&nbsp;INVOKE</a></h3>
+<p>Format: INVOKE Api_Name, parameter1, parameter2, ...</p>
+<p>
+INVOKE macro is for API invoking, similar to MASM32's invoke macro.
+
+</p>
+<div align=right class=navigation><i>[Go to <span><a href="index.htm">first</a>, <a href="index-Z-H-3.htm">previous</a></span><span>, <a href="index-Z-H-5.htm">next</a></span> page<span>; &nbsp;&nbsp;</span><span><a href="index-Z-H-1.htm#node_toc_start">contents</a></span>]</i></div><p></p>
+</body>
+</html>

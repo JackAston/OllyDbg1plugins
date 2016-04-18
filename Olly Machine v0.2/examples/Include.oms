@@ -1,0 +1,19 @@
+///////////////////////////////////////////////////////////////////////////////
+//
+//  FileName    :   Include.oms
+//  Author      :   Luo Cong
+//  Date        :   2004-11-15
+//  Comment     :   Demo for include files
+//
+///////////////////////////////////////////////////////////////////////////////
+
+lds reg01, "This is main program!"
+
+// Method 1:
+push reg01
+msg
+
+// Method 2:
+invoke msg, reg01
+
+include "HelloWorld.oms"

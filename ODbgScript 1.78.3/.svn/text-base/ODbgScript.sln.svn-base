@@ -1,0 +1,12 @@
+Microsoft Visual Studio Solution File, Format Version 1.00
+Project("{059D6162-CD51-11D0-AE1F-00A0C90FFFC3}") = "ODbgScript", "ODbgScript.dsp", "{4B6D9594-ABD7-4554-8E8B-14CFE7682823}"
+EndProject
+Global
+	GlobalSection(LocalDeployment) = postSolution
+		StartupProject = {00000000-0000-0000-0000-000000000000}
+	EndGlobalSection
+	GlobalSection(BuildOrder) = postSolution
+	EndGlobalSection
+	GlobalSection(DeploymentRoot) = postSolution
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,84 @@
+# Microsoft Developer Studio Generated Dependency File, included by ODbgScript.mak
+
+!IF  "$(CFG)" == "ODbgScript - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "ODbgScript - Win32 Debug"
+
+.\Dialogs.cpp : \
+	".\dumper.h"\
+	".\guicon.h"\
+	".\HelperFunctions.h"\
+	".\hook.h"\
+	".\mru.h"\
+	".\ODbgScript.h"\
+	".\OllyLang.h"\
+	".\Plugin.h"\
+	".\resource.h"\
+	".\Search.h"\
+	".\StdAfx.h"\
+	".\var.h"\
+	
+
+!ENDIF 
+
+!IF  "$(CFG)" == "ODbgScript - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "ODbgScript - Win32 Debug"
+
+.\ODbgScript.cpp : \
+	".\dumper.h"\
+	".\guicon.h"\
+	".\HelperFunctions.h"\
+	".\hook.h"\
+	".\mru.h"\
+	".\ODbgScript.h"\
+	".\OllyLang.h"\
+	".\Plugin.h"\
+	".\resource.h"\
+	".\Search.h"\
+	".\StdAfx.h"\
+	".\var.h"\
+	
+
+!ENDIF 
+
+!IF  "$(CFG)" == "ODbgScript - Win32 Release"
+
+.\StdAfx.cpp : \
+	"..\..\vc98\include\basetsd.h"\
+	".\dumper.h"\
+	".\guicon.h"\
+	".\HelperFunctions.h"\
+	".\hook.h"\
+	".\mru.h"\
+	".\ODbgScript.h"\
+	".\OllyLang.h"\
+	".\Plugin.h"\
+	".\resource.h"\
+	".\Search.h"\
+	".\StdAfx.h"\
+	".\var.h"\
+	
+
+!ELSEIF  "$(CFG)" == "ODbgScript - Win32 Debug"
+
+.\StdAfx.cpp : \
+	".\dumper.h"\
+	".\guicon.h"\
+	".\HelperFunctions.h"\
+	".\hook.h"\
+	".\mru.h"\
+	".\ODbgScript.h"\
+	".\OllyLang.h"\
+	".\Plugin.h"\
+	".\resource.h"\
+	".\Search.h"\
+	".\StdAfx.h"\
+	".\var.h"\
+	
+
+!ENDIF 
+
+.\ODbgScript.rc : \
+	".\resource.h"\
+	

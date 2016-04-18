@@ -1,0 +1,125 @@
+GODUP - Godfather+  Olly Debugger Universal Plug-in
+
+ver. 1.2 2004-08-09
+
+add:	Resource viewer can show Delphi and Borland C builder forms
+add:	Resource viewer can show dialogs
+add:	Resource viewer can show version infos
+
+fix:	Problem with executing dumpsig.exe if full path have space in it
+fix:	Memory leak with showing bitmap resources
+
+Experimental -	Resource viewer - automatic breakpoint search on static
+		events from Delphi or BCB form - Works ONLY for DELPHI and BCB
+
+How to use it: 
+
+1. in Olly debuger select executable which you want to examine 
+   (ALT+E) or menu View -> Executable modules
+2. Analyse it
+3. Now you can use Resource viewer.
+
+When you inspect form in resource viewer you see something like:
+
+  object Button1: TButton
+    Left = 32
+    Top = 24
+    Width = 75
+    Height = 25
+    Caption = 'Button1'
+    TabOrder = 0
+    OnClick = Button1Click    <--- Double click here!!!!!
+  end
+
+Go to OnClick = Button1Click event and press double click - plugin will 
+try to find all places where event with this name is valid and put breakpoint there
+automatically.
+
+This don't work with:
+- Events which are set dinamically on runtime (They don't exist on form)
+- programs protected with ASProtect 
+(place for setting breakpoint is correct, and  breakpoint is set, after that I get 
+ exception 80000003 when try to execute this code)
+
+ver. 1.1 2004-08-01
+
+add:	Resource viewer can show DIB resources
+add:	Resoruces saving
+add:	Signature loader selector - selecting full row in grid for better visibility 
+add:	Settings pannel
+add:	Possibility to decide where your notepad files will go
+add:	Notepad files have name builded from short process name + _dbg.txt
+
+fix:	Incorrect PE flag reading for signatrue files (thx TQN)
+fix:	Correct position of components on form after resize
+fix:	Support for executable packers which expand resources in memory out of 
+	resource section defined in PE header (PeCompact)
+fix:    Some minor fixes
+
+
+from this release I use TQN version of coverted plugin.h 
+(my is not so perfectly converted) 
+
+Personal greetings to:
+	tbd, TQN, redmullet
+
+
+ver. 1.0 2004-07-26
+
+This plug-in consist of 5 handy tools:
+
+1.	Map loader 
+2.	Resource viewer 
+3.	Process info 
+4.	IDA signature loader 
+5.	Notepad
+
+1.	Map loader - use it for loading map files produced by compiler or by 
+IDA. You can use it to load label names and/or to load comments from .map file. 
+There is no any checking if map file match currently debugged process.
+
+2.	Resource viewer - use it for looking to your resources ;-) This is 
+probably only viewer which works through direct memory access - means that you 
+can even look to resources of compressed (protected) executables. 
+NOTE: Still in experimental phase.
+
+3.	Process info - Give you basic information about process + try to 
+recognize compiler and protection mechanism. . Process info use signature file 
+signs.txt from PE tools v1.5  (NEOx, .Cryorb) Fell free to add your own 
+signatures and share it with us.
+
+4.	IDA signature loader - probably mostly wanted add on for Olly debugger - 
+now you can use IDA signature without IDA ;-) Just look to process info - find 
+your compiler and select and apply matching IDA signature. It's not problem if 
+you apply wrong one, you can apply another also. Only what you must do is to set 
+proper path to IDA signatures, and you need sigdump.exe file from IDA resource 
+kit.
+
+5.	Notepad - Simple but smart notepad which load your notes per process 
+automatically every time.
+
+
+INSTALLATION:
+Just unpack all files to your Olly debug plug-in directory.
+
+-------------------------------------------------------------------------------
+Plug-in is written in Delphi 7, using self converted plugin.h from Olly Plug-in 
+Kit.
+
+Plug-in in this version can recognize 85%-90% functions from IDA signature 
+files. I still missing logic, which guys from Datarescue use, when procedure or
+function has same first 32 bytes.(Then you must use checksums for rest of 
+procedure etc… pretty complicated without proper documentation)
+
+-------------------------------------------------------------------------------
+Thanks to:
+	Olly for magnificent debugger.
+	NEOx, .Cryorb for Signature file from PE tools.
+	Martin Lafferty for ConsoleApp.pas.
+	guys who make RXLibrary.
+
+Greetings to:
+	all crackers especially +ones ;-). 
+
+
+gf+

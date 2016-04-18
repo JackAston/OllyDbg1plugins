@@ -1,0 +1,81 @@
+/***********************
+   Sample ODbg Script
+          by Epsylon3
+          
+***********************/
+
+    cmp $VERSION, "1.31"
+    jae version_ok
+		msg "ERROR: ODbgScript 1.31 needed !"
+		ret
+		version_ok:
+
+		// Clear log window
+    //lclr
+		
+    // === break on load module ===
+    gpa "LoadLibraryA","kernel32"
+
+    // store address
+    mov handle, $RESULT
+
+    mov sDLL, "SHELL32.DLL"
+
+lbl_checkLibrary:
+
+    // run
+    go handle
+    	
+    // esp+4 contains pointer on DLL name
+    scmpi sDLL, [[esp+4]]
+    log [[esp+4]]
+    log ""+[[esp+4]]
+    je lbl_LibraryFound
+    
+    jmp lbl_checkLibrary
+
+lbl_LibraryFound:
+
+    msg sDLL+" found !"
+
+    // breakpoint on return address
+    mov handle,[esp]
+    
+    // hardware breakpoint on execution
+    bphws handle,"x"
+    
+    // Continue Program (SHIFT F9)
+    esto
+
+    // delete hardware breakpoint
+    bphwc handle
+
+    // get module base address
+    mov base, eax
+
+    // breakpoint sur la routine hasp()
+    gpa "DragAcceptFiles", sDLL
+		mov handle, $RESULT
+
+    // create a new breakpoint		
+    // bp handle
+    bphws handle,"x"
+
+    eval "Breapoint on DragAcceptFiles()={handle}"
+    msg $RESULT
+
+notTheGoodBreakPoint:
+
+    esto
+
+    // check if good breakpoint
+		cmp handle, eip
+    
+    jne notTheGoodBreakPoint
+
+    // delete our breakpoint
+    bc handle
+
+    // Now do what you want... 
+
+    msg "fin du script"

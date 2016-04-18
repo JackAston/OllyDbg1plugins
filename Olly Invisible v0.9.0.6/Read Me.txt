@@ -1,0 +1,60 @@
+install 
+**********************
+ Copy Invisible.dll and Teerayoot.dll to Olly Plugin dir.
+
+Leave Your "Ollydbg.exe" as is.
+Ready to run  Your "Ollydbg.exe" 
+that will make your ollydbg invisible(no have visible process name in any processlists even use  
+ZwQuerySystemInformation as SDProtecter do .
+
+Have any bugs just report me
+
+
+
+Feature
+**********************
+-hide process from ZwQuerySystemInformation
+-avoid from many debugger check from ZwQueryInformationProcess
+-avoid from IsdebuggerPresent
+-avoid from BeingDebugged
+-avoid from CsrGetProcessId
+
+Options
+**********************
+-System Wide Hooking 
+	Using this method Ollydbg  will hide in whole system.
+-User Wide Hooking
+	Using this method Ollydbg will hide in current user session.
+-Only Target Process
+	Sometimes we don't need to hide process to others process  
+	except only target process 
+	this method will also save a lot of hooking  time:)
+
+History
+**********************
+
+
+(19/4/2005)  V 0.9.0.6
+	-hooked IsDebuggerPresent
+	-hidden hook improve
+	-BeingDebugged clear
+	-hooked CsrGetProcessId
+(18/4/2005)
+	-hooked  ZwQueryInformationProcess to avoid many debug detection tricks
+	        (Thank to "TQN" for help on problem and suggestion.)
+(17/4/2005)
+	-hooked ZwReadVirtualMemory to hide hook
+	-add Only Target Process option
+(16/4/2005)
+	-hooked ZwQuerySystemInformation
+
+
+Todo
+**********************
+	-Hide dll in target process
+	-tell me Api name have to hook(only ring 3 please ) ;)
+
+We can hook all, hehe.
+	
+-----------------------------------------------------------------------------------------------------------	
+Teerayoot : teer4y00t@hotmail.com

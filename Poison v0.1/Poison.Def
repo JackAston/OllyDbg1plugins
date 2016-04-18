@@ -1,0 +1,14 @@
+LIBRARY
+EXPORTS
+_ODBG_Plugininit
+_ODBG_Plugindata
+_ODBG_Pluginmenu
+_ODBG_Pluginaction
+_ODBG_Plugindestroy
+_ODBG_Pluginreset
+_ODBG_Pluginclose
+Aggresive
+Hide
+BreakPoints
+
+

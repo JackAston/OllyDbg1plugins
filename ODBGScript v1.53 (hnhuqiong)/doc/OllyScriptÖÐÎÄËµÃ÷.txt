@@ -1,0 +1,1297 @@
+ODbgScript plugin by hnhuqiong
+
+From
+ODbgScript plugin v1.47 by Epsylon3
+OllyScript plugin v0.92 by SHaG
+
+
+-------------------------------------------
+1. 关于 OllyScript
+2. 目前情况
+2.1 v1.53最新更新
+3. 文档
+3.1 语言概述
+3.1.1 保留变量
+3.1.2 指令
+3.2 标签
+3.3 注释
+3.4 菜单
+4. 嵌入其他的插件
+5. 疑难解析
+6. 如何联系我
+7. 特许与源代码
+8. 鸣谢！
+
+-------------------
+
+1. 关于 ODbgScript
+-------------------
+ODbgScript 是OLLYDBG调试器的一个插件。我个人认为，OllyDbg是目前最好的程序级调试器。
+这个调试器的最大的特色之一就是她的插件体系，这是使得用户能够更为有效的扩展她的功能。
+ODbgScript 是一种通过类汇编语言的脚本，来控制OllyDbg自动运行的插件。
+在调试程序时，常常都是仅仅为了要找到某几个关键点，而不得不做大量的重复工作。 
+而通过使用我的脚本解释器，您就可以做到“写一次脚本，无限使用” 
+
+ODbgScript相对OllyScript最大的升级是你拥有了一个脚本的调试运行窗口,你能很好的控制脚本和观察
+脚本的运行状态,在ODbgScript的调试窗口中,你可以单步执行你的脚本,可以手工执行脚本命令,可以在你
+的脚本上下断点,甚至可以调整你的变量值.这对于你调试你的脚本是有所帮助的,在插件窗口你可以选择脚
+本运行窗口,它就出来了.
+
+ODbgScript还有一个日志窗口(LOG),它的开发还不那么完善,我相信在不久的将来,它能为你展现它强大的
+功能.
+
+------------------------------
+
+2. 目前情况（2007年5月2日）
+----------------------------
+V1.48-
+2006-5-20开始,ODbgScript由hnhuqiong在Epsylon3开放源码的基础上进行本地化以及继续升级.
+
+v1.0-v1.47
+OllyScript变成ODbgScript,带有新的图形界面,从2005-11-4开始由Epsylon3继承SHaG继续开发.
+(未知原因从2006-2-6后Epsylon3没有为OllyScript进行新的升级.)
+
+v0.92
+OllyScript目前的下载量已经超过一万次了！这意味着超过2Gb的网络下载流量。这个结果对我来说还不错！
+因为我要参与一个xray系统项目，这个项目要花去我不少的时间，所以开发这个插件的步伐可能要放慢了。
+真的对不起大家了。
+(2004年7月10日起SHaG基本放弃对OllyScript的开发,但他开放了他的源码.)
+
+
+2.1 最新更新(+:增加功能 *:BUG修正 -:去掉功能 #:测试功能)
+
+V1.53(2007/05/03)
++ pop,push,test,xchg命令
++ findcmds(查找命令序列)
+* 更换官方PLUGIN重新编译,消除DBH,DBS的BUG
+* 引导/执行脚本顺序紊乱的重大BUG修复(内部引用NRU和MRU混乱),这个BUG困扰了我很久
+ 原版一直有这个BUG,以前不太注意,最近调试多才下决心解决了这个问题.
+
+
+V1.52
+# 中文说明做了大规模的补充和命令解释以及例子
+# 为兼容以前版本的脚本,去掉了类C的操作符.
+# 添加了asmtxt(调文本asm文件汇编后写入指定地址, asm文件不支持jmp类汇编)
++ 添加了bpx,bpd功能(下,禁止调用函数断点);
++ 添加了opentrace功能(打开跟踪)
++ 添加了setoption功能(调设置菜单)
++ 添加了GAPI功能(判断指定地址API)
++ 添加了READSTR功能(读地址中指定大小的字符串)
++ 支持16位寄存器(ax,bx...)
++ find命令全面升级,可以直接支持变量和内存数据以及字符串,并支持搜索范围
++ findop命令全面升级,可以直接支持变量和内存数据,并支持搜索范围
++ 添加了findcmd功能(查找命令);
+* 修正编辑变量数量不能大于50的问题
+* var BUG修正  
+* GN功能修正,以便和GAPI区别
+* GCMT 错误修正(感谢VOLX BUG报告)
+* 修正ASM汇编代码按照最优模式处理,和OD汇编处理汇编相同(感谢liuyilin BUG报告)
+* 一些程序内部Bug调整
+
+v1.51 
+*  内部函数(getFLTOperatorPos)重大BUG修正(感谢FLY,xxxx BUG报告)
+
+v1.50 release
+* an引用的api错误修正
+* len错误修正
+* 一些小的错误
++ 添加在脚本窗口中双击高亮功能
+
+V1.49
+# MSG,MSGYN消息框弹出回归0.92版模式
+# 增加NEG,NOT,ROL,ROR命令
+# (内部增加GetBYTEOpValue函数)
++ 脚本运行窗口增加运行到光标处菜单功能(F4)
++ GMI增加DATABASE,RESBASE,RESSIZE的操作数
++ MUL,DIV命令
+* 修正本地化不准确问题
+* 修正MOV 缓冲区崩溃问题
+* 修正exec/ende不释放内存问题
+* 修正一些小问题
+* 修正asm指令中的错误
+* 修正exec/ende中的错误(script_pos计数错误,ende被跳过执行)
+
+v1.48bata (2006-5-20)
+# MUL,DIV命令
+# 脚本运行窗口增加运行到光标处菜单功能(F4)
+# 本地化
+# 适当的增加了一些预判读语句,防止用户错误造成崩溃
+* 修正BPWM的问题
+* 修正一些字符串定义错误
+* 修正一些函数的声明错误(CreateOperands==)
+* 修正缓冲区太小,造成OD崩溃.
+- 上一版本未开发的函数从类中去除(LogRegNr,Process)
+
+3. 文档
+----------------
+在这个版本中，附带了两个脚本例子(tElock098.osc 和 UPX.osc)。 
+这两个脚本，可以迅速找到对应壳的入口。
+
+
+3.1 语言
+------------
+OllyScript脚本语言是一个种类汇编的语言。你使用它来控制ODbgScript和脚本运算.
+
+在后面的文档中, “源操作数” 和 “目的操作数”表示以下含义:
+- 十六进制常数，既没有前缀也没有后缀。 (例如：是00FF, 而不是 0x00FF 和 00FFh的形式)
+  十进制常数,在后缀中加点. (例如:100. 128. 也可以是浮点数128.56,浮点数只能保留小数点后2位)
+- 变量，这个变量必须在使用前用Var进行定义
+- 32位寄存器 (EAX, EBX, ECX, EDX, ESI, EDI, EBP, ESP, EIP)。
+  16位寄存器 (AX, BX, CX, DX, SI, DI, BP, SP)
+  8位的寄存器(AL, AH, ... DL, DH)
+- 被中括号括起来的内存地址 (例如：[401000] 指向内存地址为401000里存放分数据, 
+  [ecx] 指向内存地址为寄存器ecx里存放分数据).
+- 一个标志位，带有感叹号前缀(!CF, !PF, !AF, !ZF, !SF, !DF, !OF)
+- 字符串，也可叫数据序列。其格式为： #6A0000# (数值在两个“#”号之间)，两个“#”号之间必须包含至少有一个数值。
+                                  "1234567ABCDEF"
+- 包含“?”通配符的字符串。比如 #6A??00# 或者 #6?0000#
+
+3.1.1 保留变量
+------------------------
+
+$RESULT
+-------
+<RESULT>
+保存某些函数的返回值，比如FIND函数，等等。
+在ODbgScript的脚本调试窗口,你能观察到它的变换,并且可以修改它.
+
+
+$VERSION
+--------
+<VERSION>
+ODBGScript的版本信息,整个是系统保留变量名.
+例：
+cmp $VERSION, "1.47"  //比较是否大于 1.47版
+ja version_above_147  
+
+
+3.1.2 指令
+--------------
+
+#INC "文件名"  
+---------
+
+一个脚本文件包含另外一个脚本.就像调用子程序一样.两个脚本中的变量名不能相同.
+例:
+#inc "test.txt"     
+
+
+#LOG
+----
+开始记录运行指令
+指令会显示在OllyDbg的log窗口中，每条记录前都会加上“-->”的前缀
+例：
+#log
+
+ADD 目的操作数,源操作数
+-------------
+<ADD>
+源操作数与目的操作数相加，并把相加的结果保存到目的操作数中,支持字符串相加.
+例： 
+add x, 0F          // x=x+F
+add eax, x         //eax=eax+x
+add [401000], 5    //[401000]=[401000]+5
+浮点数相加
+add x,16.50        //x=x+16.50
+(字符串相加)
+add y, " times"    // 如果在次之前y="1000" ，则在执行完此指令之后y="1000 times"
+
+
+AI
+--
+<Animate Into>
+在OllyDbg中执行“自动步入” [Animate into]操作。
+相当于在OllyDbg中按下CTRL+F7
+例：
+ai
+
+ALLOC 大小
+----------
+申请内存, 你能读/写/执行.
+例：
+  alloc 1000          //新申请内存,大小为1000,返回结果$RESULT放着申请的内存开始地址.
+	free $RESULT, 1000
+
+AN 地址
+-------
+<ANalyze>
+从指定地址处，对代码进行分析。
+例：
+an eip //   相当于在OllyDbg中按 Ctrl+A键
+
+
+AND 目的操作数, 源操作数
+-------------
+<AND>
+源操作数与目的操作数进行逻辑与操作，并将结果保存到到目的操作数中。
+例： 
+and x, 0F                  //x=x&&f
+and eax, x                 //eax=eax&&x
+and [401000], 5            //[401000]=[401000]&&5
+
+
+AO
+--
+<Animate Over>
+在OllyDbg中执行“自动步过” [Animate over]操作。
+相当于在OllyDbg中按下CTRL+F8
+例：
+ao
+
+ASK 问题
+------------
+<ASK>
+显示一个提示输入框，让用户输入，结果保存变量$RESULT中（如果用户按了取消键，则$RESULT=0）。
+$RESULT_1中放着输入的长度.
+(注:程序将判读你输入的是字符,$RESULT_1的结果是输入字符数的数目,整型/2,中文数*2)
+例:
+ask "Enter new EIP"
+cmp $RESULT, 0
+je cancel_pressed
+mov eip, $RESULT
+
+
+ASM 地址, 指令
+-----------------
+<ASseMble>
+修改指定地址的指令。
+并将修改后的汇编指令长度保存到保留变量$RESULT中
+例：
+asm eip, "mov eax, ecx" //将当前指令修改为 mov eax,ecx
+
+ASMTXT 文件 
+-----------------
+<ASseMble>
+汇编指定文件中的指令。
+将汇编指令长度保存到保留变量$RESULT中
+并将汇编指令行数保存到保留变量$RESULT_1中
+例：
+asmtxt EIP,"myasm.txt" //将myasm.txt文件中的asm转成opcode后写入EIP.
+
+
+ATOI str [, base=16.]
+-----------------
+转换字符串到16进制整型,[可以将任何进制转成16进制整型]
+返回结果放到 $RESULT 
+例：
+	itoa "F"         //字符串"F"转成了整型,结果会等于F
+	itoa "10", 10.   //字符串"10"代表十进制,结果会等于A
+
+BC 地址
+-------
+<BreakPoint Clear>
+清除指定地址的断点。
+例：
+bc 401000          //清除401000处的断点
+bc x               //清除X(变量值)处的断点
+bc eip             //清除当前EIP处的断点
+
+BP addr
+--------
+<BreakPoint>
+在指定地址设断点
+例：
+bp 401000          //在401000处下断点
+bp x               //在X(变量值)处下断点 
+bp eip             //在当前EIP处下断点
+
+BPCND 地址, 条件
+----------------
+<BreakPoint on CoNDition>
+在指定地址处，设置条件断点。
+例：
+bpcnd 401000, "ECX==1" //当 代码执行到401000且 ecx等于1 时，程序暂停
+
+BPD 函数字符串
+---------------
+清除调用函数断点,函数为字符串表示.
+
+例:
+bpd "GetVersion"   //取消呼叫GetVersion的断点
+
+BPHWC 地址
+----------
+<BreakPoint HardWare Clear>
+删除指定地址处的硬件断点。
+例：
+bphwc 401000 //清除 401000处的断点
+
+BPHWCALL
+-----------
+清除所有的硬件断点
+例：
+BPHWCALL     //清除所有的硬件断点
+
+BPHWS 地址, 模式
+----------------
+<BreakPoint HardWare Set>
+在指定地址，设置硬件断点。有三种模式： "r" - 读取, "w" - 写入 或者 "x" - 执行.
+此断点只支持1个字节的动作.
+例：
+bphws 401000, "x" //当执行到此地址时发生中断.
+Bphws 401000,"r"  //当读取401000的时候,发送中断
+
+BPL 地址, 表达式
+--------------
+<BreakPoint of Logging>
+在指定地址处设置记录断点，将表达式的结果记录到记录窗口中。
+例：
+bpl 401000, "eax" // 每次执行到401000时，都将eax寄存器的结果记录
+
+BPLCND 地址, 表达式, 条件
+-----------------------
+<BreakPoint of Logging on CoNDition>
+在指定地址处设置记录断点，如果条件为真时，将表达式的结果记录到记录窗口中。
+例：
+bplcnd 401000, "eax", "eax > 1" // 如果执行到401000时，满足eax>1，则将eax寄存器的结果记录
+
+BPMC
+----
+<BreakPoint Memory Clear>
+清除内存断点。
+例：
+bpmc
+
+BPRM 地址, 大小
+---------------
+<BreakPoint on Read Memory>
+在指定地址处，设置一个内存读取断点。 “大小” 是指内存中的字节大小。
+例：
+bprm 401000, FF  //在401000中设置内存读断点,内存中的大小为FF
+
+BPWM 地址, 大小
+---------------
+<BreakPoint on Write Memory>
+在指定地址处，设置一个内存写入断点。“大小” 是指内存中的字节大小。
+例：
+bpwm 401000, FF   //在401000中设置内存写断点,内存中的大小为FF
+
+
+BPX 函数字符串
+---------------
+设置调用函数断点,函数为字符串表示.
+返回下了断点的地址数量,结果保存在保留变量$RESULT中.
+例:
+bpx "GetVersion"   //下呼叫GetVersion断点,断下的语句为 call [xxxxx]
+
+
+CMP 目的操作数, 源操作数
+-------------
+<CoMPare>
+比较 目的操作数与源操作数的大小，和其对应的汇编指令作用相同。
+可以是各种数值,甚至可以是字符串(对大小不敏感).
+例： 
+cmp y, x          //比较两个变量(Y和X)的大小,
+cmp eip, 401000   //比较EIP和401000的大小
+
+CMT 地址, 字符串
+--------------
+<CoMmenT>
+在指定地址处，加入注释。
+例：
+cmt eip, "这是入口" //当前地址处 加上“这是入口”的注释
+
+COB
+---
+<Continue On Breakpoint>
+发生中断后，让脚本继续执行（移除EOB指令）
+例：
+COB
+
+COE
+---
+<Continue On Exception>（移除EOE指令）
+发生异常后，让脚本继续执行
+例：
+COE
+
+DBH
+---
+<DeBugger Hided> 
+隐藏调试器
+例：
+dbh
+
+DBS
+---
+<DeBugger Show>
+对隐藏的调试器操作进行恢复，不再隐藏。
+例：
+dbs
+
+DEC 变量
+-------
+<DECrement by 1>
+对变量进行减一操作
+例：
+dec v            //V=V-1
+
+DIV 目的操作数, 源操作数
+-------------
+<div>
+源操作数与目的操作数进行除法操作，并将结果保存到到目的操作数中。
+例： 
+div x, 0F        //X=X/0F
+div eax, x       //eax=eax/x
+div [401000], 5  //[401000]/5
+
+DM 地址, 大小, 文件名
+-------------------
+<Dump Memory>
+从指定地址处开始，在内存中提取指定大小的数据，并保存到指定的文件中
+例：
+dm 401000, 1F, "c:\dump.bin"
+
+DMA 地址, 大小, 文件名
+-------------------
+<Dump Memory Appended>
+从指定地址处开始，在内存中提取指定大小的数据，并保存到指定的文件中；如
+果指定文件已存在，则将数据追加到指定文件尾部。
+例：
+dma 401000, 1F, "c:\dump.bin"
+
+DPE 文件名, 入口
+----------------
+<Dump Process with Entry point>
+提取执行模块到指定文件中。
+“入口”用来设定入口地址。
+这个命令用来抓取文件,还是比较好用的,因为直接利用了OD强大的内存管理功能.
+例：
+dpe "c:\test.exe", eip //入口为当前地址，保存为C盘下test.exe
+
+EOB 标签
+---------
+<Execution On Breakpoint>
+在下次中断发生时，跳转到指定标签处。
+此功能和EOE命令常常让新手迷惑不解,其实就是遇见中断做脚本的流程转向.
+如果还有不懂,请看下文的答疑解惑章节.
+例：
+eob SOME_LABEL
+
+EOE 标签
+---------
+<Execution On Exception>
+在下次异常发生时，跳转到指定标签处。
+例：
+eoe SOME_LABEL
+
+ESTI
+----
+<Exception STep Into>
+相当于在OllyDbg按 SHIFT-F7。
+例：
+esti
+
+ESTO
+----
+<Exception STep  cOntinue>
+相当于在OllyDbg按 SHIFT-F9。
+例：
+esto
+
+
+EVAL 
+----
+<EVALuate>
+计算含义变量的表达式。
+变量必须已经在脚本中声明。
+注意:插到字符串中时，要放在大括号{ }中。
+结果保存在保留变量$RESULT中.
+这句和其它语句结合将产生很多的变化,用好它将让你的脚本十分灵活.
+例：
+var x
+mov x, 1000
+eval "x的值是 { x }" // 执行后$RESULT为 "x的值是00001000"
+
+
+EXEC/ENDE
+---------
+<EXECute/END of Execute>
+对当前调试进程，执行在EXEC和ENDE之间的指令。
+有这个命令就是你可以直接跳入进程,对进程进行直接控制.
+它的原理就是取当前进程的信息进行保存,然后新分配一个代码内存区(可读/写/执行.大小1000)
+调用OD汇编器将你的汇编语句转成OPcode,将OPcode拷贝到代码区,然后将EIP指向你的代码开头.
+然后将控制权交给你.执行完后将EIP归还原位,然后将控制权交还ODbgScript.
+这里的好处就是让你以很高的效率来避免在较慢的脚本环境运行需要高效的操作.
+!注意:由于进程控制权交给你了,那么,你的代码有效性将只有你自己来控制了.
+!注意:执行后不保存现场.这都需要你来做工作.(要保存现场,你可以使用pushad,popad)
+有大括号的，会被大括号中的变量的值替代。
+例：
+// 以下是做移动操作
+var x
+var y
+mov x, "eax"
+mov y, "0DEADBEEF"
+exec
+mov {x},{y}     // 到进程中新开的代码区去,mov eax,0DEADBEEF 将被执行
+mov ecx, {x}    //mov ecx, eax 将被执行
+ende
+// 以下是调用调试程序的ExitProcess函数
+exec
+push 0
+call ExitProcess
+ende
+ret
+
+FILL addr,len,value
+-------------------------
+从地址addr开始填充长度为len的值value
+!注:value的值最大8个字节,可以为寄存器值,标志位值,变量值,16进制值,10进制值,[]指针操作数.
+如:
+fill	401000,10,90	        //NOP 10h个字节
+fill 401000,ff,[eax]        //取出[eax]值,填充到401000,长度为ff
+fill 401000,ff,$RESULT     //将变量$RESULT的值填充到401000,长度为ff
+
+FIND 地址, 查找内容 ,[最大大小]
+---------------
+<FIND>
+从指定地址开始在内存中查找指定的内容。
+如果查找成功，地址会保存到保留变量$RESULT中，否则$RESULT将等于 0。
+查找的串支持通配符“??”(见下面的例子)。
+##中的为HEX,""中的为字符串,什么都不带的为内存数据
+!注:输入的16进制字符必须是成偶数
+    从1.52版开始支持直接变量和数据查找.
+例：
+find eip, #6A00E8# // 查找一个Call，其的第一个参数为0 (push 0)
+find eip, #6A??E8# // 查找一个带参数的Call,一个?代表一个字符常量
+find eip,"kernel32.dll"  //查找字符串"kernel32.dll"
+find eip,"ker???32.d??"  //查找带通配符的?字符串,一个?代表一个字符串常量
+                           (请注意这里的通配符?和HEX中的?不同)
+
+find eip,15ff      //查找内存数据15ff(代码为ff115)
+(mov tmp,#ff15#
+ find eip,tmp )    //查找变量tmp中的数值,tmp=ff15
+(mov tmp,"kernel32.dll"
+find eip,tmp  )    //查找变量tmp中的字符串"kernel32.dll"
+(mov tmp,15ff
+ find eip,tmp      //查找变量tmp中的内存数据15ff(注意和#ff15#区别)
+(ask "输入需要的数据"
+find eip,$RESULT       //输入的为#ff15#,"Kernel32.dll",15ff就同上面三例子
+
+find eip,#ff15#,ff  //从EIP开始,FF大小范围内,查找字符ff15,
+
+
+FINDCMD 地址, 查找内容
+-----------------
+<FIND command>
+从指定地址开始查找指定一个命令。 
+如果查找成功，地址会保存到保留变量$RESULT中，否则$RESULT将等于 0。
+
+例：
+findcmd 401000, "push eax" // find "push eax"
+
+
+FINDCMDS 地址, 查找内容
+-----------------
+<FIND command>
+从指定地址开始查找指定命令序列。 
+如果查找成功，地址会保存到保留变量$RESULT中，否则$RESULT将等于 0。
+注:命令序列分割请使用;号(分号).
+
+例：
+findcmd 401000, "push eax;mov eax,edx" //     寻找"push eax和mov eax,edx"命令序列
+
+
+FINDOP 地址, 查找内容,[查找范围]
+-----------------
+<FIND OPcode>
+从指定地址开始查找指定一个指令，这个指令是以指定内容为开始的。 
+如果查找成功，地址会保存到保留变量$RESULT中，否则$RESULT将等于 0。
+查找的串支持通配符“??”(见下面的例子)。
+注意:findop由于是opcode查找,不支持字符串查找.
+     findop和find的区别是findop查找到的必须是opcode.
+	 1.52起支持直接变量和内存数据
+例：
+findop 401000, #61# // find next POPAD
+findop 401000, #6A??# // find next PUSH of something
+译者注：
+对比一下FIND 和FINDDOP的区别：
+地址          数据                 代码
+00401007      B8 3300          MOV     EAX, 33
+0040100C      33F6             XOR     ESI, ESI
+find 401007,  #33#    //$RESULT等于401008
+finddop 401007, #33#  //$RESULT等于40100C
+
+
+FINDMEM what [, StartAddr]
+--------------------------
+从整个内存开始在内存中查找指定的内容
+如果查找成功，地址会保存到保留变量$RESULT中，否则$RESULT将等于 0。
+查找的串支持通配符“??”(见下面的例子)。
+Example:
+	findmem #6A00E8# // find a PUSH 0 followed by some kind of call
+	findmem #6A00E8#, 00400000 // search it after address 00400000
+	
+FREE
+FREE 地址 大小
+-----------
+释放由ALLOC申请的内存.
+Example:
+ alloc 1000
+ free $RESULT, 1000
+
+GAPI
+GAPI 地址
+------------
+获得指定代码处的API调用信息
+API信息保存到保留变量$RESULT中。
+如果符号名是一个API函数，则
+$RESULT保存API信息
+$RESULT_1保存链接库名（比如 kernal32）
+$RESULT_2保存符号名（比如 ExitProcess）。
+$RESULT_3保存调用地址XXXX(比如 call xxxxx)
+注意:这个和GN的区别是GN必须指向IAT地址
+     而GAPI直接给出代码地址就可得出API
+     还有如果你是在此处下了软件断点,请先清除断点再用此句,因为软件断点修改了代码为CC
+	 这里如果不清除此处的软件断点,将造成这句不能很好的识别.
+例：
+GAPI 401000   (call kernal32.ExitProcess)
+GAPI EIP   //查看当前代码是否是API调用,不是则返回0
+
+ 
+GCMT addr
+---------
+获得指定地址处的解释
+
+
+GMEMI addr, info
+----------------
+获得指定地址处内存的信息.
+信息可以是 MEMORYBASE, MEMORYSIZE or MEMORYOWNER
+Example:
+	GMEMI addr, MEMORYBASE // After this $RESULT is the address to the memory base of the memory block to which addr belongs
+
+GMI 地址, 信息
+--------------
+<Get Module Info>
+获得指定地址所在模块的相关信息。
+“信息”可以是模块基地址[MODULEBASE], 模块大小[MODULESIZE], 代码段基地址[CODEBASE] 或者 代码段大小[CODESIZE] 
+(如果您想在将来的版本中，获得更多的信息，请联系我)。
+信息会保存到保留变量$RESULT中 (如果没有找到信息，则$RESULT等于0).
+例：
+GMI eip, CODEBASE // 这条指令执行后，$RESULT等于当前所在模块的代码段基地址。
+	
+
+GN 地址
+-------
+<Get Name>
+获得指定IAT地址的符号名（比如指向API函数）。
+符号名将保存到保留变量$RESULT中。
+如果符号名是一个API函数，则
+$RESULT是符号名
+$RESULT_1保存链接库名（比如 kernal32）
+$RESULT_2保存符号名（比如 ExitProcess）。
+例：
+gn 450100
+
+GO 地址
+-------
+<GO>
+执行到指定地址处 
+例：
+go 401005
+
+GPA 函数名, 动态链接库名
+-------------
+<Get Procedure  Address>
+在指定的动态链接库中，获得指定函数的地址。
+如果查找成功，地址会保存到保留变量$RESULT中，否则$RESULT将等于 0。
+在设置API函数断点时，这个指令非常有效。
+例：
+gpa "MessageBoxA", "user32.dll" // 这条指令执行后，$RESULT等于函数MessageBoxA的地址，您可以
+使用"bp $RESULT"设置断点。
+
+GPI key
+-------------
+获得进程的信息.
+这个信息可以是HPROCESS,PROCESSID,HMAINTHREAD,MAINTHREADID,MAINBASE,PROCESSNAME,EXEFILENAME,CURRENTDIR,SYSTEMDIR
+
+GPP key
+--------------
+find API parameters number and types
+
+HANDLE x, y, class
+---------------------
+返回指定点(16进制)子窗口指定类的句柄
+
+
+INC 变量
+-------
+<INCrement by 1>
+对变量进行加一操作
+例：
+inc v
+
+ITOA n [, base=16.]
+-----------------
+转化一个整数到字符串
+结果放在 $RESULT 
+Example:
+	itoa F
+	itoa 10., 10.
+	
+JA 标签
+--------
+<Jump if Above>
+在cmp命令后使用. 和其对应的汇编指令作用相同.
+例：
+ja SOME_LABEL
+
+JAE 标签
+---------
+<jump if Above or Equal>
+cmp. 和其对应的汇编指令作用相同.
+例：
+jae SOME_LABEL
+
+JB 标签
+--------
+<Jump if Below>
+在cmp命令后使用.  和其对应的汇编指令作用相同.
+例：
+jb SOME_LABEL
+
+JBE 标签
+---------
+<Jump if Below or Equal>
+在cmp命令后使用。和其对应的汇编指令作用相同.
+例：
+jbe SOME_LABEL
+
+JE 标签
+--------
+<Jump if Equal>
+在cmp命令后使用.  和其对应的汇编指令作用相同.
+例：
+je SOME_LABEL
+
+JMP 标签
+---------
+<JuMP>
+跳转到指定标签.
+例：
+jmp SOME_LABEL
+
+JNE 标签
+---------
+<Jump if Not Equal>
+在cmp命令后使用.  和其对应的汇编指令作用相同.
+例：
+jne SOME_LABEL
+
+KEY vkcode [, shift [, ctrl]]
+--------------------------
+仿真按下键盘.
+Example:
+	key 20
+	key 20, 1 //Shift+space
+	key 20, 0, 1 //Ctrl+space
+	
+LBL 地址, 字符串
+--------------
+<LaBel Insert>
+在指定地址处插入一个标签
+例：
+lbl eip, "NiceJump"
+
+LC
+----
+清理LOG窗口
+
+LCLR
+----
+清理Script Log窗口
+
+LEN str
+--------------
+获得字符串长度,结果放在$RESULT
+Example:
+	len "NiceJump"
+	msg $RESULT
+	
+LM addr, size, filename
+-------
+引导Dm文件进内存
+Example:
+  lm 0x401000, 0x100, "test.bin"
+  
+LOG 源操作数
+-------
+<log>
+将源操作数输出到OllyDbg的记录窗口[log window]中。
+如果源操作数 是一个字符串常量，则原样记录。
+如果源操作数 是一个变量或一个寄存器，则记录名称及其存放的数值
+例：
+log "Hello world" // 记录为 "Hello world"
+var x
+mov x, 10
+log x // 记录为 "x = 00000010" 
+
+MOV 目的操作数, 源操作数,最大字节
+-------------
+<MOV>
+将源操作数移动到目的操作数中。
+源操作数可以是一个十六进制序列格式#某个十六进制序列#，例如：#1234#。
+提醒：十六进制序列的位长只能是偶数，比如2, 4, 6, 8等等。
+例： 
+mov x, 0F                         //将F传给变量x
+mov y, "Hello world"              //将字符串"Hello world"传给变量y
+mov eax, ecx                      //同汇编
+mov [ecx], #00DEAD00BEEF00#       //将##内的内容传到ecx的地址中
+mov !CF, 1                        //赋值!CF标志寄存器为1
+mov !DF, !PF                      //将!PF赋值给!DF
+mov [403000], "Hello world"       //直接将字符串"Hello world"传送到403000的地址中
+mov eax,[401000],1                //只取401000地址中的一个字节长度的内容传送到eax中(新功能)
+
+MSG 消息
+-----------
+<MeSsaGe>
+将指定消息，显示到一个对话框中。
+例：
+MSG "脚本暂停"
+
+MSGYN message
+-----------
+<MeSsaGe Yes or No>
+将指定消息，显示到一个对话框中，这个对话框有“是”、“否”按钮。
+如果点“是”，保留变量 $RESULT 等于1，否则保留变量$RESULT等于0 。
+例：
+MSGYN "继续？"
+
+
+MUL 目的操作数, 源操作数
+-------------
+<mul>
+源操作数与目的操作数进行乘法操作，并将结果保存到到目的操作数中。
+例： 
+mul x, 0F
+mul eax, x
+mul [401000], 5
+
+NEG 操作数
+-------------
+<NEG>
+操作数做取补操作，并将结果保存到到操作数中。
+例： 
+NEG x, 0F
+NEG eax
+NEG [401000]
+
+NOT 操作数
+-------------
+<NOT>
+操作数做逻辑非操作，并将结果保存到到操作数中。
+例： 
+NOT x, 0F
+NOT eax
+NOT [401000]
+
+
+OPCODE addr
+-----------
+反汇编指定地址处的代码.
+$RESULT是opcode
+$RESULT_1是汇编代码
+$RESULT_2是字节数
+如果不是opcode,$RESULT_2将返回0
+Example: 
+	opcode 00401000
+
+opentrace
+------------
+打开运行跟踪功能,关闭它请使用TC
+
+
+OR 目的操作数, 源操作数
+-------------
+<OR>
+源操作数和目的操作数做逻辑或操作，并将结果保存到到目的操作数中。
+例： 
+or x, 0F
+or eax, x
+or [401000], 5
+
+PAUSE
+-----
+<PAUSE>
+暂停脚本运行。可以通过插件菜单恢复脚本运行。
+例：
+pause
+
+
+PREOP addr
+----------
+回溯指定地址的汇编命令
+注意: 这个命令并不能真实的反映EIP前的包含jmp的命令
+Example:
+	preop eip
+
+
+READSTR addr,maxsize
+-----------
+从addr处读指定大小的字符串
+Example:
+    readstr 401000,15
+
+REF addr
+--------
+相当于在OllyDbg按 Ctrl R.
+$RESULT variable is set to the first reference addr 
+$RESULT_1 to the opcode (text asm command) 
+$RESULT_2 to the comment (like reference window). 
+Repeat "REF addr" until $RESULT=0 to get next refs
+Example:
+	continue:
+		REF eip
+		log $RESULT
+		log $RESULT_1
+		log $RESULT_2
+	cmp $RESULT,0
+	jne continue
+	
+
+REPL addr, find, repl, len
+--------------------------
+REPL 地址, 查找字符串, 替换字符串, 长度
+--------------------------
+<REPLace>
+在指定地址开始，在指定长度的字节范围内，用“替换字符串”替换“查找字符串”。
+允许使用通配符
+例：
+repl eip, #6a00#, #6b00#, 10
+repl eip, #??00#, #??01#, 10
+repl 401000, #41#, #90#, 1F
+
+REset
+---------------------------
+
+
+
+RET
+---
+<RETurn>
+退出脚本。
+例：
+ret
+
+REV
+---
+字节反转.(注意是字节反转,不是位反转)
+Example:
+rev 01020304	//$RESULT = 04030201
+
+ROL 目的操作数, n
+-------------
+循环左移目的操作数，n比特位；并将结果保存到到目的操作数中。
+例：
+mov x, 00000010
+ROL x, 8 // x is now 00001000
+
+
+ROR 目的操作数, n
+-------------
+循环右移目的操作数，n比特位；并将结果保存到到目的操作数中。
+例：
+mov x, 00000010
+ROR x, 8 
+
+
+RTR
+---
+<Run To Return>
+执行到返回
+相当于在OllyDbg中执行 "Run to return" [Ctrl+F9]操作。
+例：
+rtr
+
+	
+RTU
+---
+<Run To User code>
+返回到用户代码区
+相当于在OllyDbg中执行 "Run to user code"[Alt+F9] 操作。
+例：
+rtu
+
+
+RUN
+---
+<RUN>
+让OD继续运行
+相当于在OllyDbg中按 F9。
+例：
+run
+
+SCMP dest, src
+-------------
+字符串比较. 
+Example: 
+	cmp x, "KERNEL32.DLL"
+	cmp [eax], "Hello World"
+	
+SCMPI dest, src
+-------------
+字符串比较(大小写不敏感)
+Example: 
+	cmp sVar, "KERNEL32.DLL"
+	cmp [eax], "Hello World"
+
+SETOPTION
+-------------
+调出调试设置(Option)菜单,设置好后按确定后继续执行脚本
+注意:此选项是为了可以在执行脚本的过程中可以调出调试设置异常,跟踪等等设置
+	
+
+SHL 目的操作数, n
+-------------
+左移目的操作数，n比特位；并将结果保存到到目的操作数中。
+例：
+mov x, 00000010
+shl x, 8 // x is now 00001000
+
+SHR 目的操作数, n
+-------------
+<SHift Right>
+右移目的操作数,n 比特位；并将结果保存到到目的操作数中。
+例：
+mov x, 00001000
+shr x, 8 // x is now 00000010
+
+STI
+---
+<STep Into>
+相当于在OllyDbg中按 F7，单步步入。
+例：
+sti
+
+STO
+---
+<STep Over>
+相当于在OllyDbg中按 F8，单步步过。
+例：
+sto
+
+
+SUB dest, src
+-------------
+源数据减目的数据
+Example: 
+sub x, 0F
+sub eax, x
+sub [401000], 5
+
+
+TC
+--
+相当于在OllyDbg中 "关闭运行跟踪"
+Example:
+	tc
+
+TI
+--
+相当于在OllyDbg中按 CTRL-F7，单步跟踪。
+Example:
+	ti
+	
+TICND cond
+----------
+<Trace Into Condition>
+执行 "Trace into" 操作，直到条件为真时停止。
+例：
+ticnd "eip > 40100A" // 当 eip > 40100A 时停止
+
+TO
+--
+<Trace Over>
+相当于在OllyDbg中执行 "Trace over" 操作。
+例：
+to
+
+TOCND cond
+----------
+<Trace Over Condition>
+执行 "Trace over" 操作，直到条件为真时停止。
+例:
+tocnd "eip > 40100A" // 当 eip > 40100A 时停止
+
+VAR
+---
+<VARiable>
+在脚本中，声明一个变量。
+必须在变量使用先声明。
+注意:变量名最好是由字母和数字组合成的容易识别的变量名
+     +-*/等等符号最好不要附加在变量中,以免引起不可预测的错误
+	 由于为了兼容以前的系统,请不要将A,B,C,D,E,F作为变量.
+例： 
+var tmp
+
+XOR 目的操作数, 源操作数
+-------------
+<XOR>
+源操作数与目的操作数进行异或操作，并将结果保存到到目的操作数中。
+例： 
+xor x, 0F
+xor eax, x
+xor [401000], 5
+
+WRT file, data
+-------------
+写数据给文件 (覆盖)
+Numbers are wrote as strings... for the moment
+Example: 
+	wrt "out.txt", "Data:\r\nOk\r\n"
+	wrt sFile, ebx
+
+WRTA file, data
+-------------
+附加数据到文件中(文件结尾)
+Example: 
+	wrta sFile, "hello world\r\n"
+	
+3.2 标签
+----------
+定义标签，要在标签名后面要加上一个冒号.
+例：
+SOME_LABEL:
+
+3.3 注释
+------------
+您可以使用“//”在任何地方进行注释。
+块注释必须另外起一行并以 “/*”做为开始，以“*/”作为结束，“*/”也必须另起一行。
+
+例：
+/*
+您的注释
+*/
+
+
+3.4 菜单
+---------
+ODBGScript的主菜单包含了下面几项：
+- Run script...[运行脚本...]: 用户选择一个脚本，并运行这个脚本。
+- Abort [中止]: 中止脚本运行
+- Pause [暂停]: 暂停脚本运行
+- Resume[恢复]: 恢复脚本运行
+-脚本运行窗口:动态观察脚本运行
+-脚本日志窗口:记录脚本运行情况
+- About [关于]: 显示此插件信息
+
+3.5 Script Window
+-----------------
+脚本窗口是ODbgScript内置的,它能让你调试和观察你的脚本.
+你能在这里为脚本设置断点,调试脚本,编辑变量还能手工执行脚本命令
+
+4. 嵌入其他的插件
+---------------------------------
+您可以在您的插件中调用OllyScrip，并且运行一个脚本。
+使用类似于下面的代码进行调用：
+
+HMODULE hMod = GetModuleHandle("OllyScript.dll");
+if(hMod) // 检测是否被其他插件加载
+{ 
+// 获得输出函数地址
+int (*pFunc)(char*) = (int (*)(char*)) GetProcAddress(hMod, "ExecuteScript");
+if(pFunc) // 检查是否获得输出函数
+pFunc("myscript.txt"); // 执行输出函数
+
+
+5. 疑难解释和技巧
+--------------------------------------
+在使用中,有一些语句比较难以理解和使用,这里将进行部分的解释.
+
+Q:为什么我使用一些脚本,var ->x1这句要挂掉OD?
+A:变量名最好是由字母和数字组合成的容易识别的变量名
+  +-*/?>等等符号最好不要附加在变量中,以免引起不可预测的错误
+  由于为了兼容以前的系统,请不要将A,B,C,D,E,F作为变量(系统容易和16进制abcdef混淆).
+
+Q:我能仅仅取[401000]中的一个字节么??  
+A:mov语句在这个版本中功能做了巨大的扩充,和以前的版本最大的区别是增加了第三个
+  参数(size),也就是限定赋值的最大字节数.这样你可以从内存中任意存取数值.
+
+Q:EOB,EOE功能我常常混淆,以及使用上感觉很困惑,能解释么???
+A:eob,eoe功能是中断或者异常的转向功能,当脚本执行到中断或者异常后,可以指定脚本
+  转向自己设定的标签处,它主要是为了进行流程的转向.比如判别版本号后,转向相应的
+  标签处理脚本处.  
+  由于ODBGscript程序设计的原因,你必须先设置好eob,eoe的转向处再run.这个和我们常规的
+  逻辑有点相反,我们常常喜欢设计成为run后设定eob,eoe.其实也好理解,你必须先声明你
+  要转向的地方再让脚本去触发你设定的条件,而不是你触发了条件在去寻找你要求的标签处.
+
+Q:某些情况下,我需要直接下OD来执行自己所希望的代码,怎么实现呢??
+A:脚本不是万能的,常常需要自己写一些汇编代码来执行,那么,我们可以寻找一些程序空白处,
+  利用mov addr,#xxxxxxxxxxxx#这样的语句来将自己的代码放入相应的地址,再记录当前的
+  EIP,然后mov eip,addr,也就是将程序的流程转向自己的代码处,执行自己的代码完毕后,可以
+  将EIP改回原程序的地址, 请记住保存现场,你下到了OD直接执行你的代码,那么你必须为你的
+  代码负责.ODbgscript并不帮你保存现场.
+  
+Q:find,findop,findmem好像没有什么区别,能告诉我它们真正的区别么???
+A:这三句都是在内存中寻找数据,但不同的是.
+  find仅仅找到相应的匹配关系的地址
+  findop要寻找的是OPCODE相匹配的地址,也就是找到的地址必须是OPCODE匹配处.它
+        寻找方式和find完全不同,它先将一小节一小节的将数据转化为opcode,然后
+		进行匹配查找.这句和find配合能很好鉴别花指令.
+  findmem寻找的是在指定的节地址处相匹配的关系.比如.data节处
+
+Q:eval这句是什么意思?
+A:eval是计算含义变量的表达式,变量必须已经在脚本中声明。
+      插到字符串中时，要放在大括号{ }中,结果保存在保留变量$RESULT中.
+      这句和其它语句结合将产生很多的变化,用好它将让你的脚本十分灵活.
+      这里相当于变化成了变量的变量.请好好掌握它并灵活运用它,它将给你
+	  的脚本带来无穷的变化.
+	  比如现在的壳常常运用了多态变形,而利用好这句,你将有了有利的武器.
+
+Q:GAPI和GN的区别是什么??
+A:GAPI是求出代码处的API信息
+  而GN是给出IAT地址处的API信息.
+
+
+Q:opcde的用处
+A:我们知道,现在的壳常常使用动态解码,而这句就是对付动态解码的有力武器
+  opcode反汇编指定地址处的代码,如果opcode和指定的代码比较,那么你就能
+  牢牢的盯住动态解码的流程和算法.
+
+Q:我能调试我的脚本么??
+A:在odbgscript版本以前的ollyscript 0.92版本中,你只能凭直觉来写脚本,造成
+  写脚本的效率比较低,而新的ODBGscript 版本中,你有了一个脚本窗口,能很好
+  的监测到脚本的运行状态,并且你能单步执行你的脚本,快快使用强大的脚本调试
+  功能吧,记得单步执行是在脚本窗口中按"s"键,空格就是放开让脚本跑.
+  你能在这里为脚本设置断点,调试脚本,编辑变量还能手工执行脚本命令
+
+Q:脚本有什么好处,和脱壳机以及补丁相比有什么好处???
+A:脚本最大的好处就是你能根据脚本的思路来掌握软件的思路.脚本能让你的工作轻松
+  很多,无论是你在调试程序还是脱壳或者做逆向工作.
+  而脱壳机和补丁严格的限制对应程序的版本,而脚本来说做常常简单的添加或者修改
+  就能很好的适应不同的版本.当然这个前提是你能掌握它的使用.
+  某种意义上说,脚本是OD动作的重复播放,所以,掌握OD的强弱也就会影响你编写和使用
+  ODBGscript的能力.
+
+Q:Ollyscript和ODBGscript有什么区别?
+A:Ollyscript是SHag利用BC编写的,它是ODBGscript的原生版本,但是它于04年就停止了
+  开发,所以就诞生了ODBGscript.ODBGscript在Ollyscript的基础上进行了大规模的扩充
+  无论在语句数量上和语句的深化功能上都有了大幅度的扩展.但你知道,ODBGscript还不
+  那么稳定和你期望的强大,我期待你的BUG报告和指出希望的功能.
+
+
+6. 如何联系我
+-------------
+您可以在论坛提交问题(bbs.pediy.com)
+当然您也可以直接写信给我，我的信箱是：hnhuqiong@126.com
+
+7. 特许与源代码
+--------------------------
+由于Epsylon3并未放弃对ODBGScript的后续开发,我这个版本仅仅作为了看雪(pediy)的逆向爱好者
+的一个分枝版本将继续开发下去,立足于本地化和本地技术的支撑和后续研发.
+如果修改了源码,但是请您在您的文档和版权对话框中，标注上我的名字。
+如果您的工程，大规模的使用我了的代码。也请您通知我，我会关心一下的。
+
+
+8. 鸣谢！
+----------
+From
+OllyScript plugin v0.92 by SHaG
+ODBGScript plugin v1.47 by Epsylon3
+对于所有提交Bug、编写脚本以及提供宝贵建议的朋友，我表示感谢。
+感谢R@dier提供Dump引擎。
+当然，特别要感谢Olly，是他开发出了如此优秀的调试器！
+还有就是bbs.pediy.com上各位大侠
+
+

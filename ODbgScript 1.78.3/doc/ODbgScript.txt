@@ -1,0 +1,1842 @@
+-------------------------------
+ODbgScript english plugin by E3
+site : http://odbgscript.sf.net
+-------------------------------
+
+1. About OllyScript and ODbgScript
+2. Status
+ 2.1 What's new?
+3. Documentation
+ 3.1 Language
+  3.1.1 Reserved variables
+  3.1.2 Commands
+ 3.2 Labels
+ 3.3 Comments
+ 3.4 Menus
+ 3.5 Script Window
+4. Integration with other plugins
+5. Contact me
+6. License and source code
+7. Thanks!
+
+------------------------------
+
+1. About ODbgScript
+-------------------
+ODbgScript is a plugin for OllyDbg, which is, in our opinion, 
+the best application-mode debugger out there. One of the best 
+features of this debugger is the plugin architecture which allows 
+users to extend its functionality. ODbgScript is a plugin 
+meant to let you automate OllyDbg by writing scripts in an 
+assembly-like language. Many tasks involve a lot of repetitive 
+work just to get to some point in the debugged application. By 
+using this plugin you can write a script once and for all. 
+
+------------------------------
+
+2. Status
+----------------------------
+
+v1.54
+ODbgScript has a new site and SVN system : http://odbgscript.sf.net
+
+v1.0
+OllyScript becomes ODbgScript with the new GUI Windows
+
+v0.9
+OllyScript has now been downloaded more then 10000 times! That means more then 2Gb of raw
+scripting power flowing down the optic cable veins of the Internet. Not bad if you ask me!
+The development of the plugin has been a bit slow, I've got a job programming xray systems
+which has taken a lot of time. Sorry about that.
+
+TODO:
+Memory BP reason (to enhance)
+BEGINSEARCH working ?
+More Search Reference commands
+Get Trace Addr
+
+2.1 What's new? 
+---------------
+1.78 (08 Feb 2010)
++ Added GSTRW to get Wide Char String (wchar) at address, and returns wchar buffer, size and ascii
++ Added FINDOPREV (from ShaG 0.94 version)
+* GMA : Spaces to underscores in module name
+* Fixed a problem in automatic memory free routine
+
+1.77 (06 Oct 2009)
++ Added CLOSE command to close windows
++ Added SBP/RBP To save/restore breakpoints (Zool@nder based)
++ Added GSL (Selection Limits) to get addr/size of currently selected line(s) in CPUASM|CPUSTACK|CPUSTACK (Zool@nder based) 
++ Added GLBL/GSTR to get Label/String at some addr (Zool@nder based) 
+
+1.76 (28 Sep 2009)
++ Added BACKUP command to see changes in a memory area
++ Added Ctrl+F to search in "Script Log" window, and menu item
++ Search input box remembers last search, and search after current position
++ OPENDUMP returns descriptor as $RESULT for later use (backups)
+* Restored the Run Script menu in CPU Window
+* Some work on BPX, to close opened reference window (intermodular calls)
+* POP command on undeclared variable is now possible (will declare it)
+* REFRESH and LOADLIB commands keep "Executable modules" window hidden
+
+1.75 (25 Sep 2009)
+* Sources are removed from package, only available via SVN
++ Added Link to Documentation (Help)
++ Added Ctrl+F to search in script
++ Added Ctrl+G to goto script line
+* Fixed Scroll to Label when script has more than 256 lines
+* Logging multiline strings supported
+* Fixed logging data containing % symbol
+
+1.74 (23 Sep 2009)
++ Added GFO to get file offset of disasm address.
+* Labels commented ignored
+* Script Window : result/eip columns display cleanup with commented lines
+! Restored ESTO for compatibility but use ERUN only
+
+1.73 (22 Sep 2009)
++ Added ESTEP to Step Over ignoring exceptions (Shift F8)
++ Added STEP to Step Over (same as STO)
++ Added GMIMP command like GMEXP to get imports in a module
+! Removed old command ESTO (use ERUN) to force old script updates
+
+1.72 (20 Sep 2009)
++ Enhanced Script Window (Empty lines and all comments are now displayed, except comments in command lines)
++ Added GMEXP to list module exports (useful to set breakpoints on all exports)
++ Added NAMES to open Names Window in a module
++ Added "REF 0" support to force REF reset
+
+1.71 (17 Sep 2009)
++ Added REF second parameter to search in the whole module or module's code
+* LM error handling if file not found, and write only given size (if size parameter > 0)
+* Fixed WRTA default separator (set to "\r\n")
+* like the 1.68 "INC a" bug, secured more functions using MOV internally
+
+1.70 (15 Sep 2009)
++ MRU has now 9 entries
++ Added Flags Save/Restore to PUSHA/POPA
++ POPA protection to restore only in the thread used by PUSHA
++ Added DebugScript Export for Script Editor interaction
+* Fixed Edit Script Line
+* GMA now uses the 8 first chars of specified module name
+* Enhanced Memory block cleaning when multiple blocks were allocated in one command (loadlib)
+* LOADLIB now refresh modules list and memory
+
+1.69 (14 Sep 2009)
++ Added system to free memory blocks allocated directly after Ollydbg processed asm command(s)
++ LOADLIB now returns address of loaded library (delayed result)
++ new OLLY command to get Ollydbg variables (PID, HWND only for the moment)
+* Fixed display of \t in commented lines
+* Fixed bug in HANDLE command
+* Fixed bug in FREE command (1.68)
+* Variable history hiding enhancement for subcommands and String constants
+* WRTA Separator fixed
+
+1.68 (13 Sep 2009)
++ LOADLIB command to load a library in debugged program
++ PUSHA/POPA commands to Save/Restore Registers
++ Added an automatic memory block cleaning system, which cleans memory allocated by some script commands (ASM, LOADLIB)
+* Fixed ASMTXT with \0 in hex opcode
+* Fixed "INC a" when "a" is a variable and a has value 9
+
+1.67 (6 Feb 2009)
+* Fixed ASM command with [pointers]
+* Fixed a bad pointer on debug event which could crash Ollydbg (thanks to hnedka)
+* Set $RESULT to 0 on ASK dialog close
+
+1.66 (21 Dec 2008)
++ GOPI (Get Operand Information) to get asm operand information (TYPE, SIZE, ADDR, DATA, GOOD)
+* Fixed OPCODE, GCI, GAPI, REF commands, ReadMemory replaced by ReadCommand (bug on Vista ?)
+
+1.65 (SVN)
++ BPHWC without parameter clears all hardware breakpoints (same as BPHWCALL, which could be removed/renamed)
++ BC without parameter clears all loaded breakpoints (Breakpoints Window)
++ BD without parameter disables all loaded breakpoints 
+* Breakpoints saving enhanced, and saving/restore on restart.
+
+1.64 (30 May 2007)
++! Added ability to call ODbgScript command(s) from OllyDbg Conditional Log Breakpoints
++! Added CALL command to call Labels (use RET to return)
++ Added FINDCALLS command to find (and filter) intermodular calls.
++ Added GBPM command to get last memory breakpoint address, beta function affected on GBPR call
++ Script keeps breakpoints on reload if bp script lines were not modified.
++ Edit script line (to do temporary fix, not saved on disk)
++ Added GREF alone (to get lines count in reference window)
+* Enhanced Script window Focus
+* Error messagebox no more modal
+* Fixed 1.63 bug with pointers containing operator (now accept all operators)
+
+1.63 (29 May 2007)
++ Added MEMCPY function, and optimized MOV [dst],[src],size
++ Added ASM third parameter to get alternative code bytes.
++ GREF command to get Addresses from Reference Window (for FINDCMD, FINDCMDS)
++ CMP size parameter, to compare byte/word values
++ Restored "Run Script" command in Ollydbg Main menu (without MRU)
++ Added UNICODE (0/1) command to set Unicode Mode (for future unicode support)
+* First TICK value fixed
+* ASM command was logged
+* Rewrote FINDCMD(S), now use FindallSequences ODBG API, can use R8, R16, R32 keywords
+* RET Script is reset after "Script finished" message, no more modal.
+
+1.62 (26 May 2007)
++ Indent/color ASM Blocks (EXEC/ENDE)
++ Added GCI parameter COMMAND to get asm command string (like OPCODE), SIZE, CONDITION, TYPE
++ TICK without variable set time from start in text, in "%d ms" format. log purpose.
++ Added SCMP,SCMPI size parameter, to compare addr data.
+* DF/SF flags fixed
+* EOB with EXEC/ENDE fixed
+* After Error Script Cursor, also added "!" symbol in front of line
+* Fixed SUB <reg> command 
+* Fixed Value History in commands using DoMOV
+
+1.61 (23 May 2007)
++ Script Window can now display comments (only comments with ";")
++ BD (Disable Breakpoint, without deleting it)
++ JG/JGE (clone of JA/JAE)
+x TICK precision is now microseconds and get time since script startup, second var for relative time
+* Fixed ASM dw parameters with letter like this one : asm jmpaddr,"MOV DWORD PTR SS:[ESP+D],eax"
+* On Startup, cursor is now on first code line (if labels/comments)
+* fixed bug when affecting dword to string variable, was no more possible
+
+1.60 (18 May 2007)
++ Added ;Asm Comments
++ REFRESH command, to redraw memory map, module, and disasm windows
++ GMA command, Like GMI, but get Module Info by its name
++ OPENDUMP command, to create new dump window
++ BPGOTO command, assign a label to a breakpoint by its address
++ LOGBUF command to log string or buffer variable like a memory dump (wrapped)
++ Added ERUN command to replace ESTO in the future (mnemonic problem with STO)
++ Scroll to Label (in context menu)
++ JZ, JNZ added (clone of JE/JNE)
+x Buffer read speed optimisation
+x ALLOC, FREE can now refresh the memory window, was a problem with LIB, used new VC7 PDK
+* Cursor on Running command displayed correctly
+* ASM, ASMTEXT now format correctly DWORDs args to be assembled
+* "BUF/STR dw" now reverse bytes of the dword 
+* "mov data, [eax+10], 4" works and will assign dword only if data variable was not a string
+* PUSH, POP Command fixed
+
+1.55 (14 May 2007)
++ Added Sub Context Menu in Disasm
++ Added HISTORY command to enable/disable value History (run faster)
++ Added BEGINSEARCH and ENDSEARCH to optimize "find commands"
++ Added GCI Command to Get info on disasm command
++ Added GRO Command Get Relative Offset ("procedure+offset")
++ Added TAB key to Step in Script (S key could "assemble" if ASM window get focus)
++ Added PAUSE key (everywhere) to Pause Script on next command when Application is Running
+x BPHWS second parameter is now optional (default "x")
+* Comments // in /**/ block fixed
+* EXEC/END hex dword variables with letter as first char fixed
+* label script position fixed
+* negative values crash fixed
+* eip could now be affected without problems
+* Resume on Script breakpoint fixed (SPACE)
+
+Note: GAPI function could be deleted, hnhu... has not finished the code
+
+1.54.3 (13 May 2007)
++ BUF, STR commands added to convert string to buffer or buffer to string
++ GMI new constants added, (imports, exports, reloc, name, version) see documentation
++ Added Length Information and Hex value to String Variables in Context Menu
++ Enhanced Internal Buffer/String Concatenation : mov test, ##+"123" give #313233# in test
++ Compare Buffer/String is now working
++ Begin Buffer+DW and String+DW (function ADD)
++ Buffer/String Variable Editor is now Binary editor
+- Removed MRU menu and some commands from Main Olly Menu
+* Internal compare between different types (except buf/str) returns error -2
+* Better support in Log Window and Context menu of strings containing "\0"
+* removed 0 prefix of dword values in LOG and EVAL commands (%8X to %X)
+* OPENTRACE now also opens trace window if not opened
+* READSTR documentation update, but this function could be renamed/removed
+* FIND commands fix, bad address parameter results 0
+
+1.53.3 (9 May 2007)
++ WRTA has now a third parameter for separator (default \n)
+* ASK dlg is now TOPMOST
+  no more modal and fixed the crash on close if box was not closed properly
+* Added fixes and news from 1.53 Chinese version
+ 
+  + pop, push, test, xchg commands.
+  + findcmds(Search for command sequence).
+  + Added BPX and BPD functions
+  + Added the OPENTRACE function (to open run trace)
+  + Added the GAPI function (assign address API)
+  + Supports 16bit registers (ax, bx)
+  + Added the FINDCMD function (search for command);
+  * GN, GCMT, ASM
+  * Removed 0 prefix for Hex values in results/values
+  * MSG, MSGY no more modal
+  
+Other differences with Chinese Version :
+
+MRU "Bug" not modified 
+  I've made two MRU lists for a good reason, olly doesn't refresh Main Menu
+Inline operators are still working in this branch of OdbgScript
+Weird ESP Menu not added (i dont know what it is) 
+ADD doesn't supports dw+string itoa concatenation
+
+1.50.3 (8 May 2007)
+* 4-bytes alignment and speed optimization (thanks Human)
+* Changed URL to http://www.woodmann.com/forum in About Box
+* Added fixes and news from 1.50 Chinese version : 
+  *ASM
+  *EXEC,ENDE
+  +GMI (added DATABASE, RESBASE, RESSIZE constants)
+  *GN
+  *LEN bad operand fix
+  +DIV,MUL commands
+  +READSTR to copy a string (it is possible with MOV too)
+  +NEG,NOT asm commands (real asm code)
+  +ROL,ROR asm commands but looks like same as SHL, SHR
+  *RTU
+  *ADD, SHL, SHR, SUB, XOR results to script window
+
+Notes : There are some differences between versions : 
+  WRTA doesn't add CR to lines (binary writing)
+
+1.48 (27 May 2006)
++ Added ability to move script execution cursor, double click on a line.
+
+1.47 (06 Feb 2006)
+* Fixed GPI command
+* GPI CURRENTDIR returns path of debugged app. if empty
+
+1.46 (28 Jan 2006)
+* GMEMI,GMI,GPI constants were strings in last versions, no more string quotes needed
+
+1.45 (22 Jan 2006)
++ Added BPHWCALL to clear all hardware breakpoints
+* Fixed problems with leading 0 on reversed integers data in find commands
+* GMEMI and GMI constants are now in case insensitive
+* ASK Cancel button now pauses the script (was abort before)
+
+1.44 (21 Jan 2006)
++ Enhanced GCMT to retrieve automatic comments or comments from analysis
++ Added ITOA and ATOI commands
++ Added GPI (getprocessinfo) command (see docs for info)
+* GPA now uses LoadLibraryEx to fix a Comctl32 double load
+
+1.43 (13 Jan 2006)
++ Added GCMT to retrieve comment at specified addr
+* Fixed LM function
+
+1.42 (07 Jan 2006) 
++ Script Auto Reset if debugged app is restarted
+* Better script uppercase support
+* Problem with strings containing brackets
+
+1.41 (21 Dec 2005) 
++ Support for Integer operands in Float Operations (first operand need to be a float)
++ Added Edit Variable dialog for Float vars
+# log default type (pointers) is set to DW, was Float in 1.40
+# enhanced focus with Ollydbg breakpoints
+
+1.40 (20 Dec 2005) 
++ Added Float variables, registers st(0) <-> st(7), and "in line" operations (+-*/)
+  Float operations must contain float operands only
+  Float syntax : mov flt, 5.0
+# enhanced script window focus
+# fixed progress window data if script reloaded is smaller than old one
+
+1.39 (20 Dec 2005) 
+# Fixed Ask memory alloc problem
+# Always Re-focus to Script windows on "Step" from script.
+# Fixed cursor on ret/abort
+
+1.38 (19 Dec 2005) 
++ Added optional LOG command parameter to set log prefix, "" to disable
++ Log windows Auto Scroll
++ Added LC to clear main log window
+# LCLR command clears now the script log only
+# Script cursor is now normal
+# The Log Window is no more called with Script Window from main menu 
+# Fixed bugs in mov command with pointers and buffers
+# Fixed bug with hex buffer variables containing bytes < 0x10 (no pb with constants) 
+# (internal) added backup system for sources in post-link batch
+
+1.35 (12 Dec 2005)
++ Added maxsize optional third parameter to mov Command
++ Added Clear Log Command
++ Enhanced Support of "dump" variables
+# fixed some log problems
+
+1.34 (06 Dec 2005)
++ Added Mark for pointers in values column
++ Added Icons to Windows
++ Added Script Log Window
+# Fixed Manual Command when no debugged app or no script loaded.
+# Modified Load into Run in main and Disasm Menu
+# Added Version resource, and cleaned source architecture
+
+1.33 (06 Dec 2005) (Quick Fix version)
+# Some fixes
+# Added some constants in code
+# Fixed a big bug with string operands containing dword operator
+
+1.32 (05 Dec 2005)
++ Execute Script Command Manually is now possible
++ LCLR command to clear log window
+# LOG is now highlighted and displays also message in OllyDbg Status bar
+# Updated this Documentation and added a neutral sample script
+# Abort Command enhancement
+
+1.31 (05 Dec 2005)
++ Added support of operators in pointers ex: [eax+1]
++ Added support of operator + for strings
++ Decimal values are now supported, with the point (ex: 102.)
++ Variables Menu in Script Window to show/edit variables
++ Edit Script Command in Script Window Context Menu
+# Modified script window hotkeys, and added Pause
+# SCMPI & SCMP now compares only strings
+
+1.30 (04 Dec 2005)
++ Added support of reg8 & reg16 registers (al,ah...dl,dh,ax,bx,cx,dx,bp,sp,si,di)
++ Added support of operators (+-*/&|^><), operators don't have priority, it's made from left to right
+  ">" and "<" are shr and shl, "^" for xor, "&" for and, "|" for or.
++ Variables are now also declared by the destination of mov, if they don't exist
++ Added Result column
++ Value column keeps history of values
++ Enhanced Style of Script Window (current line, jumps, labels, same values)
++ Added KEY to send custom key shortcut to ollydbg (global KEY_DOWN)
++ Added TC to close and delete runtrace
+# Fix MRU when a filename contains a comma or { }
+
+1.29 (03 Dec 2005)
++ Added LEN to get string length
++ Added REV to reverse dword bytes
++ Added HANDLE to find a window handle (like "Edit" Boxes) in debugged application
+# Script is kept on debugged program restart/change
+# Fixed FIND commands to search dwords variables
+# MRU on DISASM window is now the real one
+
+1.28 (26 Nov 2005)
++ Added "Load Script" in DISASM Context Menu
++ Added "ALLOC size" and "FREE addr, size" to (un)allocate memory page
+# Modified Run Script to Load in Main MRU
+# MRU is no more showing full path of scripts
+# ASK now returns string len in $RESULT_1
+
+1.27 (25 Nov 2005)
++ Added REF to get References to selected command
++ Added OPCODE command to get command bytes, text and size at specified address
+# Better comments handling
+# Better #inc handling (using also current script path)
+# PREOP now works in memory block, not only in code block
+
+1.26 (24 Nov 2005)
++ Added Optional Start Address to "FINDMEM what [, StartAddr]" (to continue global search)
++ Added PREOP command to get previous command address before specified address
+
+1.25 (22 Nov 2005)
++ Added FINDMEM to search into the whole memory
++ Added WRT (write a file) and WRTA (append) commands: WRT file, data
++ Added GMEMI function (Memory Block Information)
+# GPA now returns 0 and continue if the API is not found, $RESULT_2 set to Proc name if found.
+# fixed OllyDbg focus problem
+# fixed path of created files when full path given
+# fixed FIND binary wildcards, broken in 1.24
+
+1.24 (19 Nov 2005)
++ FIND and FINDOP supports strings and string vars arguments
++ MSG and MSGYN have now Cancel button to pause script (MSGYN returns 2 if canceled)
+# Script will now pause instead of stop when error is returned from commands
++ Script Breakpoints (to "debug" a script)
++ Added Real "Load Script" to start paused (script window)
++ Added Step/Resume and Hotkeys (script window)
+
+1.23 (14 Nov 2005)
++ Enhanced String by Address support for commands (ex: gpa [nAddr],"KERNEL32.DLL")
++ lm, load Dump file to mem: lm, 0x401000, 0x100, "test.bin" (MetaCore)
+# fix the dm, lm, dmp, dpe 's default dump path to debugging app's path. (MetaCore)
+# fix dm, ...the open file parameter is incorrect, will add mess "0a 0d" at each lines tail. (MetaCore)
+# fix all dump related function's parameter check, so when the real mem is smaller then given 
+  dump length, will not add mess data at the end, and the $result also catches the real dump size. (MetaCore)
+
+1.22 (11 Nov 2005)
++ Added SCMP and SCMPI for string comparison (SCMPI for case insensitive)
+# Restored CMP string comparison to case sensitive
+
+1.21 (8 Nov 2005)
++ Remember Script Window Position & State
++ Automatic Scroll to follow script
++ Context Menu (Real MRU/Follow) in Script Window
+# Fix table refresh
+# CMP string compare is now case insensitive
+
+1.20 (7 Nov 2005)
++ Script Window with values and eip
++ CMP now accepts strings from address
+
+1.10 (5 Nov 2005)
++ MRU List
+
+1.0 (4 Nov 2005)
+# ODbgScript (VC6 Based)
+
+0.92
++ New commands: ASK, BPL, BPLCND, COB, COE, EVAL, EXEC/ENDE, GN, TICND, TOCND
++ Execution of code in the target process context
++ String concatenation with ADD or EVAL
++ Input box
++ Logging breakpoints
++ Removal of EOB and EOE
++ Tracing with condition
++ Get name of address
+# ASM now returns assembled length in $RESULT
+# Fixed pause crash bug
+# Fixed bug with JBE, hopefully it was the last of the Jxx bugs
+# OllyScript now REQUIRES OllyDbg v1.10. No other versions are officially supported.
+
+------------------------------
+
+3. Documentation
+----------------
+Example script (sample.osc) is available with this release. 
+The script will break on LoadLibrary call to debug a SHELL32.DLL function. 
+Try it on mspaint.exe
+
+3.1 Language
+------------
+The scripting language of OllyScript is an assembly-like language.
+
+In the document below, src and dest can be (unless stated otherwise):
+ - Constant in the form of a hex number without prefixes and suffixes, with leading 0 (i.e. 00FF, not 0x00FF or 00FFh)
+   For decimal values, use the point (i.e. 100. 128.)
+ - Variable previously declared by VAR, or are declared with MOV
+ - A 32-bit registers (one of EAX, EBX, ECX, EDX, ESI, EDI, EBP, ESP, EIP).
+   A 16-bit register (one of AX, BX, CX, DX, SI, DI, BP, SP)
+   A 8-bit register (one of AL, AH, ... DL, DH)
+ - A memory reference in square brackets (i.e. [401000] points to the memory at address 401000, 
+	[ecx] points to the memory at address ecx).
+ - A flag with an exclamation mark in front (one of !CF, !PF, !AF, !ZF, !SF, !DF, !OF)
+ - Sometimes byte strings are required. Those are scripted as #6A0000# (values between two #) and 
+	must have an even number of characters.
+   Some byte strings can contain the wildcard '?', for example #6A??00# or #6?0000#
+ - A combination of these values with operators:
+
+You can use operators in your scripts, +-*/&|^>< for dword and + to concatenate strings.
+ - Operators > and < are shr and shl (>> and << in C/C++)
+ - Operator ^ is XOR 
+ - Operator & is AND
+ - Operator | is OR
+
+3.1.1 Reserved variables
+------------------------
+
+$RESULT
+-------
+Return value for some functions like FIND etc.
+$RESULT_1 and $RESULT_2 are available for some commands.
+
+$VERSION
+--------
+Contains current version of OllyScript
+Example
+	cmp $VERSION, "0.8"
+	ja version_above_08
+
+3.1.2 Commands
+--------------
+
+#INC file
+---------
+Include a script file in another script file
+Example:
+	#inc "anotherscript.txt"
+	
+#LOG
+----
+Enable logging of executed commands.
+The commands will appear in OllyDbg log window, and will be prefixed with -->
+Example:
+	#log
+
+ADD dest, src
+-------------
+Adds src to dest and stores result in dest
+Example: 
+	add x, 0F
+	add eax, x
+	add [401000], 5
+	add y, " times" // If y was 1000 before this command then y is "1000 times" after it
+
+AI
+--
+Execute "Animate into" in OllyDbg
+Example:
+	ai
+
+ALLOC size
+----------
+Allocate new memory page, you can read/write and execute.
+Example
+    alloc 1000
+	free $RESULT, 1000
+
+AN addr
+-------
+Analyze module which contains the address addr.
+Example:
+	an eip // Same as pressing CTRL-A
+
+AND dest, src
+-------------
+AND's src and dest and stores result in dest
+Example: 
+	and x, 0F
+	and eax, x
+	and [401000], 5
+
+AO
+--
+Executes "Animate over" in OllyDbg
+Example:
+	ao
+
+ASK question
+------------
+Display an input box with the specified question and lets user enter a response.
+Sets the reserved $RESULT variable (0 if cancel button was pressed).
+You have also the length in $RESULT_1 (divided by 2 for hex entries)
+Example:
+	ask "Enter new EIP"
+	cmp $RESULT, 0
+	je cancel_pressed
+	mov eip, $RESULT
+	
+ASM addr, command [,version]
+----------------------------
+Assemble a command at some address. 
+Change version number (0,1,...) to get alternative code bytes, if possible.
+Returns bytes assembled in the reserved $RESULT variable
+Example:
+	asm eip, "mov eax, ecx"
+
+ASMTXT addr, file
+-----------------
+Assemble a text asm file at some address.
+Example:
+	asmtxt EIP, "myasm.txt"
+
+ATOI str [, base=16.]
+-----------------
+Convert a string to integer
+Returns the integer in the reserved $RESULT variable
+Example:
+	atoi "F"
+	atoi "10", 10.
+
+BACKUP addr [,base,size]
+------------------------
+Like OPENDUMP, create a Dump Window with data at address.
+But this dump window keeps a backup of data, which can be used to view changes
+$RESULT is the HWND of window, for future use
+Note: If you are looking to save data in a file, see the DM function (Dump Memory)
+Example:
+	BACKUP esp
+	STO
+	STO
+
+BC [addr]
+---------
+Clear unconditional breakpoint at addr.
+Without parameter, the command clears all loaded breakpoints 
+Example:
+	bc 401000
+	bc x
+	bc eip
+
+BD [addr]
+---------
+Disable breakpoint at addr.
+Without parameter, the command disables all loaded breakpoints 
+Example:
+	bp 401000
+	BD 401000
+
+BEGINSEARCH [start] {commands} ENDSEARCH
+----------------------------------------
+Create a Copy of Debugged App Memory, Find commands will use this data faster.
+You need to use ENDSEARCH before writing to memory and to free this memory copy.
+Optimization time is 20% for 5000 loops... but could maybe be optimized
+Example:
+	mov count, 0
+	mov start, eip
+	beginsearch start
+  next:
+	find #00#, start
+	cmp $RESULT,0
+	je end
+	mov start, $RESULT+1
+	add count, 1
+	jmp next
+  end:
+	endsearch
+	msg count
+
+BP addr  (ubp)
+--------------
+Set unconditional breakpoint at addr.
+Example:
+	bp 401000
+	bp x
+	bp eip
+
+BPCND addr, cond
+----------------
+Set breakpoint on address addr with condition cond.
+Example:
+	bpcnd 401000, "ECX==1"
+
+BPD callname
+------------
+Remove breakpoint on dll call set by BPX
+
+BPGOTO addr, label
+------------------
+Automatic Jump at label on Breakpoint (Standard(INT3) and Hardware).
+EOB Like Command
+Example:
+	bphws addr
+	bpgoto addr, MyLabel
+  NextBP:
+	RUN
+	...
+  MyLabel:
+	...
+	jmp NextBP
+
+BPHWC [addr]
+------------
+Delete hardware breakpoint at a specified address.
+Without address, clear all hardware breakpoints.
+Example:
+	bphwc 401000
+	
+BPHWS addr, [mode]
+------------------
+Set hardware breakpoint. Mode can be "r" - read, "w" - write or "x" - execute (default).
+Example:
+	bphws 401000, "x"
+	
+BPL addr, expr
+--------------
+Sets logging breakpoint at address addr that logs expression expr
+Example:
+	bpl 401000, "eax" // logs the value of eax everytime this line is passed
+	
+BPLCND addr, expr, cond
+-----------------------
+Sets logging breakpoint at address addr that logs expression expr if condition cond is true
+Example:
+	bplcnd 401000, "eax", "eax > 1" // logs the value of eax everytime this line is passed and eax > 1
+	
+BPMC
+----
+Clear the memory breakpoint.
+Example:
+	bpmc
+
+BPRM addr, size
+---------------
+Set memory breakpoint on read. Size is size of memory in bytes.
+Example:
+	bprm 401000, FF
+
+BPWM addr, size
+---------------
+Set memory breakpoint on write. Size is size of memory in bytes.
+Example:
+	bpwm 401000, FF
+
+BPX callname
+------------
+Set breakpoint on every api calls found in current module.
+Then you can clear these breakpoints with BPD
+Example:
+	bpx "GetModuleHandleA"
+
+BUF var
+-------
+Converts string/dword variable to a Buffer
+Example: 
+	mov s, "123"
+	buf s
+	log s // output #313233#
+
+CALL label
+----------
+to call Labels (use RET to return)
+
+
+   
+CLOSE window
+------------
+Close an Ollydbg MDI window
+window parameter can be a constant or a HWND (like $RESULT of OPENDUMP/BACKUP).
+ SCRIPT, SCRIPTLOG, LOG, CPU
+ MODULES, MEMORY, THREADS, BREAKPOINTS
+ REFERENCES, SOURCELIST, WATCHES
+ WINDOWS, PATCHES, RUNTRACE, CALLSTACK
+ TEXT, FILE, HANDLES, SEH, SOURCE
+
+CMP dest, src [,size]
+---------------------
+Compares dest and src. Works like its ASM counterpart.
+see SCMP to compare strings or memory data
+Example: 
+	cmp y, x
+	cmp eip, 401000
+	je label
+	cmp cx, x, 2
+	je label
+
+CMT addr, text
+--------------
+Inserts a comment at the specified address
+Example:
+	cmt eip, "This is the entry point"
+
+COB
+---
+Makes script continue execution after a breakpoint has occured (removes EOB)
+Example:
+	COB
+
+COE
+---
+Makes script continue execution after an exception has occured (removes EOE)
+Example:
+	COE
+
+DBH
+---
+Hides debugger against kernel32!IsDebuggerPresent()
+(Note that's done through [BYTE [[FS:18]+30]+2] = 0)
+
+Example:
+	dbh
+
+DBS
+---
+Unhides debugger so kernel32!IsDebuggerPresent() will find it.
+(Note that's done through [BYTE [[FS:18]+30]+2] = 1)
+
+Example:
+	dbs
+
+DEC var
+-------
+Subtracts 1 from variable
+Example:
+	dec v
+
+DIV op1, op2
+------------
+Sets op1 with op1/op2
+Example:
+	div var, 2
+
+DM addr, size, file
+-------------------
+Dumps memory of specified size from specified address to specified file (default path set from opened app.)
+Example:
+	dm 401000, 1F, "c:\dump.bin"
+
+DMA addr, size, file
+--------------------
+Dumps memory of specified size from specified address to specified file appending to that file if it exists
+Example:
+	dma 401000, 1F, "c:\dump.bin"
+
+DPE filename, ep
+----------------
+Dumps the executable to file with specified name.
+Entry point is set to ep.
+Path is relative to the path of the currently loaded executable.
+Notes: * uses PEFileInfo.dwSizeOfImage
+  * Applies dumpfix to PE.sectionHdr
+    (PointerToRawData = VirtualAddress
+        SizeOfRawData = VirtualSize)
+Example:
+	dpe "c:\test.exe", eip
+
+EOB label
+---------
+Transfer execution to some label on next breakpoint.
+(see BPGOTO command to assign a label to a breakpoint)
+Example:
+	eob SOME_LABEL
+
+EOE label
+---------
+Transfer execution to some label on next exception.
+Example:
+	eob SOME_LABEL
+
+ERUN   [formerly ESTO]
+----------------------
+Executes SHIFT-F9 in OllyDbg. Run with Ignore Exceptions
+Note: Was ESTO before, but the command is depreciated
+Example:
+	erun
+
+ESTEP
+-----
+Executes SHIFT-F8 in OllyDbg. Step Over ignoring Exceptions.
+Example:
+	estep
+
+ESTI
+----
+Executes SHIFT-F7 in OllyDbg. Step Into ignoring Exceptions.
+Example:
+	esti
+
+EVAL
+----
+Evaluates a string expression that contains variables.
+The variables that are declared in the current script can be enclosed in curly braces {} to be inserted.
+Sets the reserved $RESULT variable
+Example:
+	var x
+	mov x, 1000
+	eval "The value of x is {x}" // after this $RESULT is "The value of x is 1000"
+
+EXEC/ENDE
+---------
+Executes instructions between EXEC and ENDE in the context of the target process.
+Values in curly braces {} are replaced by their values.
+PUSHA / POPA commands could be useful when you use this.
+Examples:
+	// This does some mov's
+	mov x, "eax"
+	mov y, DEADBEEF
+	exec
+		mov {x}, {y} // mov eax, 0DEADBEEF will be executed
+		mov ecx, {x} // mov ecx, eax will be executed
+	ende
+
+	// This calls ExitProcess in the debugged application
+	exec
+		push 0
+		call ExitProcess
+	ende
+	ret
+
+FILL addr, len, value
+---------------------
+Fills len bytes of memory at addr with value
+Example:
+	fill 401000, 10, 90 // NOP 10h bytes
+
+FIND addr, what
+---------------
+Searches memory starting at addr for the specified value.
+When found sets the reserved $RESULT variable. $RESULT == 0 if nothing found.
+The search string can also use the wildcard "??" (see below).
+
+Example:
+	find eip, #6A00E8# // find a PUSH 0 followed by some kind of call
+	find eip, #6A??E8# // find a PUSH 0 followed by some kind of call
+
+FINDCALLS addr [,name]
+----------------------
+Find all intermodular calls (dll calls) in the disasm area.
+You can filter results by label (case insensitive) with the optionnal second parameter.
+Reference Window is used and its content changed
+Then can use GREF to get results count and retrieve them.
+
+Example:
+	findcalls eip, "exit"
+	gref
+	msg $RESULT
+
+FINDCMD addr, cmdstr
+--------------------
+Search for asm command(s), you can search for series also with ";" separator.
+This command uses "Search for All Sequences" Ollydbg function so could find relative calls/jmp
+Reference Window is used and its content changed
+You can use GREF to get next results in disasm window range
+
+Example 1:
+	mov line,1
+	findcmd eip, "xor R32,R32"
+  next:
+	gref line
+	cmp $RESULT,0
+	je finished
+	inc line
+	jmp next
+  finished:
+
+Example 2:
+	findcmd 401000, "nop;nop;nop"
+	msg $RESULT
+
+
+FINDCMDS (this function name could be deleted in future versions)
+--------
+Same as FINDCMD
+
+FINDOP addr, what [, maxsize]
+-----------------
+Searches code starting at addr for an instruction that begins with the specified bytes. 
+It sets the reserved $RESULT variable to the start of the found instruction. If $RESULT == 0 nothing was found.
+The search string can also use the wildcard "??" (see below).
+Use maxsize to limit that search range.
+Examples:
+	findop 401000, #61# // find next POPAD
+	findop 401000, "1" // = #61#
+	findop 401000, #6A??# // find next PUSH of something
+
+
+FINDOPPREV addr, what
+-----------------
+Searches code backwards starting at addr for an instruction that begins with the specified bytes. 
+It sets the reserved $RESULT variable to the start of the found instruction. If $RESULT == 0 nothing was found.
+The search string can also use the wildcard "??" (see below).
+Example:
+	findop FINDOPPREV, #68??????00# // find next PUSH 00xxxxxx backwards
+
+
+
+FINDMEM what [, StartAddr]
+--------------------------
+Searches whole memory for the specified value.
+When found sets the reserved $RESULT variable. $RESULT == 0 if nothing found.
+The search string can also use the wildcard "??" (see below).
+Example:
+	findmem #6A00E8# // find a PUSH 0 followed by some kind of call
+	findmem #6A00E8#, 00400000 // search it after address 0040.0000
+
+FREE addr [, size]
+------------------
+Free memory block allocated by ALLOC (or not). 
+If size not given, drop whole memory block.
+Example
+    alloc 1000
+	free $RESULT
+
+GAPI addr #BETA#
+---------
+## Chinese Translation ## 
+Obtains the code place API call information
+The API information saves in preservation variable $RESULT.
+If the symbolic name is a API function, then
+$RESULT saves the API information
+$RESULT_1 save link base/storehouse (for instance kernel32)
+$RESULT_2 save symbolic name (for instance ExitProcess).
+$RESULT_3 save calling location (for instance call xxxxx)
+$RESULT_4 save destination
+
+Notice: This and the GN difference is GN must point to the IAT address
+But GAPI gives the code address to be possible directly to obtain API
+Also has, if you have gotten down the software break point in here, please first clear the break point to use this sentence again, because the software break point modified the code is CC
+If here does not clear here the software break point, will create this not to be able the very good recognition.
+Example:
+	GAPI 401000 (call kernel32.ExitProcess)
+	GAPI the EIP // examined whether the current code is API calls, is not then returns to 0
+
+GBPM (beta)
+----
+Get last memory breakpoint address, affects $RESULT with dword value
+ 
+GBPR
+----
+Get last breakpoint reason, affects $RESULT with dword value
+Example:
+	GBPR
+	cmp $RESULT, 10
+	je SelectNormalBP
+	cmp $RESULT, 20
+	je SelectMemBP
+	cmp $RESULT, 40
+	je SelectHwBP
+	jmp NextBP
+
+GCI addr, info
+--------------
+Get Command Information of asm instruction at "addr".
+"info" specifies what data should be returned in $RESULT:
+	- COMMAND for asm command string (like OPCODE)
+	- CONDITION {disasm.condition}
+	- DESTINATION for Destination of jump/call/return
+	- SIZE for number of command bytes
+	- TYPE for asm command string (one of C_xxx, see OllyDbg Plugin API)
+Example:
+	GCI eip, DESTINATION
+
+GCMT addr
+---------
+Get the comment, automatic comment or analyses comment at specified code address
+
+GMA name, info
+--------------
+Call GMI, but parameter is short name of the module
+Example:
+	GMA "KERNEL32", MODULEBASE
+
+GFO addr
+--------
+Get File Offset of address
+
+GLBL addr
+---------
+Get Label at address
+
+GMEMI addr, info
+----------------
+Get information about a memory block to which the specified address belongs.
+"info" can be MEMORYBASE, MEMORYSIZE or MEMORYOWNER (if you want other info in the future versions plz tell me).
+Sets the reserved $RESULT variable (0 if data not found).
+Example:
+	GMEMI addr, MEMORYBASE // After this $RESULT is the address to the memory base of the memory block to which addr belongs
+
+GMEXP moduleaddr, info, [num]
+-----------------------------
+Get Export Address and Names in a module
+info can be ADDRESS, LABEL, COUNT
+Example:
+	gma "KERNEL32", MODULEBASE
+	mov addr, $RESULT
+	GMEXP addr, COUNT
+	log $RESULT
+	GMEXP addr, LABEL, 1
+	log $RESULT
+	GMEXP addr, ADDRESS, 1
+	log $RESULT
+
+GMI addr, info
+--------------
+Get information about a module to which the specified address belongs.
+"info" can be :
+MODULEBASE, MODULESIZE, CODEBASE, CODESIZE, MEMBASE, MEMSIZE, 
+ENTRY, NSECT, DATABASE, RELOCTABLE, RELOCSIZE
+RESBASE, RESSIZE, IDATABASE, IDATATABLE, EDATATABLE, EDATASIZE
+and strings NAME, PATH, VERSION
+ (if you want other info in the future versions plz tell me).
+Sets the reserved $RESULT variable (0 if data not found).
+Example:
+	GMI eip, CODEBASE // After this $RESULT is the address to the codebase of the module to which eip belongs
+
+GMIMP moduleaddr, info, [num]
+-----------------------------
+Get Import address and names in a module
+info can be ADDRESS, LABEL, MODULE, NAME, COUNT
+if LABEL results string like "KERNEL32.CopyFileEx"
+MODULE results "KERNEL32"
+NAME results "CopyFileEx"
+Example:
+	gma "USER32", MODULEBASE
+	mov addr, $RESULT
+	GMIMP addr, COUNT
+	log $RESULT
+	GMIMP addr, LABEL, 1
+	log $RESULT
+	GMIMP addr, ADDRESS, 1
+	log $RESULT
+
+GN addr
+-------
+Get the symbolic name of specified address (ex the API it points to)
+Set the reserved $RESULT variable to the name. If that name is an API
+$RESULT_1 is set to the library (ex kernel32) and $RESULT_2 to the name of the API (ex ExitProcess).
+Example:
+	gn 401000
+	
+GO addr
+-------
+Execute to specified address (like G in SoftIce)
+Example:
+	go 401005
+
+GOPI addr, index, info
+----------------------
+Get information about operands of asm command
+
+"index" is between 1 and 3
+
+"info" can be :
+	- TYPE Type of operand (extended set DEC_xxx, see OllyDbg Plugin API)
+	- SIZE Size of operand, bytes
+	- GOOD Whether address and data valid
+	- ADDR Address if memory, index if register
+	- DATA Actual value (only integer operands)
+
+Example:
+	GOPI eip, 1, SIZE
+
+GPA proc, lib, [0,1]
+--------------------
+Get the address of the specified procedure in the specified library.
+When found sets the reserved $RESULT variable. $RESULT == 0 if nothing found.
+Useful for setting breakpoints on APIs.
+Set third param to 1 if you want to keep library in memory
+Example:
+	gpa "MessageBoxA", "user32.dll" // After this $RESULT is the address of MessageBoxA and you can do "bp $RESULT".
+
+GPP proc, lib, [0,1] 
+--------------------
+Calls GPA and tries to find API parameters count and types of the API
+$RESULT   = ref->addr
+$RESULT_1 = disasm.result //command text
+$RESULT_2 = disasm.comment
+
+GPI key
+-------
+Get process information, one of :
+HPROCESS, PROCESSID, HMAINTHREAD, MAINTHREADID, MAINBASE, PROCESSNAME, EXEFILENAME, CURRENTDIR, SYSTEMDIR
+
+GREF [line]
+-----------
+Get Address from Reference Window at Line. First line is 1 because 0 is CPU Initial EIP.
+Without parameter, GREF results the Reference Window number of entries.
+Example:
+	FINDCMD "push eax"
+	GREF 1
+	msg $RESULT
+	GREF 2
+	msg $RESULT
+
+GRO addr
+--------
+Get Relative Offset
+When found sets the reserved $RESULT variable. $RESULT == 0 if nothing found.
+
+GSL [where]
+-----------
+Get Selection Limits
+returns START/END addresses and SIZE from currently selected line(s) in CPUASM | CPUDUMP | CPUSTACK window in $RESULT, $RESULT_1 & $RESULT_2
+arg can be either : CPUDASM, CPUDUMP, CPUSTACK. Default is CPUDASM
+Example:
+	gsl CPUDUMP
+
+GSTR addr, [arg1]
+-----------------
+Get String returns a null terminated string from addr, the string is at least arg1 characters
+returns in
+- $RESULT    : the string
+- $RESULT_1  : len of string
+Example:
+	gstr 401000     ; arg1 in this case is set to default (2 chars)
+	gstr 401000, 20 ; must be at least 20 chars
+
+GSTRW addr, [arg1]
+------------------
+Get String returns a unicode string from addr, the string is at least arg1 characters
+returns in
+- $RESULT    : the string (ascii)
+- $RESULT_1  : len of string
+- $RESULT_2  : unicode string
+Example:
+	gstrw 401000     ; arg1 in this case is set to default (2 chars)
+	gstrw 401000, 20 ; must be at least 20 chars
+
+HANDLE x, y, class
+------------------
+Returns the handle of child window of specified class at point x,y (remember: in hex values).
+
+HISTORY (0,1)
+-------------
+Enable or Disable Value history in Script Progress Window, could optimize loops
+Example:
+	history 0 //disable
+	history 1 //enable
+
+INC var
+-------
+Adds 1 to variable
+Example:
+	inc v
+
+ITOA n [, base=16.]
+-------------------
+Convert an integer to string
+Returns the string in the reserved $RESULT variable
+Example:
+	itoa F
+	itoa 10., 10.
+
+JA label (JG)
+--------
+Use this after cmp. Works like its asm counterpart.
+Example:
+	ja SOME_LABEL
+
+JAE label (JGE)
+---------
+Use this after cmp. Works like its asm counterpart.
+Example:
+	jae SOME_LABEL
+
+JB label
+--------
+Use this after cmp. Works like its asm counterpart.
+Example:
+	jb SOME_LABEL
+
+JBE label
+---------
+Use this after cmp. Works like its asm counterpart.
+Example:
+	jbe SOME_LABEL
+
+JE label (JZ)
+--------
+Use this after cmp. Works like its asm counterpart.
+Example:
+	je SOME_LABEL
+
+JMP label
+---------
+Unconditionally jump to a label.
+Example:
+	jmp SOME_LABEL
+
+JNE label (JNZ)
+---------
+Use this after cmp. Works like its asm counterpart.
+Example:
+	jne SOME_LABEL
+
+KEY vkcode [, shift [, ctrl]]
+--------------------------
+Emulate global keyboard shortcut.
+Example:
+	key 20
+	key 20, 1 //Shift+space
+	key 20, 0, 1 //Ctrl+space
+
+LBL addr, text
+--------------
+Insert a label at the specified address
+Example:
+	lbl eip, "NiceJump"
+
+LC
+--
+Clear Main Log Window
+
+LCLR
+----
+Clear Script Log Window
+
+LEN str
+-------
+Get length of a string
+Example:
+	len "NiceJump"
+	msg $RESULT
+
+LM addr, size, filename
+-----------------------
+Load dump file into memory
+LM is the opposite of the DM command
+Example:
+	;whole file
+	lm 401000, 0, "test.bin"
+	;first 0x100 bytes
+	lm 401000, 100, "test.bin"
+
+LOADLIB dllname
+---------------
+Load a dll into debugged program memory
+Could be useful to set breakpoints on dynamically loaded library
+Returns address of loaded library
+Example:
+	pusha
+	loadlib "user32.dll"
+	popa
+  
+LOG src [,prefix]
+-----------------
+Log src to OllyDbg log window.
+If src is a constant string the string is logged as it is.
+If src is a variable or register its logged with its name.
+You can replace default prefix with the optional second parameter.
+Example:
+	log "Hello world" // The string "Hello world" is logged
+	var x
+	mov x, 10
+	log x // The string "x: 00000010" is logged.
+	log x, "" // The string "00000010" is logged.
+
+LOGBUF var [,linecount [,separator]]
+------------------------------------
+Logs a string or buffer like a memory dump, useful for long data
+
+MOV dest, src [,size]
+---------------------
+Move src to dest.
+Src can be a long hex string in the format #<some hex numbers>#, for example #1234#.
+Remember that the number of digits in the hex string must be even, i.e. 2, 4, 6, 8 etc.
+Example: 
+	mov x, 0F
+	mov y, "Hello world"
+	mov eax, ecx
+	mov [ecx], #00DEAD00BEEF00#
+	mov !CF, 1
+	mov !DF, !PF
+	mov [403000], "Hello world"
+
+MEMCPY dest,src,size
+--------------------
+Copy app. memory from "src" address to "dst" address.
+This function is same as mov [dst],[src],size
+Example: 
+	gma "OLE32",CODEBASE
+	mov base, $RESULT
+	gma "OLE32",CODESIZE
+	mov size, $RESULT
+	alloc size
+	mov dst, $RESULT
+	MEMCPY dst,base,size
+	...
+	free dst
+
+MSG message
+-----------
+Display a message box with specified message
+Example:
+	MSG "Script paused"
+
+MSGYN message
+-------------
+Display a message box with specified message and YES and NO buttons.
+Sets the reserved $RESULT variable to 1 if YES is selected and 0 otherwise.
+Example:
+	MSGYN "Continue?"
+
+MUL op1, op2
+------------
+Sets op1 with op1*op2
+Example:
+	mul op1, 10
+
+NAMES addr
+----------
+Open names Window for module (Like Ctrl + N)
+addr is the module address
+
+NEG op
+------
+Assembly Operation "neg eax"
+
+NOT op
+------
+Assembly Operation "not eax"
+
+OLLY info
+---------
+Get information about ollydbg
+"info" can be :
+	- PID retrieve the Ollydbg Process ID
+	- HWND retrieve the main Ollydbg HWND
+
+Example:
+	OLLY PID
+	mov pid, $RESULT
+	OLLY HWND
+	mov hwnd, $RESULT
+
+OR dest, src
+------------
+ORs src and dest and stores result in dest
+Example: 
+	or x, 0F
+	or eax, x
+	or [401000], 5
+
+OPCODE addr
+-----------
+OPCODE set the $RESULT variable to the opcode bytes, $RESULT_1 variable to mnemonic opcode (i.e. "MOV ECX,EAX") 
+and $RESULT_2 to the length of the opcode. 
+If an invalid opcode appears, $RESULT_2 should be 0. 
+addr is increased by the length of the opcode (disassemble command). 
+With this function you can step forward through code. 
+Example: 
+	opcode 00401000
+
+OPENDUMP addr [,base,size]
+--------------------------
+Create a new Dump Window with data at address.
+$RESULT is the HWND of the new window, for future use (backup purpose)
+
+OPENTRACE
+---------
+Opens run trace window
+
+PAUSE
+-----
+Pauses script execution. Script can be resumed from plugin menu.
+Example:
+	pause
+
+POP dw
+------
+Retrieve dword from stack
+
+POPA
+-----
+RESTORE all registers from plugin memory (saved with PUSHA)
+
+PREOP addr
+----------
+Get asm command line address just before specified address.
+Attention: Will not give real executed command eip before the jump.
+Example:
+	preop eip
+
+PUSH dw
+-------
+Add dword to stack
+
+PUSHA
+-----
+Save all register in plugin memory (to be restored by POPA)
+Stack is not used by this command
+
+RBP [arg1]
+----------
+Restore Break Points
+arg1 = may be STRICT or nothing
+Restores all hardware and software breakpoints
+if arg1 == 'STRICT', all soft bp set by script will be deleted and only those 
+have been set before it runs will be restored.
+If no argument set, previous soft bp will be appended to those set by script
+Return in:
+ - $RESULT number of restored swbp
+ - $RESULT_1 number of restored hwbp
+Example:
+	rbp
+	rbp STRICT
+
+
+READSTR str, len
+----------------
+Copy len chars of str into $RESULT
+
+
+REF addr, [LOCATION]
+--------------------
+REF addr works as "Find references to .. Selected command" and "Find references", Ctrl R, in OllyDbg.
+Search LOCATION could be the MEMORY block (default), CODE of module, or whole MODULE
+$RESULT variable is set to the first reference addr 
+$RESULT_1 to the opcode (text asm command) 
+$RESULT_2 to the comment (like reference window). 
+Repeat "REF addr" until $RESULT=0 to get next refs
+REF value counter is reset when addr changes or forced with addr = 0
+Example:
+	REF 0 // RESET REF
+	continue:
+		REF eip,CODE
+		log $RESULT
+		log $RESULT_1
+		log $RESULT_2
+	cmp $RESULT,0
+	jne continue
+
+
+REFRESH
+-------
+to redraw memory map, module, and disasm windows
+(add in version 1.60)
+
+
+RESET
+-----
+Reloads target (same as Ctrl+F2 in ollydbg)
+
+
+REPL addr, find, repl, len
+--------------------------
+Replace "find" with "repl" starting at "addr" for "len" bytes.
+Wildcards are allowed
+Example:
+	repl eip, #6a00#, #6b00#, 10
+	repl eip, #??00#, #??01#, 10
+	repl 401000, #41#, #90#, 1F
+
+RET
+---
+Exits script or return from CALL.
+Example:
+	ret
+
+REV what
+--------
+Reverse dword bytes.
+Example:
+	rev 01020304
+	//$RESULT = 04030201
+
+ROL op, count
+-------------
+Assembly Operation "rol eax, cl"
+save in the target (first) operand.
+
+ROR op, count
+-------------
+Assembly Operation "ror eax, cl"
+Example:
+	mov x, 00000010
+	ROR x, 8 
+
+RTR
+---
+Executes "Run to return" in OllyDbg, [Ctrl+F9] operation.
+Example:
+	rtr
+
+RTU
+---
+Executes "Run to user code" in OllyDbg, [Alt+F9] operation.
+Example:
+	rtu
+
+RUN
+---
+Executes F9 in OllyDbg, you can also use ERUN to ignore exceptions
+Example:
+	run
+
+SBP 
+---
+Store Break Points
+stores all hardware and software breakpoints, to be restored with RBP
+return in:
+ - $RESULT number of stored swbp
+ - $RESULT_1 number of stored hwbp
+
+SCMP dest, src [,size]
+----------------------
+Compares strings dest to src. Works like its asm counterpart.
+Example: 
+	cmp x, "KERNEL32.DLL"
+	cmp [eax], "Hello World", 11.
+	je Label
+
+SCMPI dest, src [,size]
+-----------------------
+Compares strings dest to src (case insentitive). Works like its asm counterpart.
+Example: 
+	cmp sVar, "KERNEL32.DLL"
+	cmp [eax], "Hello", 5
+	jne Label
+
+SETOPTION
+---------
+Open the OllyDBG Options Window, to change debugging parameters.
+Script will continue on close.
+
+SHL dest, src
+-------------
+Shifts dest to the left src times and stores the result in dest.
+Example:
+	mov x, 00000010
+	shl x, 8 // x is now 00001000
+
+SHR dest, src
+-------------
+Shifts dest to the right src times and stores the result in dest.
+Example:
+	mov x, 00001000
+	shr x, 8 // x is now 00000010
+
+STEP
+----
+Execute F8 in OllyDbg. Same as STO
+Example:
+	sto
+
+STI
+---
+Execute F7 in OllyDbg. STep Into.
+Example:
+	sti
+
+STO
+---
+Execute F8 in OllyDbg. STep Over. Same as STEP
+Example:
+	sto
+
+STR var
+-------
+Converts variable to a String (buffer or dword)
+
+SUB dest, src
+-------------
+Reduce src from dest.
+Example: 
+	sub x, 0F
+	sub eax, x
+	sub [401000], 5
+
+TC
+--
+Cancels run trace in OllyDbg
+Example:
+	tc
+
+TEST dest,src
+-------------
+Performs a logical AND of the two operands updating the flags register without saving the result.
+(Modifies Flags: CF OF PF SF ZF (AF undefined))
+
+TI
+--
+Executes "Trace into" in OllyDbg, CTRL-F7 in OllyDbg.
+Example:
+	ti
+
+TICK [var [,reftime]]
+---------------------
+Set variable with script execution time (microsec)
+if reftime parameter is set, set $RESULT with time since reftime.
+if no parameter is set, function set $RESULT with execution time in text, in "<ssss mmm> ms" format
+var is declared automatically.
+Example:
+	tick time
+	msg time		//time since script startup
+	tick time,time	
+	msg $RESULT		//time since last TICK, DWORD value
+
+
+TICND cond
+----------
+Traces into calls until cond is true
+Example:
+	ticnd "eip > 40100A" // will stop when eip > 40100A
+
+TO
+--
+Executes "Trace over" in OllyDbg
+Example:
+	to
+
+TOCND cond
+----------
+Traces over calls until cond is true
+Example:
+	tocnd "eip > 40100A" // will stop when eip > 40100A
+
+UNICODE enable
+--------------
+Set Unicode Mode, not used for the moment
+Example: 
+	UNICODE 1
+	...
+
+VAR
+---
+Declare a variable to be used in the script.
+Example: 
+	var x
+
+XOR dest, src
+-------------
+XORs src and dest and stores result in dest
+Example: 
+	xor x, 0F
+	xor eax, x
+	xor [401000], 5
+
+XCHG dest, src                                 
+--------------
+Exchanges contents of source and destination.         
+
+WRT file, data
+--------------
+Write to file (replace existing one) the only accepted symbol is "\r\n"
+Numbers are wrote as strings... for the moment
+Example: 
+	wrt "out.txt", "Data:\r\nOk\r\n"
+	wrt sFile, ebx
+
+WRTA file, data [, separator]
+-----------------------------
+Append to file, default separator is "\r\n"
+Example: 
+	wrt sFile, "hello world"
+	wrta sFile, ABCD, ""
+	wrta sFile, "Windows CR, "\r\n"
+
+3.2 Labels
+----------
+Labels are defined bu using the label name followed by a colon.
+Example:
+	SOME_LABEL:
+
+3.3 Comments
+------------
+Comments can be put anywhere and have to start with ";" or "//".
+Comment lines starting with ";" will be displayed in script window.
+Block comments between "/*" and "*/"
+
+3.4 Menus
+---------
+The main OllyScript menu consists of the following items:
+- Run script...: lets the user select a script file and starts it
+- Abort: aborts a running script
+- Pause: pauses a running script
+- Resume: resumes a paused script
+- About: shows information about this plugin
+
+3.5 Script Window
+-----------------
+The Script Window was introduced with ODbgScript, it enables you to debug
+and see progression of your script.
+You can set script breakpoints, debug the script, edit variables and also 
+execute commands manually.
+
+
+4. Integration with other plugins
+---------------------------------
+You can call OllyScript from your plugin and make it execute a script.
+Use something like the source code below:
+
+HMODULE hMod = GetModuleHandle("ODbgScript.dll");
+if(hMod) // Check that the other plugin is present and loaded
+{
+	// Get address of exported function
+	int (*pFunc)(char*) = (int (*)(char*)) GetProcAddress(hMod, "ExecuteScript");
+	if(pFunc) // Check that the other plugin exports the correct function
+		pFunc("myscript.txt"); // Execute exported function
+}
+
+DebugScript dll entry is also available.
+
+You can also execute script commands via OllyDBG ODBG_plugincmd() 
+and in Conditional Log Breakpoints.
+
+5. Contact us
+-------------
+To contact us you can post your question in the forum or go on IRC 
+and message Epsylon3 or SHaG on EFnet. 
+
+You can also use Sourceforge.net Forums or Bug Trackers
+
+
+6. License and source code
+--------------------------
+Soon I'm going to armadildo this plugin and charge an awful lot of money
+for it! :P Seriously, you are free to use this plugin and the source code however 
+you see fit. However please name me in your documentation/about box and if 
+the project you need my code for is on a larger scale please also notify 
+me - I am curious.
+
+
+7. Thanks!
+----------
+I'd like to thank all the wonderful people who reported bugs, wrote scripts, came
+with improvement ideas etc. 
+
+R@dier for the great dumping engine.
+
+shERis, nick_name, MetaCore, XanSama, arnix, hila123, bukkake, Human, hnhuqiong,
+SunBeam, LCF AT, Fungus, hnedka, Zool@nder for ideas and bug report on the new ODbgScript
+
+And of course Olly for this great debugger!
+

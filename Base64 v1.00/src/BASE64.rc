@@ -1,0 +1,31 @@
+// Microsoft Visual C++ generated resource script.
+
+#include "winres.h"
+#include "resource.h"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOG1 DIALOGEX 0, 0, 300, 301
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | 
+    WS_SYSMENU
+CAPTION "BASE64"
+FONT 9, "MS UI Gothic", 400, 0, 0x80
+BEGIN
+    CONTROL         "BASE64",IDC_RADIO1,"Button",BS_AUTORADIOBUTTON,11,15,42,
+                    10
+    COMBOBOX        IDC_COMBO1,7,100,286,172,CBS_DROPDOWN | WS_VSCROLL
+    LTEXT           "Start Address:",IDC_STATIC,11,132,48,8,NOT WS_GROUP
+    EDITTEXT        IDC_EDT_TOPADDR,60,129,40,14,ES_RIGHT | ES_AUTOHSCROLL
+    LTEXT           "size:",IDC_STATIC,107,132,14,8,NOT WS_GROUP
+    EDITTEXT        IDC_EDT_NUMBER,122,129,50,14,ES_RIGHT | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    CONTROL         "",IDC_SPIN1,"msctls_updown32",UDS_SETBUDDYINT | 
+                    UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | 
+                    UDS_NOTHOUSANDS,172,129,9,14
+    EDITTEXT        IDC_EDIT1,7,148,286,125,ES_MULTILINE | ES_AUTOVSCROLL | 
+                    ES_AUTOHSCROLL | WS_VSCROLL | WS_HSCROLL
+    PUSHBUTTON      "close",IDCANCEL,243,280,50,14,NOT WS_TABSTOP
+END

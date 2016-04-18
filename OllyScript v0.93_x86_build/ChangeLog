@@ -1,0 +1,18 @@
+
+28th of June, 2006
+------------------
+	
+	> Release of 0.93
+	
+	* Added support for 16/8bits registers
+	
+	* Added new pseudo-opcodes: TEST, NOT, PUSH, POP, LEA, XCHG
+	
+	* Added support to use expressions as an argument
+	
+	* Added support to insert comments to the debugged code on the fly
+	
+10th of July, 2004
+------------------
+	
+	> Release of 0.92 (according to ORIGINAL_README.TXT)

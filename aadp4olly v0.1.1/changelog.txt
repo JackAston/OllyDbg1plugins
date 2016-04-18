@@ -1,0 +1,10 @@
+v0.1.1
+--
+
+- Fixed a bug reported by marciano: when you close the window's plugin from the X the Ollydbg's window is not restored.
+
+
+v0.1 (10/11/2010)
+--
+
+- First stable version :)

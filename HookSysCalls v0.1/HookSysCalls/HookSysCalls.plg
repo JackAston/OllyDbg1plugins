@@ -1,0 +1,30 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: HookSysCalls - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating command line "rc.exe /l 0x409 /fo"Debug/Script1.res" /d "_DEBUG" "F:\compilers\microsoft visual studio\MyProjects\HookSysCalls\Script1.rc"" 
+Creating temporary file "C:\Users\ADMINI~1\AppData\Local\Temp\RSP9018.tmp" with contents
+[
+kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ntdll.lib ollydbg.lib /nologo /entry:"Dllmain" /dll /incremental:no /pdb:"Debug/HookSysCalls.pdb" /machine:I386 /nodefaultlib /out:"Debug/HookSysCalls.dll" /implib:"Debug/HookSysCalls.lib" /pdbtype:sept 
+".\Debug\HookSysCalls.obj"
+".\Debug\StdAfx.obj"
+".\Debug\Script1.res"
+]
+Creating command line "link.exe @C:\Users\ADMINI~1\AppData\Local\Temp\RSP9018.tmp"
+<h3>Output Window</h3>
+Compiling resources...
+Linking...
+LINK : warning LNK4075: ignoring /EDITANDCONTINUE due to /INCREMENTAL:NO specification
+   Creating library Debug/HookSysCalls.lib and object Debug/HookSysCalls.exp
+
+
+
+<h3>Results</h3>
+HookSysCalls.dll - 0 error(s), 1 warning(s)
+</pre>
+</body>
+</html>

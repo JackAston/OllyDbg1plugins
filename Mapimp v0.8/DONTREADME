@@ -1,0 +1,136 @@
+MAPIMP Plugin version 0.8
+by takerZ
+tPORt, 2009-2010
+
+• What is this?
+This is an OllyDbg plugin which will help you to import
+map files exported by IDA, Dede, IDR, Microsoft and Borland
+linkers
+
+• Why?
+There are many plugins using which you can perform similar
+actions, but mapimp:
+- Recognizes debugged file segments and applies names correctly
+- Has an option to overwrite or skip names that intersect already defined
+- Has a filter option which gives you great name demangling potential
+- Works fast (but who cares nowadays, right?)
+
+• How to install?
+If you ask this question you probably don't need this software
+
+• How to use?
+"Import map" menu item guides you to the file pick dialog. Pick the map
+file you want to import and be happy
+"Options" menu item guides you to the options dialog (thank you, captain Obvious)
+
+- Import objects
+There are two objects you can import: comments and labels. Nothing interesting here
+
+- Collisions
+Check "Skip if collision" to protect already defined names from being overwritten.
+Check "Overwrite" otherwise
+
+- Apply names to
+Check "Viewed module" to apply names to module you are currently viewing in a disassembler
+window. It is useful if you want to work with the library which is linked to your debuggee.
+Check "Debuggee" and whatever EIP you are the names will be applied to the module adequate to
+the file of your debugging session
+
+- If map file found
+When new session starts mapimp searches for DEBUGGEE_FILE_PATH\DEBUGGEE_FILE_NAME.MAP
+and proposes to load it right away. Of course not everyone want to see the annoing message
+so the feature is optional
+
+- Filter
+The main idea is to apply series of masks to every single name loaded. Mask syntax goes as follows:
+
+/key[/]regex
+
+Key "c" cuts the matched substring selected by regular expression
+
+[SAMPLE]
+name:     System::__linkproc__ GetMem(int)
+mask:     /c__linkproc__ 
+applied:  System::GetMem(int)
+[/SAMPLE]
+
+Key "s" skips the name if regular expression succeeds. It may be useful if you 
+want to skip some dummy or incorrect names
+
+[SAMPLE]
+name:     unknown_libname_2519
+mask:     /sunknown_libname_
+applied:
+[/SAMPLE]
+
+Key "r" replaces the substring selected by regular expression with your own
+
+/rsubstring/regex
+
+As you can see slash character delims your substring from the regular expression.
+Use double slash to define slash as a character of your substring
+
+[SAMPLE]
+name:     System@Function(System@AnsiString;System@AnsiString)
+mask:     /rsys::/System@
+applied:  sys::Function(sys::AnsiString;sys::AnsiString)
+
+name:     System@Function(System@AnsiString;System@AnsiString)
+mask:     /r//_/@
+applied:  System/_Function(System/_AnsiString;System/_AnsiString)
+[/SAMPLE]
+
+Remember that if the name met mask condition it will be changed, then the
+second mask is applied to the changed name and so on. The order of mask applying
+is adequate to the order of appearance in the list
+
+As about regular expressions, the plugin uses pcre library which syntax is
+compatible with perl regular expressions. Check http://www.pcre.org for docs and
+sources
+
+For adding, editing and other actions you can perform with masks use mask manager's 
+context menu
+
+Before being processed by mask filter names may be demangled. Microsoft and
+Borland mangling schemes are supported and only names are undecorated. If map
+file contains already demangled names the feature is ignored. Check "Demangle names"
+to enable
+
+• Keyboard shortcuts
+Since version 0.3 keyboard shortcuts are availible
+
+- From OllyDbg main window
+Ctrl + Shift + I    Import map file
+Ctrl + Shift + M    Options
+
+- From mapimp options window
+Ctrl + A       Add new mask
+Ctrl + I       Insert new mask
+Ctrl + E       Edit mask
+Ctrl + S       Save mask list
+Ctrl + L       Load mask list
+Ctrl + Up      Move mask upwards
+Ctrl + Down    Move mask downwards
+Ctrl + PgUp    Move mask to the beginning
+Ctrl + PgDown  Move mask to the end
+Enter          Apply
+Esc            Cancel
+
+Also window control accelerator is availible. Use Alt + underscored letter to interact
+
+• How to compile?
+To compile the plugin by yourself you need pcre library sources and OllyDbg PDK 1.10.
+For how to compile pcre library on win32 refer to the document called "NON-UNIX-USE" from
+pcre sources package. "BUILDING PCRE ON WINDOWS WITH CMAKE" paragraph contains step-by-step
+guide up to what button should you press next. When you get all libs pile them near the
+plugin's source files, create a project using your favourite ide (i've used msvc 8), configure
+the compiler for best output's performance, press build button and be happy
+
+• Contacts
+If you found a bug or you have some suggestions, please, let me know.
+But don't even try to ask me for missing libs or units. They could easily
+be found on the web
+email: push.ret@gmail.com
+
+• Crazy exclamation
+Enter and compile, in a place we are the force!!

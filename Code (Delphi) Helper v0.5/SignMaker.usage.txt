@@ -1,0 +1,16 @@
+Open DeDe, load a delphi program and analysis.
+1) Copy function declare to first Edit. (Delete '* Reference to: ' or other string in front.)
+2) Copy all the codes into Memo.
+3) Click "strim none addr line".
+4) Click "strim addr".
+5) Click "replace addr after E8/E9/A1".
+6) If there are codes like push $00402568/6868254000,
+   Click "Copy" to Copy "::::::::",
+   than replace "6868254000" to "68::::::::" using ctrl+v.
+   And replace all other addresses in machine codes with "::::::::".
+7) Click "strim after machine code".
+8) Click "get machine code".
+9) Click "Make and Copy Sign".
+10) Now the sign is in clipboard and third Edit.
+
+hehe, a little complex, but more faster than handwork.

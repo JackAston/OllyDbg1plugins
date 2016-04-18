@@ -1,0 +1,49 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: ODDragAttach - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating command line "rc.exe /l 0x804 /fo"Release/cursor.res" /d "NDEBUG" "E:\MyProjects\ODDragAttach\src\cursor.rc"" 
+Creating temporary file "J:\tmp\tmp\RSP61.tmp" with contents
+[
+/nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "ODDRAGATTACH_EXPORTS" /Fp"Release/ODDragAttach.pch" /Yu"stdafx.h" /Fo"Release/" /Fd"Release/" /J /FD /c 
+"E:\MyProjects\ODDragAttach\src\ODDragAttach.cpp"
+"E:\MyProjects\ODDragAttach\src\wndfrompoint.cpp"
+]
+Creating command line "cl.exe @J:\tmp\tmp\RSP61.tmp" 
+Creating temporary file "J:\tmp\tmp\RSP62.tmp" with contents
+[
+/nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "ODDRAGATTACH_EXPORTS" /Fp"Release/ODDragAttach.pch" /Yc"stdafx.h" /Fo"Release/" /Fd"Release/" /J /FD /c 
+"E:\MyProjects\ODDragAttach\src\StdAfx.cpp"
+]
+Creating command line "cl.exe @J:\tmp\tmp\RSP62.tmp" 
+Creating temporary file "J:\tmp\tmp\RSP63.tmp" with contents
+[
+kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /incremental:no /pdb:"Release/ODDragAttach.pdb" /machine:I386 /out:"E:\Tools\OllyICE\plugin/ODDragAttach.dll" /implib:"Release/ODDragAttach.lib" 
+.\Release\ODDragAttach.obj
+.\Release\StdAfx.obj
+.\Release\wndfrompoint.obj
+.\Release\cursor.res
+]
+Creating command line "link.exe @J:\tmp\tmp\RSP63.tmp"
+<h3>Output Window</h3>
+Compiling resources...
+Compiling...
+StdAfx.cpp
+Compiling...
+ODDragAttach.cpp
+wndfrompoint.cpp
+Generating Code...
+Linking...
+   Creating library Release/ODDragAttach.lib and object Release/ODDragAttach.exp
+
+
+
+<h3>Results</h3>
+ODDragAttach.dll - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

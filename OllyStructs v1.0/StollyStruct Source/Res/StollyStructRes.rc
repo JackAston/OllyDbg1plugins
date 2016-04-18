@@ -1,0 +1,2 @@
+#define IMG_ABOUT						6000
+IMG_ABOUT				BITMAP    DISCARDABLE "bs.bmp"

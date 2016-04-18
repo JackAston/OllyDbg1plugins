@@ -1,0 +1,5 @@
+A library to be injected into the debuggee address space using the InjectHookLib OllyDbg plugin.
+
+Function: It logs all system calls to c:\syscall_log.txt
+
+Target OS: Windows 7 64-bit SP0/SP1.

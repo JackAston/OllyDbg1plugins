@@ -1,0 +1,16 @@
+#define IDD_DLG_ABOUT 3000
+#define IDC_BTN_OK 1003
+#define IDC_STC_ABOUT 1004
+#define IDC_STC3 1002
+#define IDC_STC4 1001
+IDD_DLG_ABOUT DIALOGEX 6,6,131,195
+CAPTION "About"
+FONT 8,"MS Sans Serif",400,0
+STYLE 0x10CC0800
+EXSTYLE 0x00000080
+BEGIN
+  CONTROL "&Cool",IDC_BTN_OK,"Button",0x50010001,36,179,52,13,0x00000000
+  CONTROL "StollyStructs 1.0\r\nHelps to visualise and label datastructures in Olly.\r\n\r\nGreetings fly out to all members of Bl@ck St0rM, SND, Crack Latinos, ARTeam, ICU, BiW and woodman.\r\n\r\n",IDC_STC_ABOUT,"Static",0x50000000,2,75,126,61,0x00000000
+  CONTROL "Coding 4 fun !",IDC_STC3,"Static",0x50000000,2,168,126,8,0x00000000
+  CONTROL "Special greetings go out to Lena151 and Ricardo Narvaja",IDC_STC4,"Static",0x50000000,0,138,130,26,0x00000000
+END

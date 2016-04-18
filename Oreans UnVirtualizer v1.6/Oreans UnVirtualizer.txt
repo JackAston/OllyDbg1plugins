@@ -1,0 +1,82 @@
+Oreans Unvirtualizer ODBG Plug-in
+  by Deathway.
+
+// When CheckMacro dialog appears, remember this values
+// MemRegister
+03	EAX
+13	ECX
+23	EDX
+33	EBX
+43	ESP
+53	EBP
+63	ESI
+73	EDI
+
+// Scale
+0	*0
+1	*2
+2	*4
+3	*8
+
+
+
+[v1.0]
+- First Public Version
+
+[v1.1]
+- Fixed Decode GenV1
+- Added CALL [EBX+ESI+0x234234]
+- Video logs Added
+- Updated OreansJunk.cfg
+
+[v1.2]
+- Fixed Decode MovV1
+- Added REP - REPNE - CMPS - MOVS - LODS - STOS - SCAS Instructions
+- Added CISC-2 Micro-opcodes UnVirtualizer
+- Fixed Decode MovV2
+- OreansJunk.cfg updated
+- OreansAssembler.cfg updated
+- Added Virtual Opcode Mutation Tech
+- Fixed Jcc Jumps leading outside Virtual Machine
+- Fixed Crash on reading Register Handlers
+- Cisc_Vo_Dump.txt is no longer created
+
+[v1.3]
+- Fixed Identifying Some handler variants
+- Added NEG - NOT - BSWAP instructions
+- Updated OreansAssembler
+- Added Options Panel
+- Added Hotkeys
+- Added UnVirtualize With/Without Jumps
+- Fixed DeOfuscation GenV4
+- Added optimization on reading virtual labels
+- Updated references panel
+
+[v1.4]
+- Fixed Cisc - CALL [REG32+IMMC]
+- Fixed Cisc - SHL REG32, IMMC
+- Fixed an issue with odbg when using context menu
+- Added TAB key on windows
+- Added autofill on FindReferences window
+- Risc-64 machine function :)
+- Added OreansAssember_Risc.cfg
+
+[v1.5]
+- Fixed Unvirtualize with Jump on CISC machines
+- Fixed some errors when handling signed constants on RISC
+- Fixed an issue when processing MOVS instrution on CISC machine
+- Fixed some inversion data when processing COMM, REGX, REGX (like XOR EDI,ESI was decoded as XOR ESI,EDI)
+- Fixed a problem when handling AH CH DH BH registers on COMM2 instructions
+- Added MOVSX - MOVZX - XCHG - IMUL - MUL - DIV - IDIV - PUSHFD - POPFD instructions on RISC
+- Added CALL [ESP+IMMC] on Cisc Machine
+- Added support of dump files on RISC machines
+- OreansAssember_Risc.cfg updated
+- DLL Support on CISC and RISC machines
+
+[v1.6]
+- RISC machine re-designed
+- Added RISC V2 machines (new branch tech)
+- Added Pushad-popad instructions on risc machines
+- Fixed some issues with end jump
+- Added new detection for virtual machines
+- Added abort button

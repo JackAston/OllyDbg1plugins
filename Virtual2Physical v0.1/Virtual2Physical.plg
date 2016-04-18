@@ -1,0 +1,38 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: Virtual2Physical - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\Moti\LOCALS~1\Temp\RSP176.tmp" with contents
+[
+/nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "VIRTUAL2PHYSICAL_EXPORTS" /FR"Release/" /Fp"Release/Virtual2Physical.pch" /YX /Fo"Release/" /Fd"Release/" /J /FD /c 
+"D:\Virtual2Physical\olly_main.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\Moti\LOCALS~1\Temp\RSP176.tmp" 
+Creating temporary file "C:\DOCUME~1\Moti\LOCALS~1\Temp\RSP177.tmp" with contents
+[
+kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /incremental:no /pdb:"Release/Virtual2Physical.pdb" /machine:I386 /out:"C:\Tools\odbg110\plugins\Virtual2Physical.dll" /implib:"Release/Virtual2Physical.lib" 
+.\Release\olly_main.obj
+.\Release\V2PMemory.obj
+.\lib\ollydbg.lib
+]
+Creating command line "link.exe @C:\DOCUME~1\Moti\LOCALS~1\Temp\RSP177.tmp"
+<h3>Output Window</h3>
+Compiling...
+olly_main.cpp
+Linking...
+   Creating library Release/Virtual2Physical.lib and object Release/Virtual2Physical.exp
+Creating command line "bscmake.exe /nologo /o"Release/Virtual2Physical.bsc"  .\Release\olly_main.sbr .\Release\V2PMemory.sbr"
+Creating browse info file...
+<h3>Output Window</h3>
+
+
+
+<h3>Results</h3>
+Virtual2Physical.dll - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

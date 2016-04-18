@@ -1,0 +1,80 @@
+LoadSome ;) plugin for OllyDbg 1.10
+v0.1b
+n1kto, 2006
+
+[rusian description is below]
+
+This plugin has one target: load other plugins by groups.
+Today, number of olly plugin is much more than an ollydbg
+loading capabilities. 
+
+How to install
+
+1. Create directory at ollydbg path. 
+2. Copy files 
+3. setup debugger: OllyDbg -> Appearance -> Directories -> Plugin path
+   to this directory
+4. Configure LoadSome
+
+How  it works
+
+Easiest way to sort plugins - put them to many directories
+in olly path, by functional groups (e.g. analize plugins to
+one directory, breakpoint plugins to another, dump plugins to
+the third, unpack to the fourth and so on).
+
+This plugin can be configured for some catalogs, from where
+debugger will load plugins. Our task to sort plugins and
+configure loader.
+
+Configuring is able from OllyDbg -> Plugins -> LoadSome Plugin -> Config plugin paths
+Here you can see list of plugin's directories, from where debugger will load
+plugins at next start. By buttons "Add path" and "Remove path" you can edit list.
+
+As you can see, it is very, very simple :)
+
+This is very early beta, but it works on mine system. Try, it if you want ;)
+Plugin written by Delphi7, using KOL/MCK library. Sources included.
+
+Wbr, n1kto
+
+
+[По русски]
+
+Число плугинов для OllyDbg стремительно растет. Их уже столько, что
+не сразу вспомнишь кто что длает, и загрузка всех сразу выходит за
+пределы ограничений отладчика.
+
+Этот плугин делает простую вещь - позволяет разбить плугины на группы и
+грузить их выборочно. Группы записываются в разные каталоги, а потом в
+ольке вы указываете, какие из них (групп) грузить при следующем старте.
+
+Инсталляция
+
+1. создаем каталог в пути ольки (или где захотим)
+2. копируем туда плугин
+3. в ольке настраиваем: OllyDbg -> Appearance -> Directories -> Plugin path
+   на этот каталог
+4. конфигурируем загрузку
+
+Как оно работает
+
+Простой путь рассортировать плугины - по функциональности. Создаем подкаталоги 
+и разносим по ним плугины по группам (например, в первую - всякий анализ,
+работу с бряками - во вторую, дамперы - в третью, анпакеры в четвертую и тд)
+
+Потом идем в OllyDbg -> Plugins -> LoadSome Plugin -> Config plugin paths
+и настраиваем пути. Там будет список каталогов, из которых будут грузиться плугины
+при следующем старте. Кнопками "Add path" и "Remove path" список можно редактировать.
+
+Перезаходим в ольку и все :)
+
+Да, плугин пока довольно сырой, но у меня работает. Замечены глюки при загрузке 
+плугинов дважды (одинаковых из разных каталогов), сделана поптыка исправить, 
+но все-же, будьте внимательны. Плугин написан на Delphi, версия 7, использовалась
+библиотека KOL/MCK 2.30; исходники прилагаются.
+
+зы. Благодарности Asterix за подсказку про дельфовый OllyDbg PDK. :)
+
+n1kto,
+10/08/2006

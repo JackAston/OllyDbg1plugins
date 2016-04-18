@@ -1,0 +1,4 @@
+LIBRARY walied
+EXPORTS
+ODBG_Plugindata @1
+func @2

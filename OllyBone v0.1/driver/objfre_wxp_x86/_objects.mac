@@ -1,0 +1,24 @@
+MUI_386_OBJECTS=
+
+386_OBJECTS= \
+    $(_OBJ_DIR)\i386\ollybone.obj \
+    $(_OBJ_DIR)\i386\multicpu.obj
+
+MUI_IA64_OBJECTS=
+
+IA64_OBJECTS= \
+    $(_OBJ_DIR)\ia64\ollybone.obj \
+    $(_OBJ_DIR)\ia64\multicpu.obj
+
+MUI_AMD64_OBJECTS=
+
+AMD64_OBJECTS= \
+    $(_OBJ_DIR)\amd64\ollybone.obj \
+    $(_OBJ_DIR)\amd64\multicpu.obj
+
+MUI_ARM_OBJECTS=
+
+ARM_OBJECTS= \
+    $(_OBJ_DIR)\arm\ollybone.obj \
+    $(_OBJ_DIR)\arm\multicpu.obj
+

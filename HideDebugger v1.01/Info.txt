@@ -1,0 +1,29 @@
+--------------------------------------------------------------
+  +  Hide Debugger v1.0.1 by Asterix - plugin for OllyDbg  +
+--------------------------------------------------------------
+
+< Features >
+------------
+This plugin allows to hide debugger from IsDebuggerPresent API
+function.
+
+Works on:
+---------
+NT(may be..., not tested), 2000, XP, Server 2003
+
+< History >
+-----------
+Hide Debugger v1.0.1
+- Code was corrected.
+
+Hide Debugger v1.0
+- Initial Release.
+
+< Notes & Disclaimer >
+----------------------
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY.
+The program was tested, but there may still be bugs (Report to
+me if any).
+
+Coded by Asterix  <a_sterix_44_1@mail.ru>

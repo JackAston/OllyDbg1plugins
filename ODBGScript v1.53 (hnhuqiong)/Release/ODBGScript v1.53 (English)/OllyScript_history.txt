@@ -1,0 +1,1297 @@
+ODbgScript plugin by hnhuqiong
+
+From
+ODbgScript plugin v1.47 by Epsylon3
+OllyScript plugin v0.92 by SHaG
+
+
+-------------------------------------------
+1. About OllyScript
+2. At present situation
+2.1 v1.53 newest renewals
+3. Documents
+3.1 language outlines
+3.1.1 retention variables
+3.1.2 instructions
+3.2 labels
+3.3 annotations
+3.4 menus
+4. Inserts other plug-in units
+5. Difficult analysis
+6. How to contact with me
+7. Special permission and source code
+8. Acknowledge!
+
+-------------------
+
+1. About ODbgScript
+-------------------
+ODbgScript is a OLLYDBG debugger's plug-in unit.I believed that OllyDbg is at present the best procedure level debugger.
+One of this debugger's biggest characteristics is her plug-in unit system, this is enables the user to be able more effective to expand her function.
+ODbgScript is one kind through the kind of assembly language script, controls the OllyDbg automatic movement the plug-in unit.
+When debugging routine, is frequently for must find several key points merely, but can not but do the massive repetition works. 
+But through uses my script interpreter, you may achieve “write one time the script, infinite use” 
+
+ODbgScript the relative OllyScript biggest promotion was you had a script debugging movement window, you could the very good control script and the observation
+The script running status, in the ODbgScript debugging window, you may the single step your script, be possible to carry out the script order manually, may in you
+Script high and low break point, even may adjust your variable value.This debugs your script regarding you to have the help, you may choose the foot in the plug-in unit window
+This movement window, it came out.
+
+ODbgScript also has diary window (LOG), its development also not that consummates, I believe in the near future, it can unfold it formidable for you
+Function.
+
+------------------------------
+
+2. At present situation (on May 2, 2007)
+----------------------------
+V1.48-
+2006-5-20 start, ODbgScript carries on the localization by hnhuqiong in the Epsylon3 opening source code's foundation as well as continues to promote.
+
+v1.0-v1.47
+OllyScript turns ODbgScript, has the new graphical interface, from 2005-11-4 starts by Epsylon3 to inherit SHaG to continue to develop.
+(unknown reason after 2006-2-6 Epsylon3 has not been OllyScript carries on new promotion.)
+
+v0.92
+The OllyScript present under load capacity already surpassed 10,000 times!This meant surpasses 2Gb under the network the current-carrying capacity.This result is also for me good!
+Because I must participate in a xray system project, this project needs to spend to go to my many time, therefore developed this plug-in unit's step to slow down possibly.
+Was unfair to everybody really.
+(on July 10, 2004 SHaG gave up basically to the OllyScript development, but he opened his source code.)
+
+
+2.1 newest renewals (+:Increases the function *:BUG revision -:Removes the function #:Test function)
+
+V1.53(2007/05/03)
++ pop, push, test, xchg order
++ findcmds (lookup command sequence)
+* replacement official PLUGIN translates, eliminates DBH, DBS BUG
+* the guidance/carries out the script order disorder significant BUG repair (interior to quote NRU and the MRU confusion), this BUG puzzled me to be very long
+ The first edition has had this BUG, before not too pays attention, recently debugged many only then decides to solve this problem.
+
+
+V1.52
+# Chinese showed that has made the large-scale supplement and the order explanation as well as the example
+# for the compatible before edition's script, has removed the kind of C instruction character.
+after # increased asmtxt (adjusted text asm document assembly, has read in assigns address, the asm document not to support a jmp kind of assembly)
++ increased the bpx, bpd function (next, forbids to transfer function break point);
++ increased the opentrace function (to open track)
++ increased the setoption function (to adjust establishment menu)
++ increased the GAPI function (judgment to assign address API)
++ increased the READSTR function (to read address middle finger sizing string of character)
++ supports 16 registers (ax, bx…)
++ find orders the comprehensive promotion, may support the variable and the stored data as well as the string of character directly, and supports the hunting zone
++ findop orders the comprehensive promotion, may support the variable and the stored data directly, and supports the hunting zone
++ increased the findcmd function (lookup command);
+* revision edition variable quantity cannot be bigger than 50 questions
+* var BUG revision  
+* the GN function revises, in order to with the GAPI difference
+* the GCMT wrong revision (thanks VOLX the BUG report)
+* revises the ASM assembly code according to the most superior schema proccessing, same (thanks liuyilin with the OD assembly processing assembly the BUG report)
+* some procedure interior Bug adjustment
+
+v1.51 
+* built-in function (getFLTOperatorPos) significant BUG revises (thanks FLY, xxxx the BUG report)
+
+v1.50 release
+* an quotation api wrong revision
+* len wrong revision
+* some small mistakes
++ the increase double-clicks the Gao Liang function in the script window
+
+V1.49
+# the MSG, MSGYN news frame springs returns 0.92 edition of pattern
+# increases the NEG, NOT, ROL, ROR order
+# (interior increases the GetBYTEOpValue function)
++ the script movement window increases moves to the cursor place menu function (F4)
++ GMI increases DATABASE, RESBASE, RESSIZE the operand
++ MUL, DIV order
+* revision localization inaccurate question
+* revises the MOV buffer collapse question
+* revises exec/ende not to release the memory question
+* revises some small questions
+* revises in the asm instruction the mistake
+* revises in exec/ende the mistake (script_pos counting mistake, ende is jumped over execution)
+
+v1.48bata (2006-5-20)
+# MUL, DIV order
+# the script movement window increases moves to the cursor place menu function (F4)
+# localization
+# suitable increased some pre-interpret sentence, prevents the user to create the collapse wrongly
+* revises BPWM the question
+* revises some string of character definition mistake
+* revises some functions statement wrong (CreateOperands==)
+* the revision buffer is too small, creates the OD collapse.
+- on an edition development's function has not removed from the kind (LogRegNr, Process)
+
+3. Documents
+----------------
+In this edition, has supplemented two script examples (tElock098.osc and UPX.osc). 
+These two scripts, may find the corresponding shell rapidly the entrance.
+
+
+3.1 languages
+------------
+The OllyScript script language is a type assembly language.You use it to control ODbgScript and the script operation.
+
+In the following documents, “the source operand” and “the goal operand” expresses the following meaning:
+- hexadecimal system constant, also does not have the prefix also not to have the suffix. (e.g.:Is 00FF, but is not 0x00FF and the 00FFh form)
+  Decimal base constant, in suffix dot. (e.g.:100. 128. May also be the floating number 128.56, the floating number can retain decimal point latter 2 only)
+- the variable, this variable must carry on the definition before the use with Var
+- 32 registers (EAX, EBX, ECX, EDX, ESI, EDI, EBP, ESP, EIP).
+  16 registers (AX, BX, CX, DX, SI, DI, BP, SP)
+  8 registers (AL, AH,… DL, DH)
+- memory address which includes by the parenthesis (e.g.:the [401000] direction memory address is 401000 miles deposits divides the data, 
+  the [ecx] direction memory address deposits for register ecx in divides the data).
+- a flag bit, has the exclamation mark prefix (!CF!PF!AF!ZF!SF!DF!OF)
+- string of character, may also be called the data series.Its form is: #6A0000# (value in two “#” between), two “#” between must contain has a value at least.
+                                  “1234567ABCDEF”
+- contains “?”Wildcard character string of character.For instance #6A??00# or #6?0000#
+
+3.1.1 retention variables
+------------------------
+
+$RESULT
+-------
+<RESULT>
+Preserves certain functions the returns value, for instance FIND function, and so on.
+In the ODbgScript script debugging window, you can observe its transformation, and may revise it.
+
+
+$VERSION
+--------
+<VERSION>
+The ODBGScript edition information, entire is system retention variable.
+Example:
+cmp $VERSION, “1.47” // compares whether to be bigger than 1.47 editions
+ja version_above_147  
+
+
+3.1.2 instructions
+--------------
+
+#INC “filename”  
+---------
+
+A script document contains other script.Likely transfers in the subroutine same 0.2 scripts the variable name not to be able to be the same.
+Example:
+#inc “test.txt”     
+
+
+#LOG
+----
+Starts the record movement instruction
+The instruction will demonstrate that in the OllyDbg log window, before each record, can add on “-->” prefix
+Example:
+#log
+
+ADD goal operand, source operand
+-------------
+<ADD>
+The source operand and goal operand adding together, and preserves the additive result in the goal operand, supports string of character adding together.
+Example: 
+add x, 0F // x=x+F
+add eax, x //eax =eax+x
+add [401000], 5 // [401000]=[401000]+5
+Floating number adding together
+add x,16.50 //x =x+16.50
+(string of character adding together)
+add y, “times” //, if before next best y= " 1000”, after carrying out this instruction y= " 1000 times”
+
+
+AI
+--
+<Animate Into>
+Carries out in OllyDbg “marches into [Animate into] to operate automatically”.
+Is equal in presses down CTRL+F7 in OllyDbg
+Example:
+ai
+
+ALLOC size
+----------
+The application memory, you can read/write/the execution.
+Example:
+  the alloc 1000 // new application memory, the size is 1000, returns result $RESULT puts the memory which applies to start the address.
+	free $RESULT, 1000
+
+AN address
+-------
+<Analyze>
+From assigns the address place, carries on the analysis to the code.
+Example:
+the eip // is equal in presses the Ctrl+A key in OllyDbg
+
+
+AND goal operand, source operand
+-------------
+<AND>
+The source operand and the goal operand carry on logic and the operation, and finally will preserve in the goal operand.
+Example: 
+and x, 0F //x =x&&f
+and eax, x //eax =eax&&x
+and [401000], 5 // [401000]=[401000]&&5
+
+
+AO
+--
+<Animate Over>
+Carries out “the automatic step” in OllyDbg [Animate over] to operate.
+Is equal in presses down CTRL+F8 in OllyDbg
+Example:
+ao
+
+ASK question
+------------
+<ASK>
+Demonstrated that a prompt input frame, lets the user input, in result preservation variable $RESULT (, if user pressed has cancelled key, then $RESULT=0).
+in $RESULT_1 is putting the length which inputs.
+(note:The procedure will interpret you to input will be the character, the $RESULT_1 result is the input character number number, the trueing /2, Chinese counts *2)
+Example:
+ask "Enter new EIP"
+cmp $RESULT, 0
+je cancel_pressed
+mov eip, $RESULT
+
+
+ASM address, instruction
+-----------------
+<ASseMble>
+The revision assigns the address the instruction.
+After and will revise the assembly directive length preserves in retention variable $RESULT
+Example:
+asm eip, “mov eax, ecx” // the current instruction modification is mov eax, ecx
+
+ASMTXT document 
+-----------------
+<ASseMble>
+The assembly assigns in the document the instruction.
+The assembly directive length will preserve in retention variable $RESULT
+And the assembly directive number of lines will preserve in retention variable $RESULT_1
+Example:
+asmtxt EIP, after “myasm.txt” // transfers in myasm.txt document asm opcode, reads in EIP.
+
+
+ATOI str [, base=16.]
+-----------------
+The transformation string of character to 16 enters the system trueing, [may any enter system to transfer 16 to enter system trueing]
+The returns result puts $RESULT 
+Example:
+	itoa “F” // string of character " F " will transfer the trueing, the result will have been equal to F
+	itoa “10”, 10.   // string of character " 10 " will represent the decimal base, the result will be equal to A
+
+BC address
+-------
+<BreakPoint Clear>
+The elimination assigns the address the break point.
+Example:
+the bc 401000 // eliminates 401000 break points
+the bc x // eliminates X (variable value) place break point
+bc the eip // eliminates the current EIP place break point
+
+BP addr
+--------
+<BreakPoint>
+Is assigning the address to suppose the break point
+Example:
+bp 401000 // in 401000 under break points
+bp x // in X (variable value) place under break point 
+bp eip // under the current EIP place break point
+
+BPCND address, condition
+----------------
+<BreakPoint on CoNDition>
+Is assigning the address place, establishment condition break point.
+Example:
+bpcnd 401000, “ECX==1” //, when the code carries out to 401000, and ecx is equal to time 1, program suspension
+
+BPD function string of character
+---------------
+Elimination transfer function break point, function for string of character expression.
+
+Example:
+bpd “GetVersion” // cancels calls GetVersion the break point
+
+BPHWC address
+----------
+<BreakPoint HardWare Clear>
+The deletion assigns the address place hardware break point.
+Example:
+the bphwc 401000 // eliminates 401000 break points
+
+BPHWCALL
+-----------
+Eliminates all hardware break point
+Example:
+The BPHWCALL // eliminates all hardware break point
+
+BPHWS address, pattern
+----------------
+<BreakPoint HardWare Set>
+Is assigning the address, establishes the hardware break point.Has three kind of patterns: “r” - the read, “w” - reads in or “x” - the execution.
+This break point supports 1 byte only the movement.
+Example:
+bphws 401000, “x” //, when carries out this address has the interrupt.
+Bphws 401000, “r” //, when reads 401000 time, the transmission interrupts
+
+BPL address, expression
+--------------
+<BreakPoint of Logging>
+In assigns the address place establishment record break point, in expression object record record window.
+Example:
+bpl 401000, “eax” // each time carries out to 401000:00, eax register's object record
+
+BPLCND address, expression, condition
+-----------------------
+<BreakPoint of Logging on CoNDition>
+In assigns the address place establishment record break point, if the condition is a true time, in expression object record record window.
+Example:
+bplcnd 401000, “eax”, “eax > 1” //, if carries out to 401000:00, satisfies eax>1, eax register's object record
+
+BPMC
+----
+<BreakPoint Memory Clear>
+Elimination memory break point.
+Example:
+bpmc
+
+BPRM address, size
+---------------
+<BreakPoint on Read Memory>
+Is assigning the address place, establishes a memory to read the break point. “the size” is refers to in the memory the byte size.
+Example:
+bprm 401000, the FF // in 401000 establishment memories reads the break point, in the memory size is FF
+
+BPWM address, size
+---------------
+<BreakPoint on Write Memory>
+Is assigning the address place, establishes a memory to read in the break point.“the size” is refers to in the memory the byte size.
+Example:
+bpwm 401000, the FF // in 401000 establishment memories writes the break point, in the memory size is FF
+
+
+BPX function string of character
+---------------
+Establishment transfer function break point, function for string of character expression.
+The returns has gotten down the break point address quantity, the result preservation in retention variable $RESULT.
+Example:
+bpx “GetVersion” under // calls the GetVersion break point, breaks the sentence is call [xxxxx]
+
+
+CMP goal operand, source operand
+-------------
+<CoMPare>
+Compared with goal operand and source operand size, with its corresponding assembly directive behave identically.
+May be each kind of value, even may be the string of character (to size insensitive).
+Example: 
+cmp y, x // compares two variables (Y and X) size,
+cmp eip, 401000 // compares EIP and 401000 sizes
+
+CMT address, string of character
+--------------
+<CoMmenT>
+Is assigning the address place, joins the annotation.
+Example:
+cmt eip, “this is the entrance” the // current address place adds on “this is the entrance” the annotation
+
+COB
+---
+<Continue On Breakpoint>
+After having the interrupt, lets the script continue to carry out (the detachment EOB instruction)
+Example:
+COB
+
+COE
+---
+<Continue On Exception> (detachment EOE instruction)
+After occurring exceptionally, lets the script continue to carry out
+Example:
+COE
+
+DBH
+---
+<DeBugger Hided> 
+Hides the debugger
+Example:
+dbh
+
+DBS
+---
+<DeBugger Show>
+Carries on the restoration to the hideaway debugger operation, no longer hides.
+Example:
+dbs
+
+DEC variable
+-------
+<DECrement by 1>
+Carries on to the variable reduces an operation
+Example:
+dec v //V =V-1
+
+DIV goal operand, source operand
+-------------
+<div>
+The source operand and the goal operand carry on the division operation, and finally will preserve in the goal operand.
+Example: 
+div x, 0F //X =X/0F
+div eax, x //eax =eax/x
+div [401000], 5 // [401000]/5
+
+DM address, size, filename
+-------------------
+<Dump Memory>
+From assigns the address place start, withdraws in the memory assigns the size the data, and preserves in the document which assigns
+Example:
+dm 401000, 1F, “c:\dump.bin”
+
+DMA address, size, filename
+-------------------
+<Dump Memory Appended>
+From assigns the address place start, withdraws in the memory assigns the size the data, and preserves in the document which assigns;Like
+The fruit assigns the document to exist, supplements the data to assigns the document rear part.
+Example:
+dma 401000, 1F, “c:\dump.bin”
+
+DPE filename, entrance
+----------------
+<Dump Process with Entry point>
+The extraction executive module to assigns in the document.
+“the entrance” uses for to establish the entry point address.
+This order uses for to capture the document, quite easy to use, because has used the OD formidable memory management function directly.
+Example:
+dpe “c:\test.exe”, the eip // entrance is the current address, the preservation is under the C plate test.exe
+
+EOB label
+---------
+<Execution On Breakpoint>
+When the next time interrupt occurs, skips to assigns the label place.
+This function and the EOE order let the novice puzzle frequently, is actually meets the interrupt to make the script the flow to change.
+If could not have, please look that as follows the Q/A dispels doubt the chapter.
+Example:
+eob SOME_LABEL
+
+EOE label
+---------
+<Execution On Exception>
+When exceptionally will occur next time, skips to assigns the label place.
+Example:
+eoe SOME_LABEL
+
+ESTI
+----
+<Exception STep Into>
+Is equal in OllyDbg according to SHIFT-F7.
+Example:
+esti
+
+ESTO
+----
+<Exception STep cOntinue>
+Is equal in OllyDbg according to SHIFT-F9.
+Example:
+esto
+
+
+EVAL 
+----
+<EVALuate>
+Computation meaning variable expression.
+The variable must already state in the script.
+Attention:When inserts to the string of character, must place the brace {}.
+Result preservation in retention variable $RESULT.
+This and other sentence union will have many changes, will let your script with it be very nimble.
+Example:
+var x
+mov x, 1000
+after eval “x value is {x}” // carries out, $RESULT is “x value is 00001000”
+
+
+EXEC/ENDE
+---------
+<EXECute/END of Execute>
+To the current debugging advancement, carries out between EXEC and the ENDE instruction.
+Has this order is you may plunge into the advancement directly, carries on the positive governing to the advancement.
+Its principle is takes the current advancement the information to carry on the preservation, then assigns a code memory area (to be possible newly to read/writes/the execution.Size 1000)
+Transfers the OD assembler to transfer yours assembly statement OPcode, the OPcode copy to the code area, then aims at EIP your code opening.
+Then gives the domination you.After carrying out, returns to position EIP, then returns the domination ODbgScript.
+Here advantage is lets you avoid by the very high efficiency in the slow script environment movement needing the highly effective operation.
+!Attention:Because the advancement domination gave you, that your code validity only then you will control.
+!Attention:After the execution, does not preserve the scene.This needs you to do the work.(must preserve the scene, you may use pushad, popad)
+Has the brace, by the brace in variable value substitution.
+Example:
+below // makes the motion operation
+var x
+var y
+mov x, “eax”
+mov y, “0DEADBEEF”
+exec
+mov {x},{y} // to advancement in newly opened code area, mov eax,0DEADBEEF will be carried out
+mov ecx, {x} //mov ecx, eax will be carried out
+ende
+below // is transfers the debugging routine the ExitProcess function
+exec
+push 0
+call ExitProcess
+ende
+ret
+
+FILL addr, len, value
+-------------------------
+Starts from address addr to fill the length is len value value
+!Note:the value value is biggest 8 bytes, may be the register value, the flag bit value, the variable value, 16 enters the system value, 10 enters the system value, [] indicator operand.
+For example:
+fill 401000,10,90 //NOP 10h byte
+fill the 401000, ff,[eax] // takes out the [eax] value, fills to 401000, the length is ff
+fill the 401000, ff,$RESULT // fills the variable $RESULT value to 401000, the length is ff
+
+FIND address, find what, [greatest size]
+---------------
+<FIND>
+From assigns the address to start the content which searches in the memory assigns.
+If searches successfully, the address will preserve in retention variable $RESULT, otherwise $RESULT will be equal to 0.
+Search string support wildcard character “??”(sees the following example).
+in ## is HEX, in "" is the string of character, anything does not bring is the stored data
+!Note:The input 16 enters the system character to becomes the even number
+    Starts from 1.52 editions to support the direct variable and the data search.
+Example:
+find eip, the #6A00E8# // searches Call, its first parameter is 0 (push 0)
+find eip, #6A??The E8# // searches a belt parameter Call?On behalf of a character constant
+find eip, “kernel32.dll” // search string of character " kernel32.dll "
+find eip, “ker???32.d??”  // search belt wildcard character?String of character?On behalf of a string of character constant
+                           (please note here wildcard character?With HEX in?Different)
+
+find eip,15ff // search stored data 15ff (code is ff115)
+(mov tmp,#ff15#
+ find eip, tmp) in // search variable tmp value, tmp=ff15
+(mov tmp, “kernel32.dll”
+find eip, tmp) in // search variable tmp string of character " kernel32.dll "
+(mov tmp,15ff
+ find eip, tmp in // search variable tmp stored data 15ff (attention and #ff15# difference)
+(ask “the input needs data”
+find the eip,$RESULT // inputs is #ff15#, “Kernel32.dll”, 15ff with the above three examples
+
+find the eip,#ff15#, ff // starts from EIP, in FF size scope, search character ff15,
+
+
+FINDCMD address, find what
+-----------------
+<FIND command>
+From assigns the address to start to search assigns an order. 
+If searches successfully, the address will preserve in retention variable $RESULT, otherwise $RESULT will be equal to 0.
+
+Example:
+findcmd 401000, “push eax” // find “push eax”
+
+
+FINDCMDS address, find what
+-----------------
+<FIND command>
+From assigns the address to start to search assigns the order sequence. 
+If searches successfully, the address will preserve in retention variable $RESULT, otherwise $RESULT will be equal to 0.
+Note:The order sequence division please use;Number (semicolon).
+
+Example:
+findcmd 401000, “push eax;mov eax, edx” // seeks for " push eax and mov eax, edx " the order sequence
+
+
+FINDOP address, find what, [search scope]
+-----------------
+<FIND OPcode>
+From assigns the address to start to search assigns an instruction, this instruction is take assigns the content as to start. 
+If searches successfully, the address will preserve in retention variable $RESULT, otherwise $RESULT will be equal to 0.
+Search string support wildcard character “??”(sees the following example).
+Attention:because findop is the opcode search, does not support the string of character search.
+     findop and the find difference is findop searches must be opcode.
+	 1.52 support direct variables and stored data
+Example:
+findop 401000, #61# // find next POPAD
+findop 401000, #6A??# // find next PUSH of something
+Translator note:
+Contrasts FIND and the FINDDOP difference:
+Address data code
+00401007 B8 3300 MOV EAX, 33
+0040100C 33F6 XOR ESI, ESI
+find 401007, #33# // $RESULT is equal to 401008
+finddop 401007, #33# // $RESULT is equal to 40100C
+
+
+FINDMEM what [, StartAddr]
+--------------------------
+Starts the content from the entire memory which searches in the memory assigns
+If searches successfully, the address will preserve in retention variable $RESULT, otherwise $RESULT will be equal to 0.
+Search string support wildcard character “??”(sees the following example).
+Example:
+	findmem #6A00E8# // find a PUSH 0 followed by some kind of call
+	findmem #6A00E8#, 00400000 // search it after address 00400000
+	
+FREE
+FREE address size
+-----------
+Release memory which applies by ALLOC.
+Example:
+ alloc 1000
+ free $RESULT, 1000
+
+GAPI
+GAPI address
+------------
+Obtains assigns the code place API transfer information
+The API information preserves in retention variable $RESULT.
+If the symbolic name is a API function, then
+$RESULT preserves the API information
+$RESULT_1 preservation link storehouse (for instance kernal32)
+$RESULT_2 preservation symbolic name (for instance ExitProcess).
+$RESULT_3 preservation calling location (for instance call xxxxx)
+Attention:This and the GN difference is GN must aim at the IAT address
+     But GAPI gives the code address to be possible directly to obtain API
+     Also has, if you have gotten down the software break point in here, please first eliminate the break point to use this sentence again, because the software break point revised the code is CC
+	 If here does not eliminate here the software break point, will create this not to be able the very good recognition.
+Example:
+GAPI 401000 (call kernal32.ExitProcess)
+GAPI the EIP // examined whether the current code is API transfers, is not then returns to 0
+
+ 
+GCMT addr
+---------
+Obtains assigns the address place explanation
+
+
+GMEMI addr, info
+----------------
+Obtains assigns the address place memory the information.
+The information may be MEMORYBASE, MEMORYSIZE or MEMORYOWNER
+Example:
+	GMEMI addr, MEMORYBASE // After this $RESULT is the address to the memory base of the memory block to which addr belongs
+
+GMI address, information
+--------------
+<Get Module Info>
+Obtains assigns the address in the module related information.
+“the information” may be module base address [MODULEBASE], module size [MODULESIZE], code section base address [CODEBASE] or code section size [CODESIZE] 
+(if you want in the future edition, to obtain more informations, please contact with me).
+The information will preserve in retention variable $RESULT (, if had not found information, then $RESULT will be equal to 0).
+Example:
+GMI eip, after CODEBASE // this instruction execute, $RESULT is equal to currently in the module code section base address.
+	
+
+GN address
+-------
+<Get Name>
+Obtains assigns the IAT address the symbolic name (for instance to aim at the API function).
+The mark great soldier preserves in retention variable $RESULT.
+If the symbolic name is a API function, then
+$RESULT is a symbolic name
+$RESULT_1 preservation link storehouse (for instance kernal32)
+$RESULT_2 preservation symbolic name (for instance ExitProcess).
+Example:
+gn 450100
+
+GO address
+-------
+<GO>
+Carries out assigns the address place 
+Example:
+go 401005
+
+GPA letter proper name, dynamic link storehouse
+-------------
+<Get Procedure Address>
+In assigns in the dynamic link storehouse, obtains assigns the function the address.
+If searches successfully, the address will preserve in retention variable $RESULT, otherwise $RESULT will be equal to 0.
+When establishes the API function break point, this instruction is effective.
+Example:
+gpa “MessageBoxA”, after “user32.dll” // this instruction execute, $RESULT is equal to function MessageBoxA the address, you may
+Use " bp $RESULT " set breakpoint.
+
+GPI key
+-------------
+Obtains the advancement the information.
+This information may be HPROCESS, PROCESSID, HMAINTHREAD, MAINTHREADID, MAINBASE, PROCESSNAME, EXEFILENAME, CURRENTDIR, SYSTEMDIR
+
+GPP key
+--------------
+find API parameters number and types
+
+HANDLE x, y, class
+---------------------
+The returns office of destination (16 enters system) the sub-window to assign the kind of sentence handle
+
+
+INC variable
+-------
+<INCrement by 1>
+Carries on to the variable adds an operation
+Example:
+inc v
+
+ITOA n [, base=16.]
+-----------------
+Transforms an integer to the string of character
+The result places $RESULT 
+Example:
+	itoa F
+	itoa 10., 10.
+	
+JA label
+--------
+<Jump if Above>
+After the cmp order uses. With its corresponding assembly directive behave identically.
+Example:
+ja SOME_LABEL
+
+JAE label
+---------
+<jump if Above or Equal>
+cmp. With its corresponding assembly directive behave identically.
+Example:
+jae SOME_LABEL
+
+JB label
+--------
+<Jump if Below>
+After the cmp order uses.  With its corresponding assembly directive behave identically.
+Example:
+jb SOME_LABEL
+
+JBE label
+---------
+<Jump if Below or Equal>
+After the cmp order uses.With its corresponding assembly directive behave identically.
+Example:
+jbe SOME_LABEL
+
+JE label
+--------
+<Jump if Equal>
+After the cmp order uses.  With its corresponding assembly directive behave identically.
+Example:
+je SOME_LABEL
+
+JMP label
+---------
+<JuMP>
+Skips to assigns the label.
+Example:
+jmp SOME_LABEL
+
+JNE label
+---------
+<Jump if Not Equal>
+After the cmp order uses.  With its corresponding assembly directive behave identically.
+Example:
+jne SOME_LABEL
+
+KEY vkcode [, shift [, ctrl]]
+--------------------------
+The simulation presses down the keyboard.
+Example:
+	key 20
+	key 20, 1 //Shift +space
+	key 20, 0, 1 //Ctrl +space
+	
+LBL address, string of character
+--------------
+<LaBel Insert>
+Is assigning an address place insertion label
+Example:
+lbl eip, “NiceJump”
+
+LC
+----
+Cleans up the LOG window
+
+LCLR
+----
+Cleans up Script the Log window
+
+LEN str
+--------------
+Obtains the character string length, finally places $RESULT
+Example:
+	len “NiceJump”
+	msg $RESULT
+	
+LM addr, size, filename
+-------
+Guides the Dm document to enter the memory
+Example:
+  lm 0x401000, 0x100, “test.bin”
+  
+LOG source operand
+-------
+<log>
+Outputs OllyDbg the source operand the record window [log window].
+If the source operand is a string of character constant, then original design record.
+If the source operand is a variable or a register, then record name and depositing value
+Example:
+log “Hello world” // records is “Hello world”
+var x
+mov x, 10
+the log x // records is “x = 00000010” 
+
+MOV goal operand, source operand, biggest byte
+-------------
+<MOV>
+Moves the source operand to the goal operand.
+The source operand may be a hexadecimal system sequence form # some hexadecimal system sequence #, for example:#1234#.
+Reminder:The hexadecimal system sequence's positions long can be the even numbers only, for instance 2, 4, 6, 8 and so on.
+Example: 
+mov x, the 0F // passes to F the variable x
+mov y, “Hello world” // " Hello world " passes to the string of character variable y
+mov eax, ecx // with assembly
+mov [ecx], the #00DEAD00BEEF00# // passes to the ## in content ecx in the address
+mov!CF, 1 // evaluates!CF symbolized that the register is 1
+mov!DF!PF //!The PF evaluation gives!DF
+mov [403000], “Hello world” // " Hello world " transmits directly the string of character to 403000 addresses in
+mov the eax,[401000],1 // takes in 401000 addresses a byte length content to transmit only to eax in (new function)
+
+MSG news
+-----------
+<MeSsaGe>
+Will assign the news, demonstrates to a dialog box.
+Example:
+MSG “script suspension”
+
+MSGYN message
+-----------
+<MeSsaGe Yes or No>
+Will assign the news, demonstrated that to a dialog box, this dialog box has “is”, “otherwise” the button.
+If the spot “is”, retention variable $RESULT is equal to 1, otherwise retention variable $RESULT is equal to 0.
+Example:
+MSGYN “continues?”
+
+
+MUL goal operand, source operand
+-------------
+<mul>
+The source operand and the goal operand carry on the multiply operation, and finally will preserve in the goal operand.
+Example: 
+mul x, 0F
+mul eax, x
+mul [401000], 5
+
+NEG operand
+-------------
+<NEG>
+The operand does takes makes up the operation, and finally will preserve in the operand.
+Example: 
+NEG x, 0F
+NEG eax
+NEG [401000]
+
+NOT operand
+-------------
+<NOT>
+The operand makes the logical non-operation, and finally will preserve in the operand.
+Example: 
+NOT x, 0F
+NOT eax
+NOT [401000]
+
+
+OPCODE addr
+-----------
+The counter-assembly assigns the address place code.
+$RESULT is opcode
+$RESULT_1 assembles the code
+$RESULT_2 is a byte count
+If will not be opcode,$RESULT_2 will return to 0
+Example: 
+	opcode 00401000
+
+opentrace
+------------
+Opens the movement trace function, closes it to invite to use TC
+
+
+OR goal operand, source operand
+-------------
+<OR>
+The source operand and the goal operand make the logical 'OR' operation, and finally will preserve in the goal operand.
+Example: 
+or x, 0F
+or eax, x
+or [401000], 5
+
+PAUSE
+-----
+<PAUSE>
+Suspension script movement.May resume the script movement through the plug-in unit menu.
+Example:
+pause
+
+
+PREOP addr
+----------
+The recollection assigns the address the assembly directive
+Attention: Before this order cannot real reflection EIP contain jmp the order
+Example:
+	preop eip
+
+
+READSTR addr, maxsize
+-----------
+Reads from addr place assigns the size the string of character
+Example:
+    readstr 401000,15
+
+REF addr
+--------
+Is equal in OllyDbg according to Ctrl R.
+$RESULT variable is set to the first reference addr 
+$RESULT_1 to the opcode (text asm command) 
+$RESULT_2 to the comment (like reference window). 
+Repeat "REF addr" until $RESULT=0 to get next refs
+Example:
+	continue:
+		REF eip
+		log $RESULT
+		log $RESULT_1
+		log $RESULT_2
+	cmp $RESULT,0
+	jne continue
+	
+
+REPL addr, find, repl, len
+--------------------------
+REPL address, search string of character, replace string of character, length
+--------------------------
+<REPLace>
+In assigns the address to start, in assigns the length in the byte scope, with “replaces the string of character” the replace “the search string of character”.
+Permission use wildcard character
+Example:
+repl eip, #6a00#, #6b00#, 10
+repl eip, #??00#, #??01#, 10
+repl 401000, #41#, #90#, 1F
+
+REset
+---------------------------
+
+
+
+RET
+---
+<RETurn>
+Withdrawal script.
+Example:
+ret
+
+REV
+---
+Byte reverse.(attention is byte reverse, is not position reverse)
+Example:
+rev 01020304 // $RESULT = 04030201
+
+ROL goal operand, n
+-------------
+Rotate left goal operand, n bit position;And finally will preserve in the goal operand.
+Example:
+mov x, 00000010
+ROL x, 8 // x is now 00001000
+
+
+ROR goal operand, n
+-------------
+Shift right circular goal operand, n bit position;And finally will preserve in the goal operand.
+Example:
+mov x, 00000010
+ROR x, 8 
+
+
+RTR
+---
+<Run To Return>
+Carries out the returns
+Is equal in carries out “Run to return in OllyDbg” the [Ctrl+F9] operation.
+Example:
+rtr
+
+	
+RTU
+---
+<Run To User code>
+Returns to the user code area
+Is equal in carries out “Run to user code in OllyDbg” the [Alt+F9] operation.
+Example:
+rtu
+
+
+RUN
+---
+<RUN>
+Let OD continue to move
+Is equal in OllyDbg according to F9.
+Example:
+run
+
+SCMP dest, src
+-------------
+String of character comparison. 
+Example: 
+	cmp x, “KERNEL32.DLL”
+	cmp [eax], “Hello World”
+	
+SCMPI dest, src
+-------------
+String of character comparison (big small letter insensitive)
+Example: 
+	cmp sVar, “KERNEL32.DLL”
+	cmp [eax], “Hello World”
+
+SETOPTION
+-------------
+Assigns out the debugging to establish the (Option) menu, after establishing, after determination continues to carry out the script
+Attention:This option is for may in carry out in the script process to be possible to assign out the debugging establishment to be unusual, track and so on establishments
+	
+
+SHL goal operand, n
+-------------
+Left shift goal operand, n bit position;And finally will preserve in the goal operand.
+Example:
+mov x, 00000010
+shl x, 8 // x is now 00001000
+
+SHR goal operand, n
+-------------
+<SHift Right>
+Right lateral goal operand, n bit position;And finally will preserve in the goal operand.
+Example:
+mov x, 00001000
+shr x, 8 // x is now 00000010
+
+STI
+---
+<STep Into>
+Is equal in presses F7 in OllyDbg, marches into on foot.
+Example:
+sti
+
+STO
+---
+<STep Over>
+Is equal in presses F8 in OllyDbg, crosses step by step only.
+Example:
+sto
+
+
+SUB dest, src
+-------------
+The source data reduces the destination figure
+Example: 
+sub x, 0F
+sub eax, x
+sub [401000], 5
+
+
+TC
+--
+Is equal in OllyDbg “the closure movement track”
+Example:
+	tc
+
+TI
+--
+Is equal in presses CTRL-F7 in OllyDbg, tracks on foot.
+Example:
+	ti
+	
+TICND cond
+----------
+<Trace Into Condition>
+Execution “Trace into” operation, until condition for true time stop.
+Example:
+ticnd “eip > 40100A” //, when eip > 40100A stops
+
+TO
+--
+<Trace Over>
+Is equal in carries out “Trace over in OllyDbg” the operation.
+Example:
+to
+
+TOCND cond
+----------
+<Trace Over Condition>
+Execution “Trace over” operation, until condition for true time stop.
+Example:
+tocnd “eip > 40100A” //, when eip > 40100A stops
+
+VAR
+---
+<VARiable>
+In the script, states a variable.
+Must state first in the variable use.
+Attention:Variable should better be variable which easy to distinguish by the letter sum block synthesis
+     +-*/and so on marks should better not attach in the variable, in order to avoid causes the uncertain mistake
+	 As a result of for the compatible beforehand system, please do not take A, B, C, D, E, F the variable.
+Example: 
+var tmp
+
+XOR goal operand, source operand
+-------------
+<XOR>
+The source operand and the goal operand carry on the different 'OR' operation, and finally will preserve in the goal operand.
+Example: 
+xor x, 0F
+xor eax, x
+xor [401000], 5
+
+WRT file, data
+-------------
+Writes the data to the document (cover)
+Numbers are wrote as strings... for the moment
+Example: 
+	wrt “out.txt”, “Data:\r\nOk\r\n"
+	wrt sFile, ebx
+
+WRTA file, data
+-------------
+Additional data to document in (document ending)
+Example: 
+	wrta sFile, “hello world \ r \ n”
+	
+3.2 labels
+----------
+Defines the label, behind must, in the sign signs must add on a colon.
+Example:
+SOME_LABEL:
+
+3.3 annotations
+------------
+You may use “//” to carry on the annotation in any place.
+The block annotation must a other line and does take “/*” as the start, takes the conclusion by “*/”, “*/” must have a line in addition.
+
+Example:
+/*
+Your annotation
+*/
+
+
+3.4 menus
+---------
+The ODBGScript main menu has contained the following several items:
+- Run script…[movement script…]: The user chooses a script, and moves this script.
+- Abort [stops]: Stops the script movement
+- Pause [suspension]: Suspension script movement
+- Resume [restores]: Resumes the script movement
+- script movement window:Dynamic observation script movement
+- script diary window:Record script operational aspect
+- About [about]: Demonstrates this plug-in unit information
+
+3.5 Script Window
+-----------------
+The script window is ODbgScript built-, it can let you debug and observe your script.
+You can in here for the script set breakpoint, the debugging script, the edition variable also be able to carry out the script order manually
+
+4. Inserts other plug-in units
+---------------------------------
+You may transfer OllyScrip in yours plug-in unit, and moves a script.
+Uses is similar in the following code carries on the transfer:
+
+HMODULE hMod = GetModuleHandle (“OllyScript.dll”);
+the if(hMod) // examines whether to be loaded by other plug-in units
+{ 
+// obtains the output function address
+int (*pFunc) (char*) = (int (*) (char*)) GetProcAddress (hMod, “ExecuteScript”);
+the if(pFunc) // inspects whether to obtain the output function
+pFunc (“myscript.txt”); // carries out the output function
+
+
+5. Difficult explanation and skill
+--------------------------------------
+In the use, has some sentence comparison to understand with difficulty and to use, here will carry on the part the explanation.
+
+Q:Why do I use some scripts, var - >x1 this must hang OD?
+A:Variable should better be variable which easy to distinguish by the letter sum block synthesis
+  +-*/?> and so on marks should better not attach in the variable, in order to avoid causes the uncertain mistake
+  As a result of for the compatible beforehand system, please do not (system easy and 16 enters A, B, C, D, E, F as the variable makes the abcdef confusion).
+
+Q:I can take in [401000] merely a byte??  
+A:mov sentence the function has made the huge expansion in this edition, increased third with the beforehand edition biggest difference
+  Parameter (size), is also defines the evaluation the most large brush-written Chinese character pitch number.Like this you may from the memory the arbitrary access value.
+
+The Q:EOB, EOE function I confuse frequently, as well as uses feels is very puzzled, can explain???
+A:eob, eoe function is the interrupt or unusual changes the function, after when the script carries out the interrupt or exceptionally, may assign the script
+  Changes label place which one establish, it is mainly to carry on the flow change.After for instance distinction edition number, changes correspondingly
+  Label processing foot this place.  
+  As a result of the ODBGscript programming's reason, you must establish good eob, eoe first turning-place again run. this and our convention
+  Logic is a little opposite, after we like designs into run, establishing eob, eoe. frequently also to understand well actually, you must state you first
+  Must change the place lets the condition again which the script triggers you to establish, but was not you have triggered the condition in the label place which sought for you to request.
+
+Q:In the certain circumstances, I need the code which direct under OD carries out itself to hope, how to realize??
+A:The script is not multi-purpose, needs to write some assembly code frequently to carry out, that we may seek for some procedure blank,
+  Such sentence comes using mov addr,#xxxxxxxxxxxx# own code to put in the corresponding address, the re-recording current
+  EIP, then mov eip, addr, is also changes the procedure flow own code place, after carrying out own code to finish, may
+  Changes the original procedure EIP the address, please remember preserves the scene, under you to the OD direct execution your code, then you must for you
+  The code is responsible for .ODbgscript not help you to preserve the scene.
+  
+Q:find, findop, findmem does not have what difference probably, can tell me their true difference???
+A:These three are seeks for the data in the memory, but different is.
+  find found the corresponding match relations merely the address
+  findop must seek for the address which is OPCODE matches, is also the address which found must be the OPCODE match place.It
+        Seeks for the way and find is completely different, it a section section the data transformation is opcode first, then
+		Carries on the match search.This and the find coordination can very good distinguish the colored instruction.
+  the relations which findmem seeks is which is assigning the festival address place matches.For instance .data festival place
+
+What meaning Q:eval this is?
+A:eval was calculates the meaning variable the expression, the variable must already state in the script.
+      When inserts to the string of character, must place the brace {}, result preservation in retention variable $RESULT.
+      This and other sentence union will have many changes, will let your script with it be very nimble.
+      Here was equal in changing the variable variable.Please well grasp it and utilizes it nimbly, it will give you
+	  The script brings the infinite change.
+	  For instance the present shell has utilized the polymorphism distortion frequently, but uses this sentence, you will have the advantageous weapon.
+
+What Q:GAPI and is the GN difference??
+A:GAPI extracts the code place API information
+  But GN is gives IAT the address place the API information.
+
+
+Q:opcde use
+A:We knew that the present shell uses the dynamic decoding frequently, but this is copes with the dynamic decoding the powerful weapon
+  the opcode counter-assembly assigns the address place code, if opcode and assigns code comparison, then you energy
+  Firmly observes closely the dynamic decoding the flow and the algorithm.
+
+Q:I can debug my script??
+A:In odbgscript in the edition beforehand ollyscript 0.92 edition, you can depend on the intuition only to write the script, creates
+  Writes the script the efficiency to be quite low, but in the new ODBGscript edition, you had a script window, can be very good
+  Monitor script running status, and you can the single step your script, use the formidable script debugging in a big hurry
+  The function, remembered that the single step is presses " s in the script window " the key, the blank space is lets loose lets the script run.
+  You can in here for the script set breakpoint, the debugging script, the edition variable also be able to carry out the script order manually
+
+Q:What advantage does the script have, what advantage compares with the decorticator as well as the patch has???
+A:The script biggest advantage is you can grasp software's mentality according to the script mentality.The script can let your work be relaxed
+  Very many, regardless of being you peels off the shell in the debugging routine or does the reversion work.
+  But decorticator and patch strict limit correspondence procedure edition, but the script makes frequently the simple increase or the revision
+  Can the very good adaptation different edition.Certainly this premise is you can grasp its use.
+  In some kind of significance said that the script is the OD movement redundant broadcast, therefore, will grasp OD the strong and the weak also to affect you to compile and to use
+  ODBGscript ability.
+
+What Q:Ollyscript and do ODBGscript have to distinguish?
+A:Ollyscript is SHag uses the BC compilation, it is the ODBGscript primary edition, but it stopped in 04 years
+  Development, therefore was born ODBGscript.ODBGscript to carry on the large-scale expansion in the Ollyscript foundation
+  Regardless of had the large scale expansion in the sentence quantity and in the sentence deepened function.But you knew, ODBGscript also not
+  Then stable and you expected the great strength, I anticipated that your BUG reports and points out the hope the function.
+
+
+6. How to contact with me
+-------------
+You may in the forum submission question (bbs.pediy.com)
+Certainly you may also write a letter for me, my mailbox are directly:hnhuqiong@126.com
+
+7. Special permission and source code
+--------------------------
+Because Epsylon3 has not given up to the ODBGScript following development, my this edition has taken the reversion amateur merely who looks at snow (pediy)
+A branching edition will continue to develop, bases in localized and the local technical support and the following research and development.
+If revised the source code, but invites you in yours documents and in the copyright dialog box, in labelling my name.
+If your project, large-scale used I code.Also will ask you to inform me, I to care about.
+
+
+8. Acknowledge!
+----------
+From
+OllyScript plugin v0.92 by SHaG
+ODBGScript plugin v1.47 by Epsylon3
+Regarding all submits the friend who Bug, the compilation script as well as provides the precious suggestion, I express thanks.
+Thanks R@dier to provide the Dump engine.
+Certainly, must thank Olly specially, was he develops the so outstanding debugger!
+Also has is on bbs.pediy.com the fellow chivalrous people
+
+

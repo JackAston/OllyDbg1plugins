@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ODbgScript", "ODbgScript.vcproj", "{E70561A4-6B5D-4044-99AE-91BAE1975AB6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		ReleaseWDK|Win32 = ReleaseWDK|Win32
+		ToDebug|Win32 = ToDebug|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E70561A4-6B5D-4044-99AE-91BAE1975AB6}.ReleaseWDK|Win32.ActiveCfg = ReleaseWDK|Win32
+		{E70561A4-6B5D-4044-99AE-91BAE1975AB6}.ReleaseWDK|Win32.Build.0 = ReleaseWDK|Win32
+		{E70561A4-6B5D-4044-99AE-91BAE1975AB6}.ToDebug|Win32.ActiveCfg = ToDebug|Win32
+		{E70561A4-6B5D-4044-99AE-91BAE1975AB6}.ToDebug|Win32.Build.0 = ToDebug|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,41 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Untitled Document</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body>
+<p><font face="Arial, Helvetica, sans-serif"> <font color="#009999" size="5">IsDebuggerPresent 
+  plugin</font><br>
+  <font color="#009999">by SV 2oo3</font><br>
+  </font></p>
+<p> <img src="Plugin.PNG" width="232" height="261"></p>
+<font face="Arial, Helvetica, sans-serif"> 
+<p>This Plugin is intended to hide debugger from <em><font color="#009999">IsDebuggerPresent</font></em> 
+  Windows API.</p>
+<p><em>Option</em>:</p>
+<p><img src="Option.PNG" width="299" height="159"></p>
+<p>You can choose if automatically debugger is <strong>hidden or not (</strong><em>Autohide</em><strong>).</strong></p>
+<p><strong>If checked</strong> when you load an exe, debugger is <strong>hidden</strong> 
+  and you can choose how long thread will sleep until patch byte api is done (<em>Sleep 
+  Time</em>).</p>
+<p>It must be change, depending on OllyDbg exe load time (Big exe).</p>
+<p>Otherwise, manually, you can hide or restore debugger with menu option.</p>
+<p><strong>PS</strong>: <font color="#FF0000"><strong>Warning</strong></font>, 
+  as ODBG_Pluginreset is called before CreateProcess, i have only find<br>
+  the way of using another thread, which call one plugin API function.<br>
+  I have no problem with it, but there is a risk to corrupt internal data structures 
+  and crash both <br>
+  program and OllyDbg ! If you have problem, remove it !!! ;)</p>
+<p><em>Dumper</em> is a small dialog which allow to save data in a file.</p>
+</font> 
+<p><img src="Dumper.PNG" width="177" height="111"> 
+</p>
+<p><font face="Arial, Helvetica, sans-serif">Enter (Hexa) Offset start and size 
+  values, click <em>'Dump'</em> to save file.</font></p>
+<p><font face="Arial, Helvetica, sans-serif">Thanks to <strong>Eviloid</strong> 
+  for his MASM work.<br>
+  </font></p>
+</body>
+</html>

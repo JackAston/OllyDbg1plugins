@@ -1,0 +1,13 @@
+you want to know what it is?
+
+its basically an improved version of nonawrite. (except the save button does jack shit unless you open a script first, ie. if you just write a patch and press save it tells you no file name specified.)
+
+
+ive translated SkyPatch.dll (not just the buttons) the test1.odp (example patch script) and the readme. (nothing better to do, its cold and raining)
+
+the translation is a little dodgy, but you will get the general idea, at least its readable.
+
+not sure if it use is the same as nonawrite i dont use it.
+
+
+feel free to try it before duly dumping it in the recycle bin

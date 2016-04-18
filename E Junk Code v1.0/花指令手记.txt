@@ -1,0 +1,37 @@
+花指令1:
+stc (F9)
+jb  (72 01)
+
+0F9H,72H,01H,XX
+Len = 4
+
+x: 0B5H 0FH 7CH 0B7H 79H 0BF
+
+
+花指令2:
+clc (F8)
+jnb (73 01)
+
+0F8H,73H,01H,XX
+Len = 4
+
+X:0FH 
+
+花指令3:
+call (E8 00 00 00 00)
+add dword ptr ss:[esp],6  (83 04 24 06)
+ret (C3)
+
+0E8H,00H,00H,00H,00H,83H,04H,24H,06H,0C3H,XX
+Len = 11
+
+X: 0FH
+
+
+花指令4:
+jmp (EB 01)
+
+0EBH,01H,XX
+Len = 3
+
+X:71H  0EBH 78H 

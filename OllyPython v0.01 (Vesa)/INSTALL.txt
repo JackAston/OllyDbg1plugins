@@ -1,0 +1,4 @@
+OllyPython 0.01 ALPHA installation
+
+- Copy all files to your OllyDbg directory
+- If you have plugins dir in your ollydbg's directory, move ollypythonplugin.dll there

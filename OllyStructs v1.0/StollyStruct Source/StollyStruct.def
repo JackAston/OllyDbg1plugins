@@ -1,0 +1,12 @@
+;LIBRARY
+EXPORTS
+_ODBG_Plugindata
+_ODBG_Plugininit
+_ODBG_Plugindestroy
+_ODBG_Pluginmenu
+_ODBG_Pluginaction
+_ODBG_Pluginreset
+
+
+
+

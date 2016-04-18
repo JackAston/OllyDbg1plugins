@@ -1,0 +1,291 @@
+<HTML>
+<TITLE>Universal Hooker</TITLE>
+
+<p>
+<b>NOTE: The last version of uhooker is v1.2</b>
+</p>
+
+<H1>Topics</H1><br>
+<a href="#whatis">What is the Universal Hooker?</a><br>
+<a href="#howdoesitwork">How does it work?</a><br>
+<a href="#theconffile">The configuration file</a><br>
+<a href="#hookhandlers">The Hooks Handlers</a><br>
+<a href="#using">Using the Universal Hooker</a><br>
+<a href="#usecases">Use cases</a><br>
+<a href="http://oss.coresecurity.com/uhooker/doc/uhooker_apiref.html">API reference</a><br>
+<a href="#scripts">Scripts</a><br>
+<p>	
+
+<H1>Universal Hooker</H1>
+
+<a name="whatis">
+<H3>What is the Universal Hooker?</H3>
+
+<p>
+The Universal Hooker is a tool to intercept execution of programs. It enables the user
+to intercept calls to API calls inside DLLs, and also arbitrary addresses within the executable file
+in memory.
+<p>
+Why is it 'Universal'? There'are different ways of hooking functions in a program, for example,
+it can be done by setting software breakpoints (int 3h), hardware breakpoints (cpu regs), or
+overwriting the prologue of a function to jump to a 'stub', etc. All the methods mentioned required
+above, specially the latter, require the programmer of the code creating the hook to have 
+certain knowledge of the function it is intercepting. If the code is written in a programming language
+like C/C++, the code will need to be recompiled for every function one wants to intercept, etc.
+<p>
+The Universal Hooker tries to create very simple abstractions that allow a user of the tool
+to write hooks for different API and non-API functions using an interpreted language (python),
+without the need to compile anything, and with the possibility of changing the code that
+gets executed whent the hooked function is called in run-time.
+
+The Universal Hooker builds on the idea that the function handling the hook is the one with the knowledge about the parameters type of the function it
+is handling. The Universal Hooker only knows the number of parameters of the function, and obtains them from the stack (all DWORDS). The hook handler is the
+one that will interpret those DWORDS as the types received by the function.
+
+The hook handlers are written in python, what eliminates the need for recompiling the handlers when a modification is required. And also, the hook handlers (executed by the server) are reloaded from disk every time a hook handler is
+called, this means that one can change the behavior of the hook handler without
+the need to recompile the code, or having to restart the application being analyzed.
+
+<a name="howdoesitwork">
+<H3>How does it work?</H3>
+
+I have written several versions of the Universal Hooker, using different techniques to
+hook functions such as implementing my own 'debugger', modifying prologue of functions, etc. 
+The version available at this web page is implemented as an OllyDbg plugin, so the hooking
+of functions is taken care by the OllyDbg Debugger (using software breakpoints).
+ 
+<P>
+The basic components of the Universal Hooker are:
+<p>
+<li>The universal hooker core, implemented as a OllyDbg plugin (uhooker.dll)
+<li>A Configuration File (e.g: hook.cfg)
+<li>a Server (server.py) written in python that handles communication with the universal hooker core
+<li>a library written in python (proxy.py) that contains different functions to communicate with the universal hooker core.
+This functions allows the developer to perform different actions on the intercepted process, for example: read memory, write memory, etc.
+<li>A python module written by the developer that contains the code that handles the hooked functions/addresses. This
+module uses the python library proxy.py to perform actions on the intercepted process.
+
+<img src="uhooker_.jpg">
+<p>
+A configuration file is loaded from Ollydbg that defines what functions/addresses to hook, after parsing the configuration
+file the uhooker core connects to the server and sends the hook information. Every time a function hook is triggered,
+the uhooker core communicates with the server sending information about the function/address hooked, and the server
+executes the corresponding hook handler as defined in the configuration files.
+
+
+<a name="theconffile">
+<H3>The configuration file</H3>
+
+The configuration files is a regular text file where each line defines the
+functions/addresses to intercept (All lines beginning with '#' are
+treated as comments). 
+<p>
+There are 3 different types of hooks:
+<p>
+1. Hook Before Entering the function (type 'B')<br>
+2. Hook After the function returns (type 'A')<br>
+3. Hook when executing reaches this address (type '*')<br>
+<p>
+To intercept functions exported from a DLL the syntax is:
+<P>
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+<b>name_of_dll:function_name:number_of_parametes:python_module.hook_handler_name:hook_type</b>
+<p>
+for example, to hook 'CreateFileA' (which has 7 parameters) before it is executed with
+a handler called 'CreateFileA_handler' implemented in the file mymodule.py:
+<p>
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+<b>kernel32.dll:CreateFileA:7:mymodule.CreateFileA_handler:B</b>
+<p>
+As explained above, it is possible to hook any 'executable' address of a process
+(which is basically the same as setting a breakpoint on an address):
+<p>
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+<b>field_not_used:address_to_hook_in_hex:field_not_used:python_module.hook_handler_name:hook_type</b>
+<p>
+So, for example, to hook execution at 0x401000 handled by the hook handler called 'anybp'
+implemented in the mymodule.py file:
+<p>
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+<b>dummy.dll:0x401000:0:mymodule.anybp:*</b><br>
+<p>
+Next is a sample of how a configuration file look like:
+<pre>
+# B = hook before entering function
+# A = hook AFTER function returns
+# * = hook when an address is executed
+kernel32.dll:CreateFileA:7:mymodule.CreateFileA_handler:B
+dummy.dll:0x401000:0:mymodule.anybp:*
+</pre>
+<p>
+The configuration file can be loaded from OllyDbg by going to the 'plugins->uhooker' menu, and selecting 'Load Cfg File'. See the
+screenshot below.
+<p>
+<img src="uhooker0.jpg">
+<p>
+A file dialog will be displayed from which a .cfg file (in fact any name can be used) can be loaded.
+<p>
+<img src="uhooker1.jpg">
+<p>
+After parsing the configuration file, the uhooker core will try to set breakpoints on the functions/addresses indicated
+in the configuration file, for that reason before loading the configuration file the process to intercept should be loaded
+in the debugger or the debugger should be attached to the process.
+
+<a name="hookhandlers">
+<H3>The Hooks Handlers</H3>
+
+A hook handler is basically a python script that is called every time the intercepted
+function/address is called. It has the following definition:
+<p>
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+<b>def hook_name(hookcall):</b>
+<p>
+The hookcall parameter is an object passed by the server to the hook handler that
+contains useful information about the intercept function and process. For
+example:
+<p>
+<li><b>hookcall.regs</b>: contains the content of the registers of the intecepted process (e.g.: hookcall.regs['eax']).
+<li><b>hookcall.params</b>: contains parameters of the intercepted function. As explained above,
+the parameters are only DWORDs as far as the uhooker core knows, so this 'params' list
+contains basically a list of DWORDs that the hook handler must interpret as char*,
+ints, or any other type depending on the function it is handling. The list is zero-based,
+meaning hookcall.params[0] is the first parameter to the function.
+<li><b>hookcall.retaddr</b>: contains the return address of the function. 
+<li><b>hookcall.threadid</b>: contains thread id of current thread
+<li><b>hookcall.procid</b>: contains process id of current process
+<li><b>hookcall.sendack()</b>: All hook handlers must end with a call to this function. Otherwise, the uhooker core will hang forever.
+This function returns control to ollydbg and resumes execution of the program being debugged.
+<li><b>hookcall.sendacknocont()</b>: handlers can also end with a call to this function. This function does the same
+thing as hookcall.sendack(), but it DOES NOT resume execution of the debugged program. This is good, for example,  for scripts that
+want to check for certain condition, and then stop the debugger to allow the user to continue debugging manually.
+<p>
+A hook handler can also read and write memory of the intercepted process, allocate
+memory, etc. All these functions are available from the Proxy.py module, so all hook
+handler also import and create and instance of the 'Proxy' object.
+<p>
+Next is a sample hook handler:
+<p>
+<pre>
+def CreateFileA_handler(hookcall):
+	myproxy = hookcall.proxy
+	print "bughandler running..."
+	print "esp = %X" % hookcall.regs['esp']
+	print "retaddr = %X" % hookcall.retaddr
+	print "arg0 = %X" % hookcall.params[0]
+	buffer = myproxy.readasciiz( hookcall.params[0] )
+	print buffer
+	hookcall.sendack()
+	return
+</pre>
+<p>
+This handler:
+<p>
+<li>obtains an instance of the 'Proxy' object. (*IMPORTANT*: before uhooker v1.2, you needed to create the instance by doing a 'myproxy = proxy.Proxy()',
+ths is no longer the case, if you are using uhooker v1.2, please change your scripts to use this new method)
+<li>prints meaningless information to the console ("CreateFileA handler running...")
+<li>prints to the console the value of the ESP register, the return address of
+the function, and the value (DWORD) of the first parameter of the function.
+<li>Since this is a handler for the CreateFileA function, and the first parameter
+(hookcall.params[0]) is a pointer to an ASCII string indicating the file to open, it uses the 'readascizz' function, to read that ascii string and prints it to the console.
+<li>finally, it calls sendack() to inform to the uhooker core that it has finished processing
+the hook, and returns.
+<p>
+<a name="using">
+<H3>Using the Universal Hooker</h3>
+
+To use uhooker the steps that need to be done are:
+<p>
+<li>Have a valid configuration file defining what functions/addresss to hook and indicating which are the handlers for those hooks
+<li>Have a .py file with the hook handlers indicated in the configuration file
+<li>Start OllyDbg, load or attach to the process to intercept
+<li>Load the configuration file. The uhooker core will set the breakpoints, start the python server automtically and send the hook information
+to the server.
+<li>That's all. Every time the function/address is called, the proper hook handler will be executed.
+
+<a name="usecases">
+<H3>Use cases</H3>
+
+next are some examples of fun things to do using the universal hooker.
+
+<H3>Intercepting network traffic</H3>
+
+One of the most commont tasks when trying to find bugs or analyze 
+the network protocol used by an application is interception of the 
+information sent on the wire. This allows for fuzzing of the
+protocol without the need to implement it, we only need to
+change the packets generated by the application.
+<p>
+This can be easily done using the uhooker; for example,
+by hooking send(),sendto(), recvfrom(), recv(), etc.
+<p>
+One thing that I normally do and that people without 
+much technical knowledge finds very amusing and I myself
+find very handy for certain ocassions, is that
+for every packet the application is about to send,
+my hook handler saves the packet to a file,
+runs an hex editor and loads the file with the
+packet, using the hex editor I can change the packet, observe it,
+add more bytes, etc, then I save the modified packet, and
+that is the packet that will be sent over the wire.
+<p>
+<a href="http://oss.coresecurity.com/uhooker/doc/udpnet.py">Here</a> is a hook handler for sendto() that does what I just
+described.
+<p>
+
+When the packet is bigger than the original packet, this script
+allocates a new buffer and modifies (overwrites) the frame
+of the called function so the length is now correct and the
+ptr to the buffer points to the new data. In some ocassiones,
+this overwriting of the frame causes the program to crash
+or do weird things, I don't really know why yet (I
+did not try to establish the reason yet :)), so one thing I
+usually do is hook connect(), and make the program
+connect to a different port number and IP addresses.
+<p>
+Then I have a "proxy_hooker" that is basically a "tcp proxy"
+written in python, when a packet arrives to the proxy, it knows
+where to forward it, and also, every time a packet arrives,
+it calls a 'hook handler' in python, just like the universal hooker.
+In this way, I only need to mess with the connect() function,
+and I make all the changes to the packet with a hooker
+handler in the "proxy hooker" using the hex editor thing
+I mentioned above for example, outside the process.
+<p>
+This is the very simple <a href="http://oss.coresecurity.com/uhooker/proxy_hooker/proxy_hooker.py">proxy_hooker</a>.
+<p>
+And <a href="http://oss.coresecurity.com/uhooker/proxy_hooker/hooks.py">here</a> is the hooks.py sample hook that loads an hex editor to edit packets.
+
+<a name="scripts">
+<h3>Scripts</h3>
+
+<li>Windows Registry Monitor: This is a script to monitor registry access. <b>*updated on 06/28/2006*</b><br>
+<a href="http://oss.coresecurity.com/uhooker/scripts/regmonitor.cfg">regmonitor.cfg</a><br>
+<a href="http://oss.coresecurity.com/uhooker/scripts/regmonitor.py">regmonitor.py</a><br>
+<li>StepIn Sample: This is a sample on how to use the 'stepin' function to control the execution flow of a program.<br>
+<a href="http://oss.coresecurity.com/uhooker/scripts/stepin.cfg">stepin.cfg</a><br>
+<a href="http://oss.coresecurity.com/uhooker/scripts/stepin.py">stepin.py</a><br>
+
+
+</HTML>
+
+<!-- This document saved from http://oss.coresecurity.com/uhooker/doc/index.html -->

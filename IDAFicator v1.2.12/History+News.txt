@@ -1,0 +1,164 @@
+
+
+
+-------------------------((((06/05/2008 V 1.2.12 )))--------------------------
+----------------------------<<<< What's new: >>>>-----------------------------
+
+1. Adding support for asm like command in 'multicommand assembler'.
+Added commands til now are: 
+    1.1) PUSHSTR -> There'are 2 versions of this cmd: 
+         1.1.1) First one, without argument 
+         (ex: pushstr 'kernel32.dll' -> PUSH 3D0000 ; ASCII "kernel32.dll" ) 
+         1.1.2) Second one, accept one argument (The address where to assemble)
+         ex: pushstr 'kernel32.dll', 401000 -> PUSH 00401000
+
+1.2) PUSHALL -> push several commands
+    (ex: pushall 0402000, @GWL_EXSTYLE 
+         call GetWindowLongA 
+         
+    assembled to: ->
+       PUSH 00402000 
+       CALL user32.GetWindowLongA) 
+
++/- all constants in windows.inc (thanks hutch and iczelion for this 
+file) can be used just with the prefix '@' 
+
+1.3) INVOKE -> Works like its homologous asm command with an extra ;) 
+Note that: 
+    1.3.1 - The strings will be assembled in a 'rundom' address 
+allocated in debugee memory 
+    1.3.2 - you can integrate string directly in the invoke macro 
+    ( ex1: invoke MessageBoxA, 'Text1 from invoke macro', 'Text2 from invoke macro', @MB_OK 
+     -> PUSH 0                                       ; /Style = MB_OK|MB_APPLMODAL 
+        PUSH 1D0030                                  ; |Title = "Text2 from invoke macro" 
+        PUSH 1D0048                                  ; |Text = "Text1 from invoke macro" 
+        PUSH 00402000                                ; |hOwner = 00402000 
+        CALL DWORD PTR DS:[<&user32.MessageBoxA>>    ; \MessageBoxA 
+
+     ex1: And invoke GetPrivateProfileIntA, 'Section Name', 'Key', 0, 'B:\bla\bla\bla\bla.ini' 
+     -> PUSH 1D0060                                 ; /IniFileName = "B:\bla\bla\bla\bla.ini" 
+        PUSH 0                                      ; |Default = 0 
+        PUSH 1D0077                                 ; |Key = "Key" 
+        PUSH 1D007B                                 ; |Section = "Section Name" 
+        CALL DWORD PTR DS:[<&kernel32.GetPrivate>   ; \GetPrivateProfileIntA 
+) 
+
+1.4) Note that the constants are located in 'BYTES.OEP' file provided 
+with this version (version of 06/05/ 2008) and you've to re^lace the old 
+one. Otherwise, all constants will return 0 and will assembled : push 0. 
+
+
+2- Position saving for most important and most used dialog boxes. 
+Please, consider to use the pushstr macro instead of invoke one if the 
+lenght of pushed text is > 40 chars Privacy note: The last entered piece 
+of text to assemble in MCasm is stored in registry 
+("HKEY_CURRENT_USER\Software\IDAFicator Plugin"), just in case.
+
+3- MuCAsm now remembers last entered text even between debugging 2 sessions.
+
+
+------------------------------(((( TODO list )))-------------------------------
+
+1- Automatic update of bp menu checked item when starting olly with already 
+set bpts. 
+2- Keep a list of disabeled hwbp so reverser can set them on after restarting
+HWBP dialogbox 
+3- Handling the relative jumps by the MuCAsm.
+
+
+
+
+
+
+
+
+
+------------------------------(((( OLD RELEASES )))-------------------------------
+
+
+27/04/2008 (private version) 
+
+21/04/2008 (public version) 
+1- Advanced GUI for shortcuts MENU manipulator -> toolsMenu -> Settings -> drag&drop 
+all files and directories you want to add and the menuCustomizer will parcel them out 
+in their convenient listbox -> doubleclick the items you want to ADD/REMOVE (or 
+choose item then click << or >> buttons). 
+To add a separator, just click the 'Sep' button. 
+2- Added tooltips for WHBP custom window -> After disabling a HWBP, just point the 
+ENABLE/DISABLE button to show up the tooltip with HWBP to be reactivated. 
+3- Now, code can be restored after assembling commands with 'multicommand assembler'
+or 'Universal stolen code restorer'. 
+
+
+17/04/2008 (private version) 
+1- Now you can ENABLE/DISABLE hwbp form hwbp dialog 
+(NB:If you close the dialogbox, then all disabeled BP will be deleted) 
+
+
+15/04/2008 (private version) 
+1- The 5th button is now activated. 
+2- U can now add custom APIs to APIs menu. (Go to IDAFicator menu -> Options 
+-> Settings then add APIs you want with a SINGLE space between APIs and 
+if you want to insert a separator, then enter a '-' and here's an example: 
+'GetProcAddress GetModuleHandleA - CreateMenu AppendMenu' without quotes) 
+3- 'Search for all strings' fixed. 
+4- Now the hardware bp dialog box is all costumised (The original one is kept), 
+so you can set and unset breakpoints and have the list updated on the fly without
+restarting it. 
+5- I think the problem of painting olly after working 
+with it for a long time,is now off. 
+
+
+12-12-2007 (PUBLIC VERSION)
+v1.2.0
+[+] Added a wide support for mouse (and in near future for the clipboard) actions: see help file.
+[+] Added 3 new buttons with nice functions.
+[+] Added 5 customizable buttons: Only 4 functions are available. If you have some suggestions, don't hesitate to contat me: anderZool@hotmail.fr or Zoolander@AT4RE.com.
+[!] Position of buttons is now fixed (nbo more overlap with CJL plugin -> Thanks Fungus.
+[+] I decided that "NO more spell checking" will be done. This will help me to have more comfortable days ;-) silly, isn't it.
+
+12-05-2007
+v1.1
+Private release.
+
+12-02-2007
+v1.1.0
+[+] Added one of the most interesting feature I've planed to do: THE IDA-LIKE MOUSE EFFECTS, see and comment (comments are free of charges :-)
+[!] Correction of a bug (if windbg lunched from menu, path are not valid and bytes.oep was not loaded)
+[!] Always dealling with spelling mistakes.
+
+
+11-28-2007
+v1.0.8
+[!] Corrction of 'no patterns in combo box' bug -> thanks LFC-AT
+[+] Tested ok with CIM version -> thanks to Ahmed18
+[+] Arabic/English help are now available in the package
+[+] Correction of some spelling errors.
+
+
+11-26-2007
+v1.0.7
+First public release
+
+
+11-21-2007
+1.0
+Private beata release
+
+
+
+
+
+
+
+
+
+------------------------------(((( Greetings )))-------------------------------
+
+Thanks to all AT4RE members for testing and improving the plugin.
+Thanks to Oleh Yushuk for the great OLLYDBG.
+Thanks to roobenhoodarab for nice gfx. 
+Thanks LCF_AT for beta testing and for many ideas that my plugin holds. 
+Thanks SUB ZER0 for the excellent idea of asm like commands. 
+Thanks to SND and woodmann members for supporting and hosting the useless plugin. 
+

@@ -1,0 +1,34 @@
+
+Plugin Asprotect_1.2x (v. 1.20)
+---------------------
+
+1-NOVEDADES
+
+-Se ha corregido un bug relacionado con los nombres de archivo extra-largos bajo Windows XP
+que impedía el correcto funcionamiento del plugin (bug reportado por ShoulcK).
+
+2-SOLUCIÓN DE PROBLEMAS
+
+-Si el plugin dejase de funcionar correctamente (aparentemente sin motivo para ello), o si
+cambiamos de máquina y/o sistema operativo, deberemos BORRAR el archivo "Asprotect_1.2x.INI"
+situado en la misma carpeta donde tenemos instalado el plugin ("Asprotect_1.2x.DLL").
+Este archivo ".ini" es una base de datos que crea automáticamente el plugin, y en el que
+va guardando las direcciones virtuales de cada programa ejecutable con el que se utiliza,
+en las que espera ir encontrando los datos que necesita en cada momento, y de esta forma
+ir más rápido con aquellos programas en los que ya se ha utilizado.  Si en algún momento
+estas direcciones virtuales cambian (por haber cambiado de máquina o de sistema operativo,
+o por alguna otra razón) el plugin ya no funcionará correctamente, puesto que estará
+buscando los datos en unas direcciones virtuales erróneas (las antiguas).
+En estos casos, bastará con que borremos el archivo ".ini" antes mencionado y empezar la
+tarea del volcado con cada programa desde el principio.  El plugin generará automáticamente
+otro archivo ".ini" en el que irá guardando los nuevos datos.
+
+3-AGRADECIMIENTOS
+
+-Como siempre, a todo CracksLatinos y en especial a ShoulcK, quien no sólo ha detectado el
+problema, sino que ha tenido que depurar el plugin e identificar el bug bajo Windows XP (ya
+que yo no dispongo de dicho sistema operativo), proporcionándome en todo momento la
+información necesaria para poder corregirlo.  Gracias, amigo ;-)
+
+
+The_Chameleon

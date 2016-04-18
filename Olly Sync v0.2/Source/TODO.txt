@@ -1,0 +1,5 @@
+
+comment functions better
+better error reporting
+abstract address from ulong to ea_t for different archs?
+store received names/comments in a sorted olly table for user to view

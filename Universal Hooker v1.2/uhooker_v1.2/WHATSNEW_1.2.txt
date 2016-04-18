@@ -1,0 +1,128 @@
+
+Whats new in uhooker v1.2?
+==========================
+
+-The communication mechanism between the ollydbg plugin and the python proxy
+server has been reworked. Previously, the plugin performed a tcp connection
+per breakpoint/function hooked (yes, very bad, I know), this caused
+the problem that if the breakpoint/function hooked was called many many times
+the system ran out of TCP sockets and everything died. Now, the ollydbg plugin
+connects to the server and performs all the necessary communication between the
+two using only that SINGLE connection. This eliminates the problem I mentioned
+before, and also makes everything go faster.
+
+*VERY IMPORTANT*: because of this change, previous scripts WILL NOT WORK
+with this version of uhooker. Well, is not that bad. They will work,
+but you need the change the following:
+
+Previously, to obtain an instance of 'Proxy' you did the following:
+
+def CreateFileA_handler(hookcall):
+	myproxy = proxy.Proxy()
+
+now, you have to do this:
+
+def CreateFileA_handler(hookcall):
+	myproxy = hookcall.proxy
+
+as you can see, you no longer have to create the instance of 'Proxy', it
+gets created by the server, and its passed to the handler thru the 'hookcall'
+structure.  You need only to change this line and previous scripts
+will work just fine.
+
+
+-I added the posibility to enable and disable the plugin, if you are using the
+plugin and want to stop using to debug on your own or whatever reason, now you
+can do it. You can access this functinality from the Plugins->Uhooker menu.
+
+-I fixed different issues. Probably the most important issues is that there
+was a bug that prevented you to step the program being debugged when uhooker
+was installed. This is fixed now.
+
+-Besides the 'proxy' object, there is new data available from the 'hookcall' 
+structure received by handlers:
+
+hookcall.regs: registers of the debugged program. you can access them
+like hookcall.regs['eax']. This was in fact available before but I think
+I never documented it.
+
+hookcall.threadid = thread id of the current thread at the moment
+the handler was called
+
+hookcall.procid = proces id of the current process at the moment
+the handler was called
+
+
+
+
+-I added some new functions to the plugin, some might not be working very
+well, I'm in the process of fixing some issues. Even when not all the
+functions are not functioning perfectly, I didn't want to take out the functions
+from the release,it was more work that didn't make sense to me. If it fails,
+let me know and I'll tell you what the problem is and how close I am to fix
+the issue.
+
+
+Some of the new functions are:
+
+* setbreakpoint(breakaddr): there's a problem with the ollydbg GUI that makes
+this function hang for some reason. I'm trying to solve this.
+
+* changeregs(threadid, regs): this one should work fine, it changes the
+registers of the thread specified in threadid.
+
+* stepin(threadid): allows you to programtically step in the code (run one
+instruction of the debugged program).
+
+
+For examples on how to use these functions take a look at the documentation
+page at http://oss.coresecurity.com/uhooker/doc/index.html.
+
+
+There's also a new function you can use in your scripts,
+normally all scripts end with a call to:
+
+hookcall.sendack()
+
+this returns control to uhooker (the ollydbg plugin) and uhooker
+continues execution of the program being debugged. 
+
+Now, you can also end a script with a call to
+
+hookcall.sendacknocont()
+
+this returns control to uhooker (the ollydbg plugin) but DOES NOT
+continues the execution of the program being debugged. This is very
+good for creating handlers that act as 'complex breakpoints' (among
+other things), for example:
+
+You hook CreateFile and want to stop execution of the program when 
+the file 'whatever.dat' is opened. So, you can code a script
+that checks if the first paremeter of CreateFile contains the
+string 'whatever.dat' and if that's the case, you want to
+return control to ollydbg but WITHOUT resuming execution of the program,
+so you can start debugging on your own from that point on.
+
+To do this, just call hookcall.sendacknocont() at the end of the
+script, and NOT hookcall.sendack(). In this way, when the condition
+is met, the program being debugged will stop its execution and you can
+start debugging the program on your own.
+
+for example:
+
+def advapi32_regclosekey_handler(hookcall):
+	print_debug( str(hex(hookcall.threadid)) )
+	print_debug( str(hex(hookcall.procid)) )
+	hookcall.sendacknocont()
+
+This script will print the 'thread id' and 'process id' and
+return control to the debugger every time RegCloseKey() is called.
+
+
+Comments to Hernan Ochoa (hochoa[at corest.com]).
+
+
+
+
+
+

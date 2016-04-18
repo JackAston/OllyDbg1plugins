@@ -1,0 +1,18 @@
+------ Rebuild All started: Project: Push0x86Trace, Configuration: Release Win32 ------
+
+Deleting intermediate files and output files for project 'Push0x86Trace', configuration 'Release|Win32'.
+Compiling...
+olly_main.cpp
+olly_main.cpp(398) : warning C4018: '<' : signed/unsigned mismatch
+Linking...
+   Creating library .\Release/Push0x86Trace.lib and object .\Release/Push0x86Trace.exp
+
+Build log was saved at "file://c:\Documents and Settings\Administrator\Desktop\Push0x86Trace\Release\BuildLog.htm"
+Push0x86Trace - 0 error(s), 1 warning(s)
+
+
+---------------------- Done ----------------------
+
+    Rebuild All: 1 succeeded, 0 failed, 0 skipped
+
+

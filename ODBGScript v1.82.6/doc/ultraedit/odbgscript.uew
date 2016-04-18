@@ -1,0 +1,127 @@
+/L20"OllyDBG Script 1.82" ASM_LANG Line Comment = ; Block Comment On = /* Block Comment Off = */ String Chars = " Escape Char = \ File Extensions = OSC
+/Indent Strings = ":"
+/Delimiters = ~!%&^*()-+=|\/{}[]:;"'<> 	,
+/Function String = "%[ ^t]++^([a-zA-Z_0-9]+^):$"
+/TGBegin "Variables"
+/TGFindStr = "%[ ^t]++var[ ^t]++^([0-9a-zA-Z_]+^)$"
+/TGFindStr = "%[ ^t]++pop[ ^t]++^([0-9a-zA-Z_]+^)$"
+/TGFindStr = "%[ ^t]++mov[ ^t]++^([0-9a-zA-Z_]+^)?+$"
+/TGEnd
+/C1"Instructions" STYLE_FUNCTION Colors = 16711680 Colors Back = 16777215 Colors Auto Back = 1 Font Style = 0
+add ai alloc an and ao ask asm asmtxt atoi
+backup bc bd beginsearch bp bpcnd bpd bpgoto bphwc bphwcall bphws bpl bplcnd bpmc bprm bpwm bpx buf
+close cmp cmt cob coe cret
+dbh dbs dec div dm dma dpe
+ende eob eoe erun estep esti esto eval exec
+fill find findcalls findcmd findcmds findmem findop findoprev free
+gapi gbpm gbpr gci gcmt gfo glbl gma gmemi gmexp gmi gmimp gn go gopi gpa gpi gref gro gsl gstr gstrw
+handle history
+inc itoa
+key
+loadlib lbl lc lclr len lm loadlib log logbuf
+memcpy mov msg msgyn mul
+names neg not
+olly opcode opendump opentrace or
+pause pop popa preop push pusha
+rbp refresh readstr ref repl rev rol ror rtr rtu run
+sbp scmp scmpi setoption shl shr step sti sto str sub
+tc test ti tick ticnd to tocnd
+unicode
+var
+wrt wrta
+xchg xor
+ADD AI ALLOC AN AND AO ASK ASM ASMTXT ATOI
+BACKUP BC BD BEGINSEARCH BP BPCND BPD BPGOTO BPHWC BPHWCALL BPHWS BPL BPLCND BPMC BPRM BPWM BPX BUF
+CLOSE CMP CMT COB COE CRET
+DBH DBS DEC DIV DM DMA DPE
+ENDE EOB EOE ERUN ESTEP ESTI ESTO EVAL EXEC
+FILL FIND FINDCALLS FINDCMD FINDCMDS FINDMEM FINDOP FINDOPREV FREE
+GAPI GBPM GBPR GCI GCMT GFO GLBL GMA GMEMI GMEXP GMI GMIMP GN GO GOPI GPA GPI GREF GRO GSL GSTR GSTRW
+HANDLE HISTORY
+INC ITOA
+KEY
+LOADLIB LBL LC LCLR LEN LM LOADLIB LOG LOGBUF
+MEMCPY MOV MSG MSGYN MUL
+NAMES NEG NOT  
+OLLY OPCODE OPENDUMP OPENTRACE OR 
+PAUSE POP POPA PREOP PUSH PUSHA
+RBP REFRESH READSTR REF REPL REV ROL ROR RTR RTU RUN
+SBP SCMP SCMPI SETOPTION SHL SHR STEP STI STO STR SUB
+TC TEST TI TICK TICND TO TOCND
+UNICODE
+VAR
+WRT WRTA
+XCHG XOR
+/C2"Jump Instructions" Colors = 16711680 Colors Back = 16777215 Colors Auto Back = 1 Font Style = 1
+call
+else endif
+goto
+ifa ifae ifb ifbe ife ifeq ifg ige ifl ifle ifne ifneq
+ja jae jb jbe je jg jge jl jle jmp jne jnz jz
+ret
+CALL
+ELSE ENDIF
+GOTO
+IFA IFAE IFB IFBE IFE IFEQ IFG IGE IFL IFLE IFNE IFNEQ
+JA JAE JB JBE JE JG JGE JL JLE JMP JNE JNZ JZ
+RET
+/C3"Constants" STYLE_KEYWORD Colors = 8323072 Colors Back = 16777215 Colors Auto Back = 1 Font Style = 0
+ADDR
+CODE CODEBASE CODESIZE COMMAND CURRENTDIR
+DATA DATABASE DESTINATION DIR
+EDATASIZE EDATATABLE EXEFILENAME
+ENTRY EXE
+GOOD
+HMAINTHREAD HPROCESS HWND
+IDATABASE IDATATABLE INI
+MAINBASE MAINTHREADID MEMBASE MEMSIZE
+MEMORY MEMORYBASE MEMORYOWNER MEMORYSIZE
+MODULE MODULEBASE MODULESIZE
+PATH PROCESSID PROCESSNAME
+NAME NSECT
+PATH PID 
+RELOCSIZE RELOCTABLE RESBASE RESSIZE
+SIZE SYSTEMDIR
+THREAD THREADID TYPE
+VERSION
+$RESULT $RESULT_1 $RESULT_2 $RESULT_3 $RESULT_4 $VERSION
+/C4"Registers" Colors = 255 Colors Back = 16777215 Colors Auto Back = 1 Font Style = 0
+ah al ax
+bh bl bp bx
+carry? ch cl cr0 cr2 cr3 cr4 cs cx
+dh di dl dr0 dr1 dr2 dr3 dr4 dr5 dr6 dr7 ds dx
+eax ebx ebp ecx edi edx es esi esp ext0 ext1 ext2 ext3 ext4 ext5 ext6 ext7
+extb0 extb1 extb2 extb3
+fs
+gs
+mm mm0 mm1 mm2 mm3 mm4 mm5 mm6 mm7
+si sp ss
+tr3 tr4 tr5 tr6 tr7
+xmm xmm0 xmm1 xmm2 xmm3 xmm4 xmm5 xmm6 xmm7
+/C5"MMX 3DNow SIMD" Colors = 4210816 Colors Back = 16777215 Colors Auto Back = 1 Font Style = 0
+addps addss andnps andps
+cmpeqps cmpeqss cmpleps cmpless cmpltps cmpltss cmpneqps cmpneqss cmpnleps
+cmpnless cmpnltps cmpnltss cmpordps cmpordss cmpps cmpss cmpunordps
+cmpunordss comiss cvtpi2ps cvtps2pi cvtsi2ss cvttps2pi cvttss2si cvtss2si
+divps divss
+emms
+femms fxrstor fxsave
+ldmxcsr
+maskmovq maxps maxss minps minss movaps movd movdf movdt movhps movhlps
+movlhps movlps movmskps movntps movntq movq movss movups mulps mulss
+orps
+packssdw packsswb packuswb paddb paddd paddsb paddsw paddusb paddusw paddw
+pand pandn pavgb pavgusb pavgw pcmpeqb pcmpeqd pcmpeqd pcmpeqw pcmpgtb
+pcmpgtd pcmpgtw pextrw pf2id pfacc pfadd pfcmpeq pfcmpge pfcmpgt pfmax
+pfmin pfmul pfrcp pfrcpit1 pfrcpit2 pfsqit1 pfrsqrt pfsub pfsubr pi2fd
+pinsrw pmaddwd pmaxsw pmaxub pminsw pminub pmovmskb pmulhrw pmulhuw pmulhw
+pmullw por prefetch prefetchw prefetchnta prefetcht0 prefetcht1 prefetcht2
+psadbw pslld psllq psllw psrad psraw psrld psrlq psrlw psubb psubd psubsb
+psubsw psubusb psubusw psubw punpckhbw punpckhdq punpckhwd punpcklbw
+punpckldq punpcklwd pxor pshufw
+rcpps rcpss rdpmc rsqrtps rsqrtss
+sfence shufps sqrtps sqrtss stmxcsr subps subss syscall sysret
+ucomiss unpckhps unpckps unpcklps
+xmmword xorps
+/C6"Options" STYLE_KEYWORD Colors = 255 Colors Back = 16777215 Colors Auto Back = 1 Font Style = 0
+#INC #LOG #VER

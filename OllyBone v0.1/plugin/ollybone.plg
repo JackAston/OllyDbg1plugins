@@ -1,0 +1,36 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: ollybone - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP8.tmp" with contents
+[
+/nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "OLLYBONE_EXPORTS" /Fp"Release/ollybone.pch" /YX /Fo"Release/" /Fd"Release/" /J /FD /c 
+"C:\ollybone\plugin\ollybone.cpp"
+"C:\ollybone\plugin\Instdrv.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP8.tmp" 
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP9.tmp" with contents
+[
+kernel32.lib user32.lib advapi32.lib ollydbg.lib /nologo /dll /incremental:no /pdb:"Release/ollybone.pdb" /machine:I386 /out:"../ollybone.dll" /implib:"Release/ollybone.lib" /libpath:"C:\ollybone\plugin" 
+.\Release\ollybone.obj
+.\Release\Instdrv.obj
+]
+Creating command line "link.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP9.tmp"
+<h3>Output Window</h3>
+Compiling...
+ollybone.cpp
+Instdrv.cpp
+Linking...
+   Creating library Release/ollybone.lib and object Release/ollybone.exp
+
+
+
+<h3>Results</h3>
+ollybone.dll - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

@@ -1,0 +1,53 @@
+[Project]
+Assembler=masm
+Type=Dll Project
+Description=OllyDbg sample plugin
+Backup=$P\Bak\
+Group=1
+GroupExpand=1
+[MakeDef]
+Menu=0,1,1,1,0,0,0,0
+1=4,O,$B\RC.EXE /v,1
+2=3,O,$B\ML.EXE /c /coff /Cp /nologo /DMASM /I"$I",2
+3=7,O,$B\LINK.EXE /SUBSYSTEM:WINDOWS /RELEASE /DLL /DEF:$6 /LIBPATH:"$L",3
+4=0,0,,5
+5=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
+6=*.obj,O,$B\ML.EXE /c /coff /Cp /nologo /DMASM /I"$I",*.asm
+[MakeFiles]
+0=Sample.rap
+1=Sample.rc
+2=Sample.asm
+3=Sample.obj
+4=Sample.res
+5=Sample.exe
+6=Sample.def
+7=Sample.dll
+8=Sample.txt
+9=Sample.lib
+10=Sample.mak
+11=Sample.com
+[Files]
+1=Sample.asm
+2=..\plugin.inc
+3=Sample.def
+MinorFiles=*.obj;*.res;*.exp;sample.lib;
+AutoDelete=1
+[Version-Inc]
+Options=52
+[BookMark]
+0=
+1=
+2=
+3=
+4=
+5=
+6=
+7=
+8=
+9=
+[BreakPoint]
+[AutoLoad]
+1=1
+[Size]
+2=0,0,0,0,0
+1=0,0,0,0,0

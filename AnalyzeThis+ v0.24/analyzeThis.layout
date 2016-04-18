@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_layout_file>
+	<ActiveTarget name="Release" />
+	<File name="Plugin.h" open="0" top="0" tabpos="2">
+		<Cursor position="16372" topLine="293" />
+	</File>
+	<File name="analyzeThis.c" open="1" top="1" tabpos="1">
+		<Cursor position="10223" topLine="270" />
+	</File>
+	<File name="sectionBox.h" open="1" top="0" tabpos="2">
+		<Cursor position="150" topLine="0" />
+	</File>
+	<File name="sectionBox.rc" open="1" top="0" tabpos="3">
+		<Cursor position="79" topLine="0" />
+	</File>
+</CodeBlocks_layout_file>

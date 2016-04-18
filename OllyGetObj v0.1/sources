@@ -1,0 +1,27 @@
+TARGETNAME=OllyGetObj
+TARGETTYPE=DYNLINK
+
+USE_MSVCRT=1
+DLLDEF=OllyGetObj.def
+
+_NT_TARGET_VERSION= $(_NT_TARGET_VERSION_WINXP)
+
+TARGETLIBS=$(TARGETLIBS)                     \
+    $(SDK_LIB_PATH)\uuid.lib                 \
+    $(SDK_LIB_PATH)\WIAGUID.lib              \
+    $(SDK_LIB_PATH)\Kernel32.lib             \
+    $(SDK_LIB_PATH)\ole32.lib                \
+    $(SDK_LIB_PATH)\oleaut32.lib             \
+    $(SDK_LIB_PATH)\winspool.lib             \
+    $(SDK_LIB_PATH)\gdi32.lib                \
+    $(SDK_LIB_PATH)\gdiplus.lib              \
+    $(SDK_LIB_PATH)\shlwapi.lib              \
+    $(SDK_LIB_PATH)\Advapi32.lib             \
+    $(SDK_LIB_PATH)\user32.lib               \
+    $(SDK_LIB_PATH)\ntdll.lib                \
+    $(OBJ_PATH)\ollydbg.lib               
+
+
+SOURCES=OllyGetObj.c 
+UMBASE=0x1000000
+USER_C_FLAGS=/J

@@ -1,0 +1,58 @@
+# Sample project file for BCC 5.5, makes Bookmark.DLL
+
+BCC = $(MAKEDIR)\..
+PROJECT  = CmdBar
+TARGET   = $(PROJECT).dll
+OBJFILES = cmdexec.obj $(PROJECT).obj
+RESFILES = #$(PROJECT).res
+RESDEPEN = $(RESFILES)
+LIBFILES = ollydbg.lib
+PATHCPP  = .;
+PATHASM  = .;
+PATHRC   = .;
+RELEASELIBPATH = $(BCC)\lib\release
+PSDKLIBPATH = $(BCC)\lib\PSDK
+
+CFLAG1 = -I$(BCC)\include -WD -O2 -Hc -w -Vx -Ve -C -X- -a1 -b -d -k -y -v -vi -K -c -tWM -w-par
+RFLAGS = -i$(BCC)\include
+AFLAGS = /i$(BCC)\include /mx /w2 /zd
+LFLAGS = -L$(BCC)\lib\obj;$(BCC)\lib;$(RELEASELIBPATH);$(PSDKLIBPATH) -aa -Tpd -x -Gn -Gi -w -v
+ALLOBJ = c0d32.obj $(OBJFILES)
+ALLRES = $(RESFILES)
+ALLLIB = $(LIBFILES) $(LIBRARIES) comctl32.lib import32.lib cw32.lib
+
+.autodepend
+BCC32  = bcc32
+CPP32  = cpp32
+TASM32 = tasm32
+LINKER = ilink32
+BRCC32 = brcc32
+
+.PATH.CPP = $(PATHCPP)
+.PATH.C   = $(PATHCPP)
+.PATH.ASM = $(PATHASM)
+.PATH.RC  = $(PATHRC)
+
+$(TARGET): $(OBJFILES) $(RESDEPEN) $(DEFFILE)
+    $(BCC)\BIN\$(LINKER) @&&!
+    $(LFLAGS) +
+    $(ALLOBJ), +
+    $(TARGET),, +
+    $(ALLLIB), +
+    $(DEFFILE), +
+    $(ALLRES)
+!
+
+.c.obj:
+    $(BCC)\BIN\$(BCC32) $(CFLAG1) -n$(@D) {$< }
+
+.asm.obj:
+    $(BCC)\BIN\$(TASM32) $(AFLAGS) $<, $@
+
+.rc.res:
+    $(BCC)\BIN\$(BRCC32) $(RFLAGS) -fo$@ $<
+
+c:
+    -del *.obj
+    -del *.tds
+    -del *.lib

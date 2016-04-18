@@ -1,0 +1,21 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "olly_de-attach_helper", "olly_de-attach_helper.vcproj", "{8F4131D4-1339-4F3E-9592-46AA66683C98}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{8F4131D4-1339-4F3E-9592-46AA66683C98}.Debug.ActiveCfg = Debug|Win32
+		{8F4131D4-1339-4F3E-9592-46AA66683C98}.Debug.Build.0 = Debug|Win32
+		{8F4131D4-1339-4F3E-9592-46AA66683C98}.Release.ActiveCfg = Release|Win32
+		{8F4131D4-1339-4F3E-9592-46AA66683C98}.Release.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

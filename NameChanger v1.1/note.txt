@@ -1,0 +1,5 @@
+Plugin : NameChanger ver. 1.1
+Author : Marcin 'Icewall' Noga
+
+More info about plugin you can find on my blog:
+http://www.icewall.pl/namechanger-ollydbg-plugin/?lang=en

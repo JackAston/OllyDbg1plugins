@@ -1,0 +1,9 @@
+LIBRARY
+EXPORTS
+_ODBG_Pluginaction
+_ODBG_Pluginclose
+_ODBG_Plugindata
+_ODBG_Plugininit
+_ODBG_Pluginmenu
+;_ODBG_Pausedex
+;_ODBG_Pluginreset

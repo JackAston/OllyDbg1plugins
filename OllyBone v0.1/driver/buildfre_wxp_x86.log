@@ -1,0 +1,52 @@
+BUILD: Computing Include file dependencies:
+BUILD: Examining c:\ollybone\driver directory for files to compile.
+Compiling (NoSync) c:\ollybone\driver directory ********************
+'nmake.exe /nologo BUILDMSG=Stop. -i NTTEST= UMTEST= NOLINK=1 NOPASS0=1 386=1'
+cl -nologo -Ii386\ -I. -IC:\WINDDK\3790~1.183\inc\mfc42 -Iobjfre_wxp_x86\i386 -IC:\WINDDK\3790~1.183\inc\wxp -IC:\WINDDK\3790~1.183\inc\wxp -IC:\WINDDK\3790~1.183\inc\ddk\wxp -IC:\WINDDK\3790~1.183\inc\ddk\wdm\wxp -IC:\WINDDK\3790~1.183\inc\crt -D_X86_=1 -Di386=1  -DSTD_CALL -DCONDITION_HANDLING=1   -DNT_INST=0 -DWIN32=100 -D_NT1X_=100 -DWINNT=1 -D_WIN32_WINNT=0x0501 /DWINVER=0x0501 -D_WIN32_IE=0x0603    -DWIN32_LEAN_AND_MEAN=1 -DDEVL=1 -D__BUILDMACHINE__=WinDDK -DFPO=0  -DNDEBUG -D_DLL=1      /c /Zl /Zp8 /Gy /Gm- -cbstring /W3 /WX /Gz  /GX-  /GR- /GF /GS /G6 /Ze /Gi- /QIfdiv- /hotpatch -Z7 /Oxs  /Oy-   -FIC:\WINDDK\3790~1.183\inc\wxp\warning.h   .\ollybone.c .\multicpu.c 
+ollybone.c
+multicpu.c
+Generating Code...
+
+Stop.
+Linking c:\ollybone\driver directory ********************
+'nmake.exe /nologo BUILDMSG=Stop. -i LINKONLY=1 NOPASS0=1 NTTEST= UMTEST= 386=1'
+	link -out:..\i386\ollybone.sys -machine:ix86 @C:\DOCUME~1\Owner\LOCALS~1\Temp\nm1E.tmp
+Microsoft (R) Incremental Linker Version 7.10.4035
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+-MERGE:_PAGE=PAGE 
+-MERGE:_TEXT=.text 
+-SECTION:INIT,d 
+-OPT:REF 
+-OPT:ICF 
+-IGNORE:4198,4010,4037,4039,4065,4070,4078,4087,4089,4221 
+-INCREMENTAL:NO 
+-FULLBUILD 
+/release 
+-NODEFAULTLIB 
+/WX 
+-debug 
+-debugtype:cv 
+-version:5.1 
+-osversion:5.1 
+/functionpadmin:5 
+/safeseh 
+/pdbcompress 
+-STACK:0x40000,0x1000 
+-driver 
+-base:0x10000 
+-align:0x80 /stub:C:\WINDDK\3790~1.183\lib\wxp\stub512.com 
+-subsystem:native,5.01 
+-entry:GsDriverEntry@8 
+-out:..\i386\ollybone.sys 
+objfre_wxp_x86\i386\ollybone.obj 
+objfre_wxp_x86\i386\multicpu.obj 
+C:\WINDDK\3790~1.183\lib\wxp\i386\BufferOverflowK.lib 
+C:\WINDDK\3790~1.183\lib\wxp\i386\ntoskrnl.lib 
+C:\WINDDK\3790~1.183\lib\wxp\i386\hal.lib 
+C:\WINDDK\3790~1.183\lib\wxp\i386\wmilib.lib 
+C:\WINDDK\3790~1.183\lib\wxp\i386\sehupd.lib 
+	echo Skip Binplace:
+Skip Binplace:
+
+Stop.

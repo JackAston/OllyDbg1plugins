@@ -1,0 +1,50 @@
+NtGlobalFlagPlugin for ollydbg
+
+author Stingduk
+
+version 1.0
+
+platforms w2k and above wont work on 95,98,and winme 
+
+this plugin is intended to log all the window Ldr Emitted Debugstrings during process initialization stage in ollydbg log window
+
+usage 
+
+simply copy the dll to ollydbg directory or to the plugin path 
+if you have specified one in options 
+
+it should show up in plugin menu and ready to use
+
+use SET_LDR_SHOW_SNAPS to set the global flag
+
+if you have plugins that hide ollydbg like isDebugger present plugin
+or hidedebugger plugin
+
+you should choose yes to patch ntdll 
+
+if you chose no debug strings wont be visible 
+
+this plugin will work even before you load a debuggee so that you dont have to restart debuggee :)
+if you set after loading a debuggee then you should restrat the debuggee to catch the strings
+
+also while closing ollydbg this plugin will ask if you prefer to keep the setting for next session 
+
+normally the strings are benign and dont offer much information
+unless you are geek so choose no as keeping it active for debugging
+simple apps like iczelions tut-o2 will make the process a little bit slower as the system has to format and print the strings :) 
+
+any and all comments bug reports are welcome :)
+my mail address is in one of the plugins message box :)
+
+thanks and regards 
+
+stingduk 
+
+
+greetings 
+to oleh yuschuk author of this fine debugger 
+to detten for casting my Dwords to *(long *)(lpvoid)(char)(FARPROC *)
+without his active support i wouldnt have completed this project 
+also thanks goes to minos ,Zairon , AndreaGeddon for beta testing on 
+other platforms 
+also thanks to you :)

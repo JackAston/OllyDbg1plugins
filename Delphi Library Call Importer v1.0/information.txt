@@ -1,0 +1,24 @@
+// Delphi Library Call Importer v1.0
+// Copyright Adavnt, 2007
+// If you plan to reuse this code please give credit where credit is due, as did I.
+
+
+How to:
+In DeDe you need to generate the map file and dump the project.  When you dump the project the events.txt will be created
+
+About:
+When I would come across a Delphi subject, I would always find myself loading up DeDe along side
+Ollydbg so that I could quickly analyze Delphi library calls that I could just skip over.  This is a hassle
+when you are trying to step through code.  I also found that DeDe didn't always generate code for some of the
+functions.  Currently there is a plugin for importing MAP files into Olly, MapConv, and DeDe can export a MAP file
+for this purpose.  HOwever I decided to take it a step further.  My plugin can also import the events.txt file created
+by DeDe when you dump the project.  This gives the ability to find all references to objects and functions and note them
+as such in comments.
+
+If you find any bugs in the code please contact me on efnet, usually in #c4n.
+
+Thanks to
+godfather+ for MapConv code
+scherzo for this LCB plugin code that I used as a base plugin
+DaFixer for DeDe
+#c4n for any help

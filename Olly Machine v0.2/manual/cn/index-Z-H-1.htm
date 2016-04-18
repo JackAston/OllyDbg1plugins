@@ -1,0 +1,220 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<!--
+
+Generated from index.tex by tex2page, v 2004-09-11
+(running on MzScheme 205, windows), 
+(c) Dorai Sitaram, 
+http://www.ccs.neu.edu/~dorai/tex2page/tex2page-doc.html
+
+-->
+<head>
+<title>
+OllyMachine 手册
+</title>
+<link rel="stylesheet" type="text/css" href="css/main.css" title=default>
+<link rel="stylesheet" type="text/css" href="index-Z-S.css" title=default>
+<meta name=robots content="noindex,follow">
+<meta http-equiv="Content-Type" content="text/html;charset=gb2312"></head>
+<body>
+<div align=right class=navigation><i>[<span><a href="index.htm">首页</a>, <a href="index.htm">上一页</a></span><span>, <a href="index-Z-H-2.htm">下一页</a></span><span class=disable>; &nbsp;&nbsp;</span><span class=disable>目录 </span>]</i></div><p></p>
+<a name="node_chap_Temp_1"></a>
+<h1 class=chapter>
+<div class=chapterheading>&nbsp;</div><br>
+<a href="#node_toc_node_chap_Temp_1">目录</a></h1>
+<p><a name="node_toc_start"></a></p>
+<p class="toc"><b>
+&nbsp; &nbsp; <a name="node_toc_node_chap_1"></a><a href="index-Z-H-2.htm#node_chap_1">1&nbsp;&nbsp;概述</a></b><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_1.1"></a><a href="index-Z-H-2.htm#node_sec_1.1">1.1&nbsp;&nbsp;简介</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_1.2"></a><a href="index-Z-H-2.htm#node_sec_1.2">1.2&nbsp;&nbsp;主页</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_1.3"></a><a href="index-Z-H-2.htm#node_sec_1.3">1.3&nbsp;&nbsp;安装</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_1.4"></a><a href="index-Z-H-2.htm#node_sec_1.4">1.4&nbsp;&nbsp;运行</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_1.4.1"></a><a href="index-Z-H-2.htm#node_sec_1.4.1">1.4.1&nbsp;&nbsp;运行脚本</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_1.4.2"></a><a href="index-Z-H-2.htm#node_sec_1.4.2">1.4.2&nbsp;&nbsp;运行字节码文件</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_1.5"></a><a href="index-Z-H-2.htm#node_sec_1.5">1.5&nbsp;&nbsp;关于</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_1.6"></a><a href="index-Z-H-2.htm#node_sec_1.6">1.6&nbsp;&nbsp;历史</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_1.7"></a><a href="index-Z-H-2.htm#node_sec_1.7">1.7&nbsp;&nbsp;联系方式</a><br>
+</p>
+<p class="toc"><b>
+&nbsp; &nbsp; <a name="node_toc_node_chap_2"></a><a href="index-Z-H-3.htm#node_chap_2">2&nbsp;&nbsp;OllyMachine体系</a></b><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_2.1"></a><a href="index-Z-H-3.htm#node_sec_2.1">2.1&nbsp;&nbsp;核心</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_2.1.1"></a><a href="index-Z-H-3.htm#node_sec_2.1.1">2.1.1&nbsp;&nbsp;寻址空间</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_2.1.2"></a><a href="index-Z-H-3.htm#node_sec_2.1.2">2.1.2&nbsp;&nbsp;寄存器</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_2.1.3"></a><a href="index-Z-H-3.htm#node_sec_2.1.3">2.1.3&nbsp;&nbsp;标志位</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_2.2"></a><a href="index-Z-H-3.htm#node_sec_2.2">2.2&nbsp;&nbsp;工作流程</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_2.3"></a><a href="index-Z-H-3.htm#node_sec_2.3">2.3&nbsp;&nbsp;编译期错误</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_2.4"></a><a href="index-Z-H-3.htm#node_sec_2.4">2.4&nbsp;&nbsp;运行期异常</a><br>
+</p>
+<p class="toc"><b>
+&nbsp; &nbsp; <a name="node_toc_node_chap_3"></a><a href="index-Z-H-4.htm#node_chap_3">3&nbsp;&nbsp;OllyMachine汇编语言</a></b><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.1"></a><a href="index-Z-H-4.htm#node_sec_3.1">3.1&nbsp;&nbsp;基本元素</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.1.1"></a><a href="index-Z-H-4.htm#node_sec_3.1.1">3.1.1&nbsp;&nbsp;指令</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.1.1.1"></a><a href="index-Z-H-4.htm#node_sec_3.1.1.1">3.1.1.1&nbsp;&nbsp;操作码</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.1.1.2"></a><a href="index-Z-H-4.htm#node_sec_3.1.1.2">3.1.1.2&nbsp;&nbsp;操作数</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_Temp_7"></a><a href="index-Z-H-4.htm#node_sec_Temp_7">寄存器</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_Temp_8"></a><a href="index-Z-H-4.htm#node_sec_Temp_8">标识符</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_Temp_9"></a><a href="index-Z-H-4.htm#node_sec_Temp_9">整数常数</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.1.2"></a><a href="index-Z-H-4.htm#node_sec_3.1.2">3.1.2&nbsp;&nbsp;注释</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.2"></a><a href="index-Z-H-4.htm#node_sec_3.2">3.2&nbsp;&nbsp;标号</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.3"></a><a href="index-Z-H-4.htm#node_sec_3.3">3.3&nbsp;&nbsp;数据传送指令</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.3.1"></a><a href="index-Z-H-4.htm#node_sec_3.3.1">3.3.1&nbsp;&nbsp;MOV</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.3.2"></a><a href="index-Z-H-4.htm#node_sec_3.3.2">3.3.2&nbsp;&nbsp;XCHG</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.3.3"></a><a href="index-Z-H-4.htm#node_sec_3.3.3">3.3.3&nbsp;&nbsp;LDS</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.3.4"></a><a href="index-Z-H-4.htm#node_sec_3.3.4">3.3.4&nbsp;&nbsp;PUSH</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.3.5"></a><a href="index-Z-H-4.htm#node_sec_3.3.5">3.3.5&nbsp;&nbsp;POP</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.4"></a><a href="index-Z-H-4.htm#node_sec_3.4">3.4&nbsp;&nbsp;算术指令</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.4.1"></a><a href="index-Z-H-4.htm#node_sec_3.4.1">3.4.1&nbsp;&nbsp;加法指令</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.4.1.1"></a><a href="index-Z-H-4.htm#node_sec_3.4.1.1">3.4.1.1&nbsp;&nbsp;ADD</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.4.1.2"></a><a href="index-Z-H-4.htm#node_sec_3.4.1.2">3.4.1.2&nbsp;&nbsp;INC</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.4.2"></a><a href="index-Z-H-4.htm#node_sec_3.4.2">3.4.2&nbsp;&nbsp;减法指令</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.4.2.1"></a><a href="index-Z-H-4.htm#node_sec_3.4.2.1">3.4.2.1&nbsp;&nbsp;SUB</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.4.2.2"></a><a href="index-Z-H-4.htm#node_sec_3.4.2.2">3.4.2.2&nbsp;&nbsp;DEC</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.4.2.3"></a><a href="index-Z-H-4.htm#node_sec_3.4.2.3">3.4.2.3&nbsp;&nbsp;CMP</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.4.3"></a><a href="index-Z-H-4.htm#node_sec_3.4.3">3.4.3&nbsp;&nbsp;乘法指令</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.4.3.1"></a><a href="index-Z-H-4.htm#node_sec_3.4.3.1">3.4.3.1&nbsp;&nbsp;MUL</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.4.4"></a><a href="index-Z-H-4.htm#node_sec_3.4.4">3.4.4&nbsp;&nbsp;除法指令</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.4.4.1"></a><a href="index-Z-H-4.htm#node_sec_3.4.4.1">3.4.4.1&nbsp;&nbsp;MUL</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.5"></a><a href="index-Z-H-4.htm#node_sec_3.5">3.5&nbsp;&nbsp;逻辑指令</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.5.1"></a><a href="index-Z-H-4.htm#node_sec_3.5.1">3.5.1&nbsp;&nbsp;逻辑运算指令</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.5.1.1"></a><a href="index-Z-H-4.htm#node_sec_3.5.1.1">3.5.1.1&nbsp;&nbsp;AND</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.5.1.2"></a><a href="index-Z-H-4.htm#node_sec_3.5.1.2">3.5.1.2&nbsp;&nbsp;OR</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.5.1.3"></a><a href="index-Z-H-4.htm#node_sec_3.5.1.3">3.5.1.3&nbsp;&nbsp;NOT</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.5.1.4"></a><a href="index-Z-H-4.htm#node_sec_3.5.1.4">3.5.1.4&nbsp;&nbsp;XOR</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.5.2"></a><a href="index-Z-H-4.htm#node_sec_3.5.2">3.5.2&nbsp;&nbsp;移位指令</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.5.2.1"></a><a href="index-Z-H-4.htm#node_sec_3.5.2.1">3.5.2.1&nbsp;&nbsp;SHL</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.5.2.2"></a><a href="index-Z-H-4.htm#node_sec_3.5.2.2">3.5.2.2&nbsp;&nbsp;SHR</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.6"></a><a href="index-Z-H-4.htm#node_sec_3.6">3.6&nbsp;&nbsp;控制转移指令</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.6.1"></a><a href="index-Z-H-4.htm#node_sec_3.6.1">3.6.1&nbsp;&nbsp;无条件转移指令</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.6.1.1"></a><a href="index-Z-H-4.htm#node_sec_3.6.1.1">3.6.1.1&nbsp;&nbsp;JMP</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.6.2"></a><a href="index-Z-H-4.htm#node_sec_3.6.2">3.6.2&nbsp;&nbsp;条件转移指令</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.6.2.1"></a><a href="index-Z-H-4.htm#node_sec_3.6.2.1">3.6.2.1&nbsp;&nbsp;JE</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.6.2.2"></a><a href="index-Z-H-4.htm#node_sec_3.6.2.2">3.6.2.2&nbsp;&nbsp;JNE</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.6.2.3"></a><a href="index-Z-H-4.htm#node_sec_3.6.2.3">3.6.2.3&nbsp;&nbsp;JB</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.6.2.4"></a><a href="index-Z-H-4.htm#node_sec_3.6.2.4">3.6.2.4&nbsp;&nbsp;JNAE</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.6.2.5"></a><a href="index-Z-H-4.htm#node_sec_3.6.2.5">3.6.2.5&nbsp;&nbsp;JNB</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.6.2.6"></a><a href="index-Z-H-4.htm#node_sec_3.6.2.6">3.6.2.6&nbsp;&nbsp;JAE</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.6.2.7"></a><a href="index-Z-H-4.htm#node_sec_3.6.2.7">3.6.2.7&nbsp;&nbsp;JBE</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.6.2.8"></a><a href="index-Z-H-4.htm#node_sec_3.6.2.8">3.6.2.8&nbsp;&nbsp;JNA</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.6.2.9"></a><a href="index-Z-H-4.htm#node_sec_3.6.2.9">3.6.2.9&nbsp;&nbsp;JNBE</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.6.2.10"></a><a href="index-Z-H-4.htm#node_sec_3.6.2.10">3.6.2.10&nbsp;&nbsp;JA</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.7"></a><a href="index-Z-H-4.htm#node_sec_3.7">3.7&nbsp;&nbsp;其他指令</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.7.1"></a><a href="index-Z-H-4.htm#node_sec_3.7.1">3.7.1&nbsp;&nbsp;INCLUDE</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.7.2"></a><a href="index-Z-H-4.htm#node_sec_3.7.2">3.7.2&nbsp;&nbsp;NOP</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.7.3"></a><a href="index-Z-H-4.htm#node_sec_3.7.3">3.7.3&nbsp;&nbsp;PAUSE</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.7.4"></a><a href="index-Z-H-4.htm#node_sec_3.7.4">3.7.4&nbsp;&nbsp;HALT</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_3.7.5"></a><a href="index-Z-H-4.htm#node_sec_3.7.5">3.7.5&nbsp;&nbsp;INVOKE</a><br>
+</p>
+<p class="toc"><b>
+&nbsp; &nbsp; <a name="node_toc_node_chap_4"></a><a href="index-Z-H-5.htm#node_chap_4">4&nbsp;&nbsp;OllyMachine API</a></b><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.1"></a><a href="index-Z-H-5.htm#node_sec_4.1">4.1&nbsp;&nbsp;Hello World!</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.2"></a><a href="index-Z-H-5.htm#node_sec_4.2">4.2&nbsp;&nbsp;调用方式</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.3"></a><a href="index-Z-H-5.htm#node_sec_4.3">4.3&nbsp;&nbsp;更简便的调用方式</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.4"></a><a href="index-Z-H-5.htm#node_sec_4.4">4.4&nbsp;&nbsp;返回值</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.5"></a><a href="index-Z-H-5.htm#node_sec_4.5">4.5&nbsp;&nbsp;基本输入输出API</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.5.1"></a><a href="index-Z-H-5.htm#node_sec_4.5.1">4.5.1&nbsp;&nbsp;MSG</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.5.2"></a><a href="index-Z-H-5.htm#node_sec_4.5.2">4.5.2&nbsp;&nbsp;MSGYN</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.5.3"></a><a href="index-Z-H-5.htm#node_sec_4.5.3">4.5.3&nbsp;&nbsp;PrintNum</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.5.4"></a><a href="index-Z-H-5.htm#node_sec_4.5.4">4.5.4&nbsp;&nbsp;PrintBuf</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.5.5"></a><a href="index-Z-H-5.htm#node_sec_4.5.5">4.5.5&nbsp;&nbsp;PrintBufToDump</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.5.6"></a><a href="index-Z-H-5.htm#node_sec_4.5.6">4.5.6&nbsp;&nbsp;PrintBufToNewDump</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.5.7"></a><a href="index-Z-H-5.htm#node_sec_4.5.7">4.5.7&nbsp;&nbsp;UpdateDumpBuf</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.5.8"></a><a href="index-Z-H-5.htm#node_sec_4.5.8">4.5.8&nbsp;&nbsp;InputText</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.5.9"></a><a href="index-Z-H-5.htm#node_sec_4.5.9">4.5.9&nbsp;&nbsp;InputHexLong</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.6"></a><a href="index-Z-H-5.htm#node_sec_4.6">4.6&nbsp;&nbsp;内存操作API</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.6.1"></a><a href="index-Z-H-5.htm#node_sec_4.6.1">4.6.1&nbsp;&nbsp;ReadMemLong</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.6.2"></a><a href="index-Z-H-5.htm#node_sec_4.6.2">4.6.2&nbsp;&nbsp;WriteMemLong</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.6.3"></a><a href="index-Z-H-5.htm#node_sec_4.6.3">4.6.3&nbsp;&nbsp;WriteMemHexes</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.6.4"></a><a href="index-Z-H-5.htm#node_sec_4.6.4">4.6.4&nbsp;&nbsp;ReadFileIntoMem</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.6.5"></a><a href="index-Z-H-5.htm#node_sec_4.6.5">4.6.5&nbsp;&nbsp;DumpMem</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.6.6"></a><a href="index-Z-H-5.htm#node_sec_4.6.6">4.6.6&nbsp;&nbsp;DumpMemAppend</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.6.7"></a><a href="index-Z-H-5.htm#node_sec_4.6.7">4.6.7&nbsp;&nbsp;DumpAsPE</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.7"></a><a href="index-Z-H-5.htm#node_sec_4.7">4.7&nbsp;&nbsp;搜索和替换API</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.7.1"></a><a href="index-Z-H-5.htm#node_sec_4.7.1">4.7.1&nbsp;&nbsp;FindOpcode</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.7.2"></a><a href="index-Z-H-5.htm#node_sec_4.7.2">4.7.2&nbsp;&nbsp;Find</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.7.3"></a><a href="index-Z-H-5.htm#node_sec_4.7.3">4.7.3&nbsp;&nbsp;ReverseFind</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.7.4"></a><a href="index-Z-H-5.htm#node_sec_4.7.4">4.7.4&nbsp;&nbsp;Search</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.7.5"></a><a href="index-Z-H-5.htm#node_sec_4.7.5">4.7.5&nbsp;&nbsp;ReverseSearch</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.7.6"></a><a href="index-Z-H-5.htm#node_sec_4.7.6">4.7.6&nbsp;&nbsp;GetPrevOpAddr</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.7.7"></a><a href="index-Z-H-5.htm#node_sec_4.7.7">4.7.7&nbsp;&nbsp;GetNextOpAddr</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.7.8"></a><a href="index-Z-H-5.htm#node_sec_4.7.8">4.7.8&nbsp;&nbsp;GetProcAddress</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.7.9"></a><a href="index-Z-H-5.htm#node_sec_4.7.9">4.7.9&nbsp;&nbsp;Fill</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.7.10"></a><a href="index-Z-H-5.htm#node_sec_4.7.10">4.7.10&nbsp;&nbsp;ReplaceBytes</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.7.11"></a><a href="index-Z-H-5.htm#node_sec_4.7.11">4.7.11&nbsp;&nbsp;ReplaceBytesEx</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.7.12"></a><a href="index-Z-H-5.htm#node_sec_4.7.12">4.7.12&nbsp;&nbsp;CopyBytesTo</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.8"></a><a href="index-Z-H-5.htm#node_sec_4.8">4.8&nbsp;&nbsp;汇编API</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.8.1"></a><a href="index-Z-H-5.htm#node_sec_4.8.1">4.8.1&nbsp;&nbsp;ASM</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.8.2"></a><a href="index-Z-H-5.htm#node_sec_4.8.2">4.8.2&nbsp;&nbsp;__asm</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.8.3"></a><a href="index-Z-H-5.htm#node_sec_4.8.3">4.8.3&nbsp;&nbsp;Analyse</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.9"></a><a href="index-Z-H-5.htm#node_sec_4.9">4.9&nbsp;&nbsp;运行API</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.9.1"></a><a href="index-Z-H-5.htm#node_sec_4.9.1">4.9.1&nbsp;&nbsp;RunToReturn</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.9.2"></a><a href="index-Z-H-5.htm#node_sec_4.9.2">4.9.2&nbsp;&nbsp;RunToUserCode</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.9.3"></a><a href="index-Z-H-5.htm#node_sec_4.9.3">4.9.3&nbsp;&nbsp;Run</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.9.4"></a><a href="index-Z-H-5.htm#node_sec_4.9.4">4.9.4&nbsp;&nbsp;AnimateInto</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.9.5"></a><a href="index-Z-H-5.htm#node_sec_4.9.5">4.9.5&nbsp;&nbsp;AnimateOver</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.9.6"></a><a href="index-Z-H-5.htm#node_sec_4.9.6">4.9.6&nbsp;&nbsp;StepInto</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.9.7"></a><a href="index-Z-H-5.htm#node_sec_4.9.7">4.9.7&nbsp;&nbsp;StepIntoS</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.9.8"></a><a href="index-Z-H-5.htm#node_sec_4.9.8">4.9.8&nbsp;&nbsp;StepOver</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.9.9"></a><a href="index-Z-H-5.htm#node_sec_4.9.9">4.9.9&nbsp;&nbsp;StepOverS</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.9.10"></a><a href="index-Z-H-5.htm#node_sec_4.9.10">4.9.10&nbsp;&nbsp;ESTI</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.9.11"></a><a href="index-Z-H-5.htm#node_sec_4.9.11">4.9.11&nbsp;&nbsp;ESTO</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.9.12"></a><a href="index-Z-H-5.htm#node_sec_4.9.12">4.9.12&nbsp;&nbsp;GO</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.10"></a><a href="index-Z-H-5.htm#node_sec_4.10">4.10&nbsp;&nbsp;Trace API</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.10.1"></a><a href="index-Z-H-5.htm#node_sec_4.10.1">4.10.1&nbsp;&nbsp;TraceInto</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.10.2"></a><a href="index-Z-H-5.htm#node_sec_4.10.2">4.10.2&nbsp;&nbsp;TraceOver</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.10.3"></a><a href="index-Z-H-5.htm#node_sec_4.10.3">4.10.3&nbsp;&nbsp;TraceIntoCond</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.10.4"></a><a href="index-Z-H-5.htm#node_sec_4.10.4">4.10.4&nbsp;&nbsp;TraceOverCond</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.11"></a><a href="index-Z-H-5.htm#node_sec_4.11">4.11&nbsp;&nbsp;断点API</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.11.1"></a><a href="index-Z-H-5.htm#node_sec_4.11.1">4.11.1&nbsp;&nbsp;BP</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.11.2"></a><a href="index-Z-H-5.htm#node_sec_4.11.2">4.11.2&nbsp;&nbsp;BC</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.11.3"></a><a href="index-Z-H-5.htm#node_sec_4.11.3">4.11.3&nbsp;&nbsp;BPCND</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.11.4"></a><a href="index-Z-H-5.htm#node_sec_4.11.4">4.11.4&nbsp;&nbsp;BPL</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.11.5"></a><a href="index-Z-H-5.htm#node_sec_4.11.5">4.11.5&nbsp;&nbsp;BPLCND</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.11.6"></a><a href="index-Z-H-5.htm#node_sec_4.11.6">4.11.6&nbsp;&nbsp;BPRM</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.11.7"></a><a href="index-Z-H-5.htm#node_sec_4.11.7">4.11.7&nbsp;&nbsp;BPWM</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.11.8"></a><a href="index-Z-H-5.htm#node_sec_4.11.8">4.11.8&nbsp;&nbsp;BPMC</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.11.9"></a><a href="index-Z-H-5.htm#node_sec_4.11.9">4.11.9&nbsp;&nbsp;BPHWS</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.11.10"></a><a href="index-Z-H-5.htm#node_sec_4.11.10">4.11.10&nbsp;&nbsp;BPHWC</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.11.11"></a><a href="index-Z-H-5.htm#node_sec_4.11.11">4.11.11&nbsp;&nbsp;EOB</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.11.12"></a><a href="index-Z-H-5.htm#node_sec_4.11.12">4.11.12&nbsp;&nbsp;EOBINT3</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.11.13"></a><a href="index-Z-H-5.htm#node_sec_4.11.13">4.11.13&nbsp;&nbsp;EOBHW</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.11.14"></a><a href="index-Z-H-5.htm#node_sec_4.11.14">4.11.14&nbsp;&nbsp;EOBMEM</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.11.15"></a><a href="index-Z-H-5.htm#node_sec_4.11.15">4.11.15&nbsp;&nbsp;EOE</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.11.16"></a><a href="index-Z-H-5.htm#node_sec_4.11.16">4.11.16&nbsp;&nbsp;COB</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.11.17"></a><a href="index-Z-H-5.htm#node_sec_4.11.17">4.11.17&nbsp;&nbsp;COE</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.12"></a><a href="index-Z-H-5.htm#node_sec_4.12">4.12&nbsp;&nbsp;模块API</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.12.1"></a><a href="index-Z-H-5.htm#node_sec_4.12.1">4.12.1&nbsp;&nbsp;GMI</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.13"></a><a href="index-Z-H-5.htm#node_sec_4.13">4.13&nbsp;&nbsp;注释与标号API</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.13.1"></a><a href="index-Z-H-5.htm#node_sec_4.13.1">4.13.1&nbsp;&nbsp;Comment</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.13.2"></a><a href="index-Z-H-5.htm#node_sec_4.13.2">4.13.2&nbsp;&nbsp;SetLbl</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.14"></a><a href="index-Z-H-5.htm#node_sec_4.14">4.14&nbsp;&nbsp;日志API</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.14.1"></a><a href="index-Z-H-5.htm#node_sec_4.14.1">4.14.1&nbsp;&nbsp;LogText</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.14.2"></a><a href="index-Z-H-5.htm#node_sec_4.14.2">4.14.2&nbsp;&nbsp;LogLong</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.15"></a><a href="index-Z-H-5.htm#node_sec_4.15">4.15&nbsp;&nbsp;反反调试API</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.15.1"></a><a href="index-Z-H-5.htm#node_sec_4.15.1">4.15.1&nbsp;&nbsp;HideOD</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.15.2"></a><a href="index-Z-H-5.htm#node_sec_4.15.2">4.15.2&nbsp;&nbsp;UnHideOD</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.16"></a><a href="index-Z-H-5.htm#node_sec_4.16">4.16&nbsp;&nbsp;缓冲区API</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.16.1"></a><a href="index-Z-H-5.htm#node_sec_4.16.1">4.16.1&nbsp;&nbsp;malloc</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.16.2"></a><a href="index-Z-H-5.htm#node_sec_4.16.2">4.16.2&nbsp;&nbsp;free</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.16.3"></a><a href="index-Z-H-5.htm#node_sec_4.16.3">4.16.3&nbsp;&nbsp;VirtualAllocEx</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.16.4"></a><a href="index-Z-H-5.htm#node_sec_4.16.4">4.16.4&nbsp;&nbsp;VirtualFreeEx</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.16.5"></a><a href="index-Z-H-5.htm#node_sec_4.16.5">4.16.5&nbsp;&nbsp;strcpy</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.16.6"></a><a href="index-Z-H-5.htm#node_sec_4.16.6">4.16.6&nbsp;&nbsp;strcat</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.16.7"></a><a href="index-Z-H-5.htm#node_sec_4.16.7">4.16.7&nbsp;&nbsp;strlen</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.16.8"></a><a href="index-Z-H-5.htm#node_sec_4.16.8">4.16.8&nbsp;&nbsp;ltoa</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.16.9"></a><a href="index-Z-H-5.htm#node_sec_4.16.9">4.16.9&nbsp;&nbsp;memcpy</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.17"></a><a href="index-Z-H-5.htm#node_sec_4.17">4.17&nbsp;&nbsp;辅助调试API</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.17.1"></a><a href="index-Z-H-5.htm#node_sec_4.17.1">4.17.1&nbsp;&nbsp;FindProcBegin</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.17.2"></a><a href="index-Z-H-5.htm#node_sec_4.17.2">4.17.2&nbsp;&nbsp;FindProcEnd</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.17.3"></a><a href="index-Z-H-5.htm#node_sec_4.17.3">4.17.3&nbsp;&nbsp;FindPrevProc</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.17.4"></a><a href="index-Z-H-5.htm#node_sec_4.17.4">4.17.4&nbsp;&nbsp;FindNextProc</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.17.5"></a><a href="index-Z-H-5.htm#node_sec_4.17.5">4.17.5&nbsp;&nbsp;FollowCall</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.18"></a><a href="index-Z-H-5.htm#node_sec_4.18">4.18&nbsp;&nbsp;杂项API</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.18.1"></a><a href="index-Z-H-5.htm#node_sec_4.18.1">4.18.1&nbsp;&nbsp;IsWinNTKernel</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.18.2"></a><a href="index-Z-H-5.htm#node_sec_4.18.2">4.18.2&nbsp;&nbsp;GotoCpuAddr</a><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a name="node_toc_node_sec_4.18.3"></a><a href="index-Z-H-5.htm#node_sec_4.18.3">4.18.3&nbsp;&nbsp;GotoDumpAddr</a><br>
+</p>
+<p>
+</p>
+<div align=right class=navigation><i>[<span><a href="index.htm">首页</a>, <a href="index.htm">上一页</a></span><span>, <a href="index-Z-H-2.htm">下一页</a></span><span class=disable>; &nbsp;&nbsp;</span><span class=disable>目录 </span>]</i></div><p></p>
+</body>
+</html>

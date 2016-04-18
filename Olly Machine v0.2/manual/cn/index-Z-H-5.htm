@@ -1,0 +1,3756 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<!--
+
+Generated from index.tex by tex2page, v 2004-09-11
+(running on MzScheme 205, windows), 
+(c) Dorai Sitaram, 
+http://www.ccs.neu.edu/~dorai/tex2page/tex2page-doc.html
+
+-->
+<head>
+<title>
+OllyMachine 手册
+</title>
+<link rel="stylesheet" type="text/css" href="css/main.css" title=default>
+<link rel="stylesheet" type="text/css" href="index-Z-S.css" title=default>
+<meta name=robots content="noindex,follow">
+<meta http-equiv="Content-Type" content="text/html;charset=gb2312"></head>
+<body>
+<div align=right class=navigation><i>[<span><a href="index.htm">首页</a>, <a href="index-Z-H-4.htm">上一页</a></span><span class=disable>, 下一页</span><span>; &nbsp;&nbsp;</span><span><a href="index-Z-H-1.htm#node_toc_start">目录 </a></span>]</i></div><p></p>
+<a name="node_chap_4"></a>
+<h1 class=chapter>
+<div class=chapterheading><a href="index-Z-H-1.htm#node_toc_node_chap_4">第四章</a></div><br>
+<a href="index-Z-H-1.htm#node_toc_node_chap_4">OllyMachine API</a></h1>
+<p>在设计OllyMachine虚拟机时，我感觉到只依靠基本指令是不足以完成一些更高级的操作的，因此，我定义了一系列异常丰富的API供程序员使用，通过它们可以与OllyDbg和用户更好地交互，更有效地实现我们所期望的功能。</p>
+<p>
+</p>
+<a name="node_sec_4.1"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_4.1">4.1&nbsp;&nbsp;Hello World!</a></h2>
+<p>就像所有的程序设计教程一样，我先来给大家示范一段Hello World:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>Method</span> <span class=variable>1:</span>
+<span class=variable>lds</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=selfeval>&quot;Hello World!&quot;</span>
+<span class=variable>push</span> <span class=variable>reg01</span>
+<span class=variable>msg</span>
+
+<span class=variable>//</span> <span class=variable>Method</span> <span class=variable>2:</span>
+<span class=variable>push</span> <span class=selfeval>&quot;Hello World!&quot;</span>
+<span class=variable>msg</span>
+
+<span class=variable>//</span> <span class=variable>Method</span> <span class=variable>3:</span>
+<span class=variable>invoke</span> <span class=variable>msg</span><span class=keyword>,</span> <span class=selfeval>&quot;Hello World!&quot;</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.2"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_4.2">4.2&nbsp;&nbsp;调用方式</a></h2>
+<p>我设计的API调用方式类似于x86机器，即使用堆栈作为传递参数的“中转站”。就拿上面的Hello World为例：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>lds</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=selfeval>&quot;Hello World!&quot;</span>
+<span class=variable>push</span> <span class=variable>reg01</span>
+<span class=variable>msg</span>
+
+<span class=variable>//</span> <span class=variable>another</span> <span class=variable>way:</span>
+<span class=variable>push</span> <span class=selfeval>&quot;Hello World!&quot;</span>
+<span class=variable>msg</span>
+</pre><p></p>
+<p>
+上面这个程序是用来打印经典的“Hello World!”程序的。在这个例子中，msg是一个用来显示字符串的API，它只有一个参数，这个参数必须是一个寄存器，寄存器中储存着字符串的偏移地址；或者是一个由双引号包围起来的字符串。</p>
+<p>
+想必大家已经明白了，调用API时，如果有参数，必须使用push指令把参数按照从右向左的顺序入栈，然后再调用API名字。API运行结束后，堆栈会自动平衡，无需程序员手动调整。</p>
+<p>
+那么什么叫做“从右向左的顺序入栈”呢？我们来看一个例子：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>push</span> <span class=selfeval>16</span>
+<span class=variable>push</span> <span class=variable>0xFF</span>
+<span class=variable>PrintNum</span>
+</pre><p></p>
+<p>
+这个程序的运行结果是弹出一个对话框，显示16进制数0xFF出来。</p>
+<p>
+在这个例子中，我们调用了API函数：PrintNum。</p>
+<p>
+PrintNum有两个参数，它的原型是：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>PrintNum</span> <span class=variable>数值，进制</span>
+</pre><p></p>
+<p>
+如果是从右向左地把参数入栈的话，那么“进制”就应该是先入栈的，随后就是“数值”。可以看到，在例子中，我们的确是先push了16进去（表示“进制”为16进制），然后才push了0xFF进去（表示“数值”为0xFF），最后调用API的名字，这与我们的API函数调用约定相符合。</p>
+<p>
+</p>
+<a name="node_sec_4.3"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_4.3">4.3&nbsp;&nbsp;更简便的调用方式</a></h2>
+<p>从0.11版开始，可以使用invoke宏来调用API，例如：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>push</span> <span class=selfeval>16</span>
+<span class=variable>push</span> <span class=variable>0xFF</span>
+<span class=variable>PrintNum</span>
+
+<span class=variable>invoke</span> <span class=variable>PrintNum</span><span class=keyword>,</span> <span class=variable>0xFF</span><span class=keyword>,</span> <span class=selfeval>16</span>
+</pre><p></p>
+<p>
+跟MASM32中的invoke宏一样，是不是更简便了呢？^_^</p>
+<p>
+</p>
+<a name="node_sec_4.4"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_4.4">4.4&nbsp;&nbsp;返回值</a></h2>
+<p>有的时候，我们需要在API执行完毕后提供一些返回值，以便进行下一步的处理。例如：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>lds</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=selfeval>&quot;Are you sure?&quot;</span>
+<span class=variable>push</span> <span class=variable>reg01</span>
+<span class=variable>msgyn</span>
+
+<span class=variable>//</span> <span class=variable>another</span> <span class=variable>way:</span>
+<span class=variable>push</span> <span class=selfeval>&quot;Are you sure?&quot;</span>
+<span class=variable>msgyn</span>
+</pre><p></p>
+<p>
+API函数MsgYN会弹出一个对话框提示用户选择“是/否”，这时我们必须知道用户的选择是什么，才能进行下一步的动作。</p>
+<p>
+在OllyMachine虚拟机中，所有的API函数都遵循这样一个约定：如果该API有返回值，则返回值会储存在reg00中（类似于在Win32系统中，返回值储存在eax中）。因此，程序员在调用完API函数后要注意reg00的值，如果处理不当，可能会造成一些不预期的结果。</p>
+<p>
+在上面的例子中，如果用户输入了“Y”，则reg00的值就会为1（表示成功），如果用户输入了“N”，则reg00的值就会为0（表示失败）。</p>
+<p>
+</p>
+<a name="node_sec_4.5"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_4.5">4.5&nbsp;&nbsp;基本输入输出API</a></h2>
+<p>OllyMachine虚拟机提供了几个输入输出API，以便与用户进行基本的交互：</p>
+<p>
+</p>
+<a name="node_sec_4.5.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.5.1">4.5.1&nbsp;&nbsp;MSG</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>MSG</span> <span class=variable>message</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>MSG弹出一个对话框，显示字符串message。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>message ： 字符串
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>无</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>msg</span><span class=keyword>,</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=selfeval>&quot;Hello World!&quot;</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.5.2"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.5.2">4.5.2&nbsp;&nbsp;MSGYN</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>MSGYN</span> <span class=variable>message</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>MSGYN弹出一个对话框，显示字符串message，并且要求用户输入Y/N继续。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>message ： 字符串
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>msgyn</span><span class=keyword>,</span> <span class=selfeval>&quot;Are you sure to continue?&quot;</span>
+
+<span class=variable>cmp</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>1</span>
+<span class=variable>je</span> <span class=variable>Continue</span>
+<span class=variable>halt</span>
+<span class=variable>Continue:</span>
+<span class=variable>//</span> ...
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.5.3"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.5.3">4.5.3&nbsp;&nbsp;PrintNum</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>PrintNum</span> <span class=variable>Value</span><span class=keyword>,</span> <span class=variable>Base</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>PrintNum用Base进制来计算Value的值，并且用一个对话框来显示结果。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>Value ： 要显示的数值
+</p>
+<li><p>Base ： 进制
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>无</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>PrintNum</span><span class=keyword>,</span> <span class=variable>0x100</span><span class=keyword>,</span> <span class=selfeval>16</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.5.4"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.5.4">4.5.4&nbsp;&nbsp;PrintBuf</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>PrintBuf</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>len</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>PrintBuf用一个对话框来显示从内存地址address处开始的len个字节。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>address ： 开始的内存地址
+</p>
+<li><p>len ： 长度
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>无</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>PrintBuf</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>10</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.5.5"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.5.5">4.5.5&nbsp;&nbsp;PrintBufToDump</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>PrintBufToDump</span> <span class=variable>address</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>PrintBufToDump把从内存地址address处开始的数据显示到Dump窗口里。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>address ： 开始的内存地址
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>PrintBufToDump</span><span class=keyword>,</span> <span class=variable>eip</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.5.6"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.5.6">4.5.6&nbsp;&nbsp;PrintBufToNewDump</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>PrintBufToNewDump</span> <span class=variable>title</span><span class=keyword>,</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>len</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>PrintBufToNewDump首先创建一个新的Dump窗口，窗口名为title，</span>
+<span class=variable>然后把从内存地址address处开始的长度为len的数据显示到新的Dump窗口里。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>title ： 窗口名
+</p>
+<li><p>address ： 开始的内存地址
+</p>
+<li><p>len ： 长度
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：新的Dump窗口的句柄（HWND）</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>PrintBufToNewDump</span><span class=keyword>,</span> <span class=selfeval>&quot;New Dump Window&quot;</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=variable>0x100</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.5.7"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.5.7">4.5.7&nbsp;&nbsp;UpdateDumpBuf</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>UpdateDumpBuf</span> <span class=variable>hwnd</span><span class=keyword>,</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>len</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>从address地址开始，取len个字节，然后更新到某个Dump窗口中，该窗口通过hwnd来定位。</span>
+<span class=variable>一般来说，这个hwnd是由PrintBufToNewDump的返回值来取得的。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>hwnd ： dump窗口的句柄
+</p>
+<li><p>address ： 开始的内存地址
+</p>
+<li><p>len ： 长度
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>Create</span> <span class=variable>a</span> <span class=variable>new</span> <span class=variable>dump</span> <span class=variable>window:</span>
+<span class=variable>invoke</span> <span class=variable>PrintBufToNewDump</span><span class=keyword>,</span> <span class=selfeval>&quot;New Dump Window&quot;</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=variable>0x100</span>
+<span class=variable>//</span> <span class=variable>Save</span> <span class=variable>its</span> <span class=variable>hwnd:</span>
+<span class=variable>mov</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=variable>reg00</span>
+<span class=variable>//...</span>
+<span class=variable>//</span> <span class=variable>Update</span> <span class=variable>it:</span>
+<span class=variable>invoke</span> <span class=variable>UpdateDumpBuf</span><span class=keyword>,</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=variable>0x200</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.5.8"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.5.8">4.5.8&nbsp;&nbsp;InputText</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>InputText</span> <span class=variable>title</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>InputText会弹出一个对话框让用户输入一串字符串，对话框的标题为title中的字符串。</span>
+<span class=variable>注意：标题的长度不能大于</span> <span class=selfeval>256</span> <span class=variable>个字节，用户输入的字符串不能大于</span> <span class=selfeval>4096</span> <span class=variable>个字节。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>title ： 对话框的标题
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0（用户按下CANCEL按钮，或者用户输入的字符串大于</span> <span class=selfeval>4096</span> <span class=variable>个字节）</span>
+
+<span class=variable>如果运行成功，用户输入的字符串可以通过FreeBufferReg访问，字符串的长度储存在FreeBufferSizeReg中。</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>ask</span> <span class=variable>user</span><span class=keyword>'</span><span class=variable>s</span> <span class=variable>name</span>
+<span class=variable>invoke</span> <span class=variable>InputText</span><span class=keyword>,</span> <span class=selfeval>&quot;Please input your name&quot;</span>
+
+<span class=variable>//</span> <span class=variable>print</span> <span class=variable>user</span><span class=keyword>'</span><span class=variable>s</span> <span class=variable>name</span>
+<span class=variable>invoke</span> <span class=variable>msg</span><span class=keyword>,</span> <span class=variable>FreeBufferReg</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.5.9"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.5.9">4.5.9&nbsp;&nbsp;InputHexLong</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>InputHexLong</span> <span class=variable>value</span><span class=keyword>,</span> <span class=variable>title</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>InputHexLong会弹出一个对话框让用户输入一个16进制数，对话框的标题为title中的字符串，初始值为value。</span>
+<span class=variable>注意：标题的长度不能大于</span> <span class=selfeval>256</span> <span class=variable>个字节。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>value ： 初始化的值
+</p>
+<li><p>title ： 对话框的标题
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>把用户输入的数值储存在reg00中。</span>
+<span class=variable>如果用户按了CANCEL，则reg00的值为value原来的值。</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>InputHexLong</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>&quot;Please input EIP&quot;</span>
+<span class=variable>invoke</span> <span class=variable>PrintNum</span><span class=keyword>,</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>16</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.6"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_4.6">4.6&nbsp;&nbsp;内存操作API</a></h2>
+<p>OllyMachine可以很方便地与内存数据打交道：</p>
+<p>
+</p>
+<a name="node_sec_4.6.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.6.1">4.6.1&nbsp;&nbsp;ReadMemLong</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>ReadMemLong</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>len</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>ReadMemLong读取在address地址处的len个字节数据，并且储存在寄存器reg00中返回。</span>
+<span class=variable>len</span> <span class=variable>只能在1～4之间，小于1的话会被设置为1，大于4的话会被设置为4。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>address ： 要读取的内存地址
+</p>
+<li><p>len ： 读取的长度
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：读到的数据。</span>
+<span class=variable>失败：-1</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>ReadMemLong</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>4</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.6.2"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.6.2">4.6.2&nbsp;&nbsp;WriteMemLong</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>WriteMemLong</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>value</span><span class=keyword>,</span> <span class=variable>len</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>WriteMemLong把len个字节长的value值写到address地址处。</span>
+<span class=variable>len</span> <span class=variable>只能在1～4之间，小于1的话会被设置为1，大于4的话会被设置为4。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>address ： 要写入的内存地址
+</p>
+<li><p>value ： 要写入内存的数据
+</p>
+<li><p>len ： 写入的长度
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>WriteMemLong</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=variable>0x9090</span><span class=keyword>,</span> <span class=selfeval>2</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.6.3"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.6.3">4.6.3&nbsp;&nbsp;WriteMemHexes</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>WriteMemHexes</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>hexes</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>把hexes写到address地址处。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>address ： 要写入的内存地址
+</p>
+<li><p>hexes ： 要写入内存的数据
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>WriteMemHexes</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>&quot;e800000000&quot;</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.6.4"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.6.4">4.6.4&nbsp;&nbsp;ReadFileIntoMem</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>ReadFileIntoMem</span> <span class=variable>filename</span><span class=keyword>,</span> <span class=variable>addrbase</span><span class=keyword>,</span> <span class=variable>filesize</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>把文件filename读入内存中，自动分配一段内存给它。</span>
+<span class=variable>分配的内存的起始地址在addrbase，文件的大小在filesize。</span>
+<span class=variable>注意！使用完后一定要用VirtualFreeEx来释放这段内存，否则会造成内存泄漏！！！</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>filename ： [in]传入，文件名
+</p>
+<li><p>addrbase ： [out]返回，内存的起始地址
+</p>
+<li><p>filesize ： [out]返回，文件的大小
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>Read</span> <span class=variable>the</span> <span class=variable>file</span> <span class=variable>into</span> <span class=variable>the</span> <span class=variable>memory</span>
+<span class=variable>//</span> <span class=variable>reg01</span> <span class=variable>=</span> <span class=variable>memory</span> <span class=variable>starting</span> <span class=variable>address</span>
+<span class=variable>//</span> <span class=variable>reg02</span> <span class=variable>=</span> <span class=variable>filesize</span>
+<span class=variable>invoke</span> <span class=variable>ReadFileIntoMem</span><span class=keyword>,</span> <span class=selfeval>&quot;test.exe&quot;</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg02</span>
+
+<span class=variable>//</span> <span class=variable>Print</span> <span class=variable>the</span> <span class=variable>file</span> <span class=variable>contents</span> <span class=variable>byte</span> <span class=variable>by</span> <span class=variable>byte</span>
+<span class=variable>mov</span> <span class=variable>reg10</span><span class=keyword>,</span> <span class=variable>reg01</span>
+<span class=variable>read_file_contents:</span>
+    <span class=variable>invoke</span> <span class=variable>ReadMemLong</span><span class=keyword>,</span> <span class=variable>reg10</span><span class=keyword>,</span> <span class=selfeval>1</span>
+    <span class=variable>invoke</span> <span class=variable>PrintNum</span><span class=keyword>,</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>16</span>
+    <span class=variable>inc</span> <span class=variable>reg10</span>
+    <span class=variable>dec</span> <span class=variable>reg02</span>
+    <span class=variable>cmp</span> <span class=variable>reg02</span><span class=keyword>,</span> <span class=selfeval>0</span>
+    <span class=variable>jne</span> <span class=variable>read_file_contents</span>
+
+<span class=variable>//</span> <span class=variable>Remember</span> <span class=variable>to</span> <span class=variable>free</span> <span class=variable>the</span> <span class=variable>memory!!!</span>
+<span class=variable>invoke</span> <span class=variable>VirtualFreeEx</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.6.5"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.6.5">4.6.5&nbsp;&nbsp;DumpMem</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>DumpMem</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>len</span><span class=keyword>,</span> <span class=variable>filename</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>DumpMem把从address地址处的len个字节dump到filename里面去，如果文件已存在，则覆盖。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>address ： 开始的地址
+</p>
+<li><p>len ： 字节数
+</p>
+<li><p>filename ： 文件名
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>example1:</span>
+<span class=variable>invoke</span> <span class=variable>DumpMem</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>10</span><span class=keyword>,</span> <span class=selfeval>&quot;c:\test.bin&quot;</span>
+
+<span class=variable>//</span> <span class=variable>example2:</span>
+<span class=variable>invoke</span> <span class=variable>InputText</span><span class=keyword>,</span> <span class=selfeval>&quot;Please input filename&quot;</span>
+<span class=variable>invoke</span> <span class=variable>DumpMem</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>10</span><span class=keyword>,</span> <span class=variable>FreeBufferReg</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.6.6"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.6.6">4.6.6&nbsp;&nbsp;DumpMemAppend</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>DumpMemAppend</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>len</span><span class=keyword>,</span> <span class=variable>filename</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>DumpMemAppend把从address地址处的len个字节dump到filename里面去，如果文件已存在，则添加数据到文件末尾。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>address ： 开始的地址
+</p>
+<li><p>len ： 字节数
+</p>
+<li><p>filename ： 文件名
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>example1:</span>
+<span class=variable>invoke</span> <span class=variable>DumpMemAppend</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>10</span><span class=keyword>,</span> <span class=selfeval>&quot;c:\test.bin&quot;</span>
+
+<span class=variable>//</span> <span class=variable>example2:</span>
+<span class=variable>invoke</span> <span class=variable>InputText</span><span class=keyword>,</span> <span class=selfeval>&quot;Please input filename&quot;</span>
+<span class=variable>invoke</span> <span class=variable>DumpMemAppend</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>10</span><span class=keyword>,</span> <span class=variable>FreeBufferReg</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.6.7"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.6.7">4.6.7&nbsp;&nbsp;DumpAsPE</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>DumpAsPE</span> <span class=variable>filename</span><span class=keyword>,</span> <span class=variable>eip</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>DumpAsPE把内存镜像dump成为一个PE文件，该PE文件的Entry</span> <span class=variable>Point为eip。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>filename ： 文件名
+</p>
+<li><p>eip ： Entry Point
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>DumpAsPE</span><span class=keyword>,</span> <span class=selfeval>&quot;c:\test.exe&quot;</span><span class=keyword>,</span> <span class=variable>eip</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.7"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_4.7">4.7&nbsp;&nbsp;搜索和替换API</a></h2>
+<p></p>
+<a name="node_sec_4.7.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.7.1">4.7.1&nbsp;&nbsp;FindOpcode</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>FindOpcode</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>opcode</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>FindOpcode从address地址处开始往后搜寻opcode，并返回第一个找到的地址。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>address ： 开始的地址
+</p>
+<li><p>opcode ： 要搜寻的opcode
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：返回找到的地址</span>
+<span class=variable>失败：-1</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>FindOpcode</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=variable>0x90</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.7.2"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.7.2">4.7.2&nbsp;&nbsp;Find</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Find</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>code</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Find从address地址处开始往后搜寻code，并返回第一个找到的地址。</span>
+<span class=variable>支持通配符“??”：一个不确定的字节必须由一个“??”来表示。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>address ： 开始的地址
+</p>
+<li><p>code ： 要搜寻的code
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：返回找到的地址</span>
+<span class=variable>失败：-1</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>Find</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>&quot;e8????????&quot;</span>   <span class=variable>//</span> <span class=variable>find</span> <span class=variable>a</span> <span class=variable>CALL</span> <span class=variable>XXXXXXXX</span>
+<span class=variable>invoke</span> <span class=variable>PrintNum</span><span class=keyword>,</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>16</span>
+
+<span class=variable>//</span> <span class=variable>find:</span>
+<span class=variable>//</span>   <span class=variable>CALL</span> <span class=variable>XXXXXXXX</span>
+<span class=variable>//</span>   <span class=variable>PUSH</span> <span class=selfeval>0</span>
+<span class=variable>invoke</span> <span class=variable>Find</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>&quot;e8????????6a00&quot;</span>
+<span class=variable>invoke</span> <span class=variable>PrintNum</span><span class=keyword>,</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>16</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.7.3"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.7.3">4.7.3&nbsp;&nbsp;ReverseFind</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>ReverseFind</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>code</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>ReverseFind从address地址处开始往前搜寻code，并返回第一个找到的地址。</span>
+<span class=variable>支持通配符“??”：一个不确定的字节必须由一个“??”来表示。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>address ： 开始的地址
+</p>
+<li><p>code ： 要搜寻的code
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：返回找到的地址</span>
+<span class=variable>失败：-1</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>Reverse</span> <span class=variable>find</span> <span class=variable>some:</span> <span class=variable>PUSHAD</span><span class=keyword>,</span> <span class=variable>CALL</span> <span class=variable>XXXXXXXX</span>
+<span class=variable>invoke</span> <span class=variable>ReverseFind</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>&quot;60e8&quot;</span>
+<span class=variable>invoke</span> <span class=variable>PrintNum</span><span class=keyword>,</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>16</span>
+
+<span class=variable>//</span> <span class=variable>Reverse</span> <span class=variable>find:</span>
+<span class=variable>//</span>   <span class=variable>CALL</span> <span class=variable>XXXXXXXX</span>
+<span class=variable>//</span>   <span class=variable>PUSH</span> <span class=selfeval>0</span>
+<span class=variable>invoke</span> <span class=variable>ReverseFind</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>&quot;e8????????6a00&quot;</span>
+<span class=variable>invoke</span> <span class=variable>PrintNum</span><span class=keyword>,</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>16</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.7.4"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.7.4">4.7.4&nbsp;&nbsp;Search</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Search</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>code</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Search从address地址处开始往后搜寻code，并返回第一个找到的地址。</span>
+<span class=variable>支持通配符“??”：一个不确定的字节必须由一个“??”来表示。</span>
+
+<span class=variable>Search与Find的不同之处在于，Search并不会从一个合法的Opcode的起始地址开始搜寻。</span>
+<span class=variable>例如：</span>
+
+<span class=variable>004010DC</span> <span class=selfeval>55</span>             <span class=variable>PUSH</span> <span class=variable>EBP</span>
+<span class=variable>004010DD</span> <span class=variable>8BEC</span>           <span class=variable>MOV</span> <span class=variable>EBP</span><span class=keyword>,</span><span class=variable>ESP</span>
+<span class=variable>004010DF</span> <span class=variable>6A</span> <span class=variable>FF</span>          <span class=variable>PUSH</span> <span class=selfeval>-1</span>
+
+<span class=variable>如果用invoke</span> <span class=variable>Find</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>&quot;EC6AFF&quot;</span><span class=variable>，那么不会找到，返回-1；</span>
+<span class=variable>如果用invoke</span> <span class=variable>Search</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>&quot;EC6AFF&quot;</span><span class=variable>，那么会返回004010DE。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>address ： 开始的地址
+</p>
+<li><p>code ： 要搜寻的code
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：返回找到的地址</span>
+<span class=variable>失败：-1</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>Search</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>&quot;e8????????&quot;</span>   <span class=variable>//</span> <span class=variable>Search</span> <span class=variable>a</span> <span class=variable>CALL</span> <span class=variable>XXXXXXXX</span>
+<span class=variable>invoke</span> <span class=variable>PrintNum</span><span class=keyword>,</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>16</span>
+
+<span class=variable>//</span> <span class=variable>Search:</span>
+<span class=variable>//</span>   <span class=variable>CALL</span> <span class=variable>XXXXXXXX</span>
+<span class=variable>//</span>   <span class=variable>PUSH</span> <span class=selfeval>0</span>
+<span class=variable>invoke</span> <span class=variable>Search</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>&quot;e8????????6a00&quot;</span>
+<span class=variable>invoke</span> <span class=variable>PrintNum</span><span class=keyword>,</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>16</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.7.5"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.7.5">4.7.5&nbsp;&nbsp;ReverseSearch</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>ReverseSearch</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>code</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>ReverseSearch从address地址处开始往前搜寻code，并返回第一个找到的地址。</span>
+<span class=variable>支持通配符“??”：一个不确定的字节必须由一个“??”来表示。</span>
+
+<span class=variable>ReverseSearch与ReverseFind的不同之处在于：</span>
+<span class=variable>ReverseSearch并不会从一个合法的Opcode的起始地址开始搜寻。</span>
+
+<span class=variable>例如：</span>
+
+<span class=variable>004010DC</span> <span class=selfeval>55</span>             <span class=variable>PUSH</span> <span class=variable>EBP</span>
+<span class=variable>004010DD</span> <span class=variable>8BEC</span>           <span class=variable>MOV</span> <span class=variable>EBP</span><span class=keyword>,</span><span class=variable>ESP</span>
+<span class=variable>004010DF</span> <span class=variable>6A</span> <span class=variable>FF</span>          <span class=variable>PUSH</span> <span class=selfeval>-1</span>
+
+<span class=variable>如果用invoke</span> <span class=variable>ReverseFind</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>&quot;EC6AFF&quot;</span><span class=variable>，那么不会找到，返回-1；</span>
+<span class=variable>如果用invoke</span> <span class=variable>ReverseSearch</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>&quot;EC6AFF&quot;</span><span class=variable>，那么会返回004010DE。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>address ： 开始的地址
+</p>
+<li><p>code ： 要搜寻的code
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：返回找到的地址</span>
+<span class=variable>失败：-1</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>Reverse</span> <span class=variable>search</span> <span class=variable>a</span> <span class=variable>CALL</span> <span class=variable>XXXXXXXX</span>
+<span class=variable>invoke</span> <span class=variable>ReverseSearch</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>&quot;e8????????&quot;</span>
+<span class=variable>invoke</span> <span class=variable>PrintNum</span><span class=keyword>,</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>16</span>
+
+<span class=variable>//</span> <span class=variable>Reverse</span> <span class=variable>search:</span>
+<span class=variable>//</span>   <span class=variable>CALL</span> <span class=variable>XXXXXXXX</span>
+<span class=variable>//</span>   <span class=variable>PUSH</span> <span class=selfeval>0</span>
+<span class=variable>invoke</span> <span class=variable>ReverseSearch</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>&quot;e8????????6a00&quot;</span>
+<span class=variable>invoke</span> <span class=variable>PrintNum</span><span class=keyword>,</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>16</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.7.6"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.7.6">4.7.6&nbsp;&nbsp;GetPrevOpAddr</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>GetPrevOpAddr</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>N</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>GetPrevOpAddr返回从address地址开始的往前第N条指令的地址。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>address ： 开始的地址
+</p>
+<li><p>N ： 第N条指令
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：返回找到的地址</span>
+<span class=variable>失败：-1</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>GetPrevOpAddr</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>1</span>
+<span class=variable>invoke</span> <span class=variable>PrintNum</span><span class=keyword>,</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>16</span>  <span class=variable>//</span> <span class=keyword>Let</span><span class=keyword>'</span><span class=variable>s</span> <span class=variable>see</span> <span class=variable>what</span> <span class=variable>we</span> <span class=variable>got!</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.7.7"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.7.7">4.7.7&nbsp;&nbsp;GetNextOpAddr</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>GetNextOpAddr</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>N</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>GetNextOpAddr返回从address地址开始的往后第N条指令的地址。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>address ： 开始的地址
+</p>
+<li><p>N ： 第N条指令
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：返回找到的地址</span>
+<span class=variable>失败：-1</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>GetNextOpAddr</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>1</span>
+<span class=variable>invoke</span> <span class=variable>PrintNum</span><span class=keyword>,</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>16</span>  <span class=variable>//</span> <span class=keyword>Let</span><span class=keyword>'</span><span class=variable>s</span> <span class=variable>see</span> <span class=variable>what</span> <span class=variable>we</span> <span class=variable>got!</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.7.8"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.7.8">4.7.8&nbsp;&nbsp;GetProcAddress</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>GetProcAddress</span> <span class=variable>funcname</span><span class=keyword>,</span> <span class=variable>dllname</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>GetProcAddress返回在dllname中的funcname的地址。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>funcname ： 要查找的函数名
+</p>
+<li><p>dllname ： 函数名所在的dll名
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：返回找到的地址</span>
+<span class=variable>失败：-1</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>GetProcAddress</span><span class=keyword>,</span> <span class=selfeval>&quot;MessageBoxA&quot;</span><span class=keyword>,</span> <span class=selfeval>&quot;user32.dll&quot;</span>
+<span class=variable>invoke</span> <span class=variable>PrintNum</span><span class=keyword>,</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>16</span>  <span class=variable>//</span> <span class=keyword>Let</span><span class=keyword>'</span><span class=variable>s</span> <span class=variable>see</span> <span class=variable>what</span> <span class=variable>we</span> <span class=variable>got!</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.7.9"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.7.9">4.7.9&nbsp;&nbsp;Fill</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Fill</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>len</span><span class=keyword>,</span> <span class=variable>value</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Fill把len个字节长的value值写到address地址处。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>address ： 要写入的内存地址
+</p>
+<li><p>len ： 要写入数据的长度
+</p>
+<li><p>value ： 要写入内存的数据，Fill函数会只保留value的最低一个字节（例如0x12345678就只写入0x78）
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>fill</span> <span class=selfeval>10</span> <span class=variable>bytes</span> <span class=selfeval>&quot;NOP&quot;</span> <span class=variable>to</span> <span class=variable>address</span> <span class=variable>starting</span> <span class=variable>from</span> <span class=variable>EIP</span>
+<span class=variable>invoke</span> <span class=variable>Fill</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>10</span><span class=keyword>,</span> <span class=variable>0x90</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.7.10"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.7.10">4.7.10&nbsp;&nbsp;ReplaceBytes</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>ReplaceBytes</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>find</span><span class=keyword>,</span> <span class=variable>repl</span><span class=keyword>,</span> <span class=variable>len</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>ReplaceBytes从address地址处开始往后搜寻字节码find，并且用repl来替换find，一共替换len次。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>address ： 开始的地址
+</p>
+<li><p>find ： 要搜寻并替换的字节码
+</p>
+<li><p>repl ： 替换成的字节码
+</p>
+<li><p>len ： 替换的次数
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：返回找到的地址</span>
+<span class=variable>失败：-1</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>ReplaceBytes</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=variable>0x90909090</span><span class=keyword>,</span> <span class=variable>0x51515151</span><span class=keyword>,</span> <span class=selfeval>1</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.7.11"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.7.11">4.7.11&nbsp;&nbsp;ReplaceBytesEx</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>ReplaceBytesEx</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>len</span><span class=keyword>,</span> <span class=variable>find</span><span class=keyword>,</span> <span class=variable>repl</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>从address地址开始，在len个字节范围内，把find替换成repl。</span>
+<span class=variable>支持通配符“??”：一个不确定的字节必须由一个“??”来表示。</span>
+<span class=variable>注意：</span>
+<span class=variable>1、find和repl的长度必须相同。例如假如find为</span><span class=selfeval>&quot;60e8??&quot;</span><span class=variable>，表示3个字，那么repl也必须是3个字节。</span>
+<span class=variable>2、在find里面的</span><span class=selfeval>&quot;??&quot;</span><span class=variable>不会被替换。例如假如find为</span><span class=selfeval>&quot;60e8??&quot;</span><span class=variable>，repl为</span><span class=selfeval>&quot;123456&quot;</span><span class=variable>，</span>
+   <span class=variable>那么替换后将会是</span><span class=selfeval>&quot;1234??&quot;</span><span class=variable>，原来的</span><span class=selfeval>&quot;??&quot;</span><span class=variable>所表示的那个字节不变。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>address ： 开始的地址
+</p>
+<li><p>len ： 范围的长度
+</p>
+<li><p>find ： 要替换的字节码
+</p>
+<li><p>repl ： 替换成的字节码
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1，表示至少有一个替换。</span>
+<span class=variable>失败：0，表示没有替换。</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>ReplaceBytesEx</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>10</span><span class=keyword>,</span> <span class=selfeval>&quot;60e8??&quot;</span><span class=keyword>,</span> <span class=selfeval>&quot;909090&quot;</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.7.12"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.7.12">4.7.12&nbsp;&nbsp;CopyBytesTo</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>CopyBytesTo</span> <span class=variable>addrsrc</span><span class=keyword>,</span> <span class=variable>addrdest</span><span class=keyword>,</span> <span class=variable>len</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>把addrsrc地址处开始的len个字节拷贝到addrdest处。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>addrsrc ： 源地址
+</p>
+<li><p>addrdest ： 目的地址
+</p>
+<li><p>len ： 字节数
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>CopyBytesTo</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=variable>0x401000</span><span class=keyword>,</span> <span class=selfeval>10</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.8"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_4.8">4.8&nbsp;&nbsp;汇编API</a></h2>
+<p>汇编：</p>
+<p>
+</p>
+<a name="node_sec_4.8.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.8.1">4.8.1&nbsp;&nbsp;ASM</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>ASM</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>command</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>ASM函数对字符串command进行汇编，然后写进address地址处。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>address ： 要写入的内存地址
+</p>
+<li><p>command ： 待汇编的字符串
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>asm</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>&quot;mov eax, edx&quot;</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.8.2"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.8.2">4.8.2&nbsp;&nbsp;__asm</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>__asm</span> { }
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>内嵌汇编功能，必须使用以下的形式调用：</span>
+<span class=variable>__asm</span>
+{
+<span class=variable>mov</span> <span class=variable>eax</span><span class=keyword>,</span> <span class=selfeval>1</span>
+<span class=variable>push</span> <span class=selfeval>0</span>
+<span class=variable>call</span> <span class=variable>ExitProcess</span>
+}
+
+<span class=variable>注意事项：</span>
+<span class=variable>1、可以使用“//”、“</span><span class=comment>;”作为行注释，“/* */”作为块注释。</span>
+<span class=variable>2、不允许使用OllyMachine的寄存器。</span>
+<span class=variable>3、内嵌汇编也是要经过编译的，如果编译后的大小超过2046个字节，则必须把一个大的__asm</span>{}<span class=variable>块分开成几个小的块。</span>
+
+<span class=variable>例如：</span>
+
+<span class=variable>__asm</span>
+{
+<span class=variable>mov</span> <span class=variable>eax</span><span class=keyword>,</span> <span class=selfeval>1</span>
+<span class=variable>//</span> ...
+<span class=variable>//</span> ...
+<span class=variable>mov</span> <span class=variable>ecx</span><span class=keyword>,</span> <span class=selfeval>1</span>
+}
+
+<span class=variable>如果编译器提示内嵌汇编经过编译后的字节数太大的话，则可以把这个大的块分成两个小块：</span>
+
+<span class=variable>__asm</span>
+{
+<span class=variable>mov</span> <span class=variable>eax</span><span class=keyword>,</span> <span class=selfeval>1</span>
+<span class=variable>//</span> ...
+}
+<span class=variable>__asm</span>
+{
+<span class=variable>//</span> ...
+<span class=variable>mov</span> <span class=variable>ecx</span><span class=keyword>,</span> <span class=selfeval>1</span>
+}
+
+<span class=variable>一直这样分解下去，直到编译器不出错误提示为止。</span>
+<span class=variable>实际上2046个字节对于大多数情况来说应该已经足够了，如果不够的话我可以增加。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>无</span>
+</pre><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>无</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>__asm</span>
+{
+<span class=variable>mov</span> <span class=variable>eax</span><span class=keyword>,</span> <span class=selfeval>1</span>
+
+<span class=variable>push</span> <span class=selfeval>0</span>
+<span class=variable>call</span> <span class=variable>ExitProcess</span>
+}
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.8.3"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.8.3">4.8.3&nbsp;&nbsp;Analyse</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Analyse</span> <span class=variable>address</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Analyse函数对address地址处开始的指令进行分析。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>address ： 开始的内存地址
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>Analyse</span><span class=keyword>,</span> <span class=variable>eip</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.9"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_4.9">4.9&nbsp;&nbsp;运行API</a></h2>
+<p>通过以下API，可以做到控制OllyDbg运行的目的：</p>
+<p>
+</p>
+<a name="node_sec_4.9.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.9.1">4.9.1&nbsp;&nbsp;RunToReturn</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>RunToReturn</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>RunToReturn会一直运行被调试进程的代码，直到遇到ret指令为止。</span>
+<span class=variable>运行效果相当于在OllyDbg的主界面按住Ctrl+F9。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>无</span>
+</pre><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>无</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>RunToReturn</span> <span class=variable>//</span> <span class=variable>一直运行，直到遇到ret指令为止</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.9.2"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.9.2">4.9.2&nbsp;&nbsp;RunToUserCode</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>RunToUserCode</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>有时候，跟踪会运行到很深的系统DLL中，执行RunToUserCode能够很快地返出来，</span>
+<span class=variable>即运行到第一个不是系统DLL的指令。</span>
+<span class=variable>运行效果相当于在OllyDbg的主界面按Alt+F9。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>无</span>
+</pre><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>无</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>RunToUserCode</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.9.3"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.9.3">4.9.3&nbsp;&nbsp;Run</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Run</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Run会使被调试进程运行起来。</span>
+<span class=variable>运行效果相当于在OllyDbg的主界面按F9。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>无</span>
+</pre><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>无</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Run</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.9.4"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.9.4">4.9.4&nbsp;&nbsp;AnimateInto</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>AnimateInto</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>执行AnimateInto操作。</span>
+<span class=variable>运行效果相当于在OllyDbg的主界面按Ctrl+F7。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>无</span>
+</pre><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>无</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>AnimateInto</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.9.5"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.9.5">4.9.5&nbsp;&nbsp;AnimateOver</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>AnimateOver</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>执行AnimateOver操作。</span>
+<span class=variable>运行效果相当于在OllyDbg的主界面按Ctrl+F8。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>无</span>
+</pre><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>无</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>AnimateOver</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.9.6"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.9.6">4.9.6&nbsp;&nbsp;StepInto</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>StepInto</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>StepInto会跟踪进当前的call里面去。</span>
+<span class=variable>运行效果相当于在OllyDbg的主界面按F7。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>无</span>
+</pre><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>StepInto</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.9.7"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.9.7">4.9.7&nbsp;&nbsp;StepIntoS</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>StepIntoS</span> <span class=variable>times</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>StepIntoS执行times次StepInto操作。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>times ： 次数
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>StepIntoS</span><span class=keyword>,</span> <span class=selfeval>3</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.9.8"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.9.8">4.9.8&nbsp;&nbsp;StepOver</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>StepOver</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>StepOver会跟踪进当前的call里面去。</span>
+<span class=variable>运行效果相当于在OllyDbg的主界面按F8。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>无</span>
+</pre><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>StepOver</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.9.9"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.9.9">4.9.9&nbsp;&nbsp;StepOverS</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>StepOverS</span> <span class=variable>times</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>StepOverS执行times次StepOver操作。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>times ： 次数
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>StepOverS</span><span class=keyword>,</span> <span class=selfeval>3</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.9.10"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.9.10">4.9.10&nbsp;&nbsp;ESTI</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>ESTI</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>ESTI运行效果相当于在OllyDbg的主界面按Shift+F7。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>无</span>
+</pre><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>无</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>ESTI</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.9.11"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.9.11">4.9.11&nbsp;&nbsp;ESTO</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>ESTO</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>ESTO运行效果相当于在OllyDbg的主界面按Shift+F9。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>无</span>
+</pre><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>无</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>ESTO</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.9.12"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.9.12">4.9.12&nbsp;&nbsp;GO</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>GO</span> <span class=variable>address</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>GO会执行到address地址处。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>address ： 要执行到的内存地址
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>go</span><span class=keyword>,</span> <span class=variable>0x401005</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.10"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_4.10">4.10&nbsp;&nbsp;Trace API</a></h2>
+<p>这部分API是跟Trace相关的。</p>
+<p>
+</p>
+<a name="node_sec_4.10.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.10.1">4.10.1&nbsp;&nbsp;TraceInto</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>TraceInto</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>TraceInto函数执行OllyDbg的“Trace</span> <span class=variable>Into”功能。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>无</span>
+</pre><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>无</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>TraceInto</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.10.2"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.10.2">4.10.2&nbsp;&nbsp;TraceOver</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>TraceOver</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>TraceOver函数执行OllyDbg的“Trace</span> <span class=variable>Over”功能。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>无</span>
+</pre><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>无</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>TraceOver</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.10.3"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.10.3">4.10.3&nbsp;&nbsp;TraceIntoCond</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>TraceIntoCond</span> <span class=variable>condition</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>TraceIntoCond函数会Trace</span> <span class=variable>Into到call里面，直到condition条件为真才结束。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>condition ： 结束条件
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>无</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>Will</span> <span class=variable>stop</span> <span class=keyword>when</span> <span class=variable>eip</span> <span class=variable>&gt;</span> <span class=variable>0x40100A</span>
+<span class=variable>invoke</span> <span class=variable>TraceIntoCond</span><span class=keyword>,</span> <span class=selfeval>&quot;eip &gt; 0x40100A&quot;</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.10.4"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.10.4">4.10.4&nbsp;&nbsp;TraceOverCond</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>TraceOverCond</span> <span class=variable>condition</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>TraceOverCond函数会Trace</span> <span class=variable>Over所有的calls，直到condition条件为真才结束。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>condition ： 结束条件
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>无</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>Will</span> <span class=variable>stop</span> <span class=keyword>when</span> <span class=variable>eip</span> <span class=variable>&gt;</span> <span class=variable>0x40100A</span>
+<span class=variable>invoke</span> <span class=variable>TraceOverCond</span><span class=keyword>,</span> <span class=selfeval>&quot;eip &gt; 0x40100A&quot;</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.11"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_4.11">4.11&nbsp;&nbsp;断点API</a></h2>
+<p>这部分API是跟断点相关的。</p>
+<p>
+</p>
+<a name="node_sec_4.11.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.11.1">4.11.1&nbsp;&nbsp;BP</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>BP</span> <span class=variable>address</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>BP函数在address地址处下无条件（unconditional）断点。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>address ： 要下断点的内存地址
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>BP</span><span class=keyword>,</span> <span class=variable>0x401000</span>
+<span class=variable>invoke</span> <span class=variable>BP</span><span class=keyword>,</span> <span class=variable>eip</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.11.2"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.11.2">4.11.2&nbsp;&nbsp;BC</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>BC</span> <span class=variable>address</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>BC函数清除在address地址处的无条件（unconditional）断点。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>address ： 要清除的断点的内存地址
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>BC</span><span class=keyword>,</span> <span class=variable>0x401000</span>
+<span class=variable>invoke</span> <span class=variable>BC</span><span class=keyword>,</span> <span class=variable>eip</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.11.3"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.11.3">4.11.3&nbsp;&nbsp;BPCND</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>BPCND</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>condition</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>BPCND函数在address地址处下条件（conditional）断点，条件为condition</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>address ： 要下断点的地址
+</p>
+<li><p>condition ： 条件，为字符串
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>BPCND</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>&quot;ecx==FFFFFFFF&quot;</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.11.4"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.11.4">4.11.4&nbsp;&nbsp;BPL</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>BPL</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>expression</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>BPL函数在address地址处下无条件（unconditional）断点，然后把表达式expression显示在log窗口处。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>address ： 要下断点的地址
+</p>
+<li><p>expression ： 表达式，为字符串
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>logs</span> <span class=variable>the</span> <span class=variable>value</span> <span class=variable>of</span> <span class=variable>eax</span> <span class=variable>everytime</span> <span class=keyword>when</span> <span class=variable>EIP</span><span class=keyword>'</span><span class=variable>s</span> <span class=variable>address</span> <span class=variable>is</span> <span class=variable>passed</span>
+<span class=variable>invoke</span> <span class=variable>BPL</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>&quot;eax&quot;</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.11.5"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.11.5">4.11.5&nbsp;&nbsp;BPLCND</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>BPLCND</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>expression</span><span class=keyword>,</span> <span class=variable>condition</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>BPLCND函数在address地址处下条件（conditional）断点，然后把表达式expression显示在log窗口处。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>address ： 要下断点的地址
+</p>
+<li><p>expression ： 表达式，为字符串
+</p>
+<li><p>condition ： 条件，为字符串
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>logs</span> <span class=variable>the</span> <span class=variable>value</span> <span class=variable>of</span> <span class=variable>eax</span> <span class=variable>everytime</span> <span class=keyword>when</span> <span class=variable>EIP</span><span class=keyword>'</span><span class=variable>s</span> <span class=variable>address</span> <span class=variable>is</span> <span class=variable>passed</span> <span class=keyword>and</span> <span class=variable>eax</span> <span class=variable>&gt;</span> <span class=selfeval>1</span>
+<span class=variable>invoke</span> <span class=variable>BPLCND</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>&quot;eax&quot;</span><span class=keyword>,</span> <span class=selfeval>&quot;eax &gt; 1&quot;</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.11.6"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.11.6">4.11.6&nbsp;&nbsp;BPRM</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>BPRM</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>size</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>下内存“读”断点于address地址处，长度为size个字节。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>address ： 断点的地址
+</p>
+<li><p>size ： 长度
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>BPRM</span><span class=keyword>,</span> <span class=variable>0x401000</span><span class=keyword>,</span> <span class=variable>0xff</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.11.7"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.11.7">4.11.7&nbsp;&nbsp;BPWM</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>BPWM</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>size</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>下内存“写”断点于address地址处，长度为size个字节。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>address ： 断点的地址
+</p>
+<li><p>size ： 长度
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>BPWM</span><span class=keyword>,</span> <span class=variable>0x401000</span><span class=keyword>,</span> <span class=variable>0xff</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.11.8"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.11.8">4.11.8&nbsp;&nbsp;BPMC</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>BPMC</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>清除内存断点。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>无</span>
+</pre><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>BPMC</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.11.9"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.11.9">4.11.9&nbsp;&nbsp;BPHWS</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>BPHWS</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>mode</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>下硬件断点于address地址处，模式可以为“Execute执行”、“Read读”、“Write写”，</span>
+<span class=variable>由mode来决定：1为“Execute执行”、2为“Read读”、3为“Write写”，其他则会使API返回失败。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>address ： 断点的地址
+</p>
+<li><p>mode ： 模式：1为“Execute执行”、2为“Read读”、3为“Write写”
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>BPHWS</span><span class=keyword>,</span> <span class=variable>0x401000</span><span class=keyword>,</span> <span class=selfeval>1</span> <span class=variable>//</span> <span class=variable>mode</span> <span class=variable>-</span> <span class=selfeval>&quot;Execute&quot;</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.11.10"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.11.10">4.11.10&nbsp;&nbsp;BPHWC</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>BPHWC</span> <span class=variable>address</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>清除address地址处的硬件断点。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>address ： 断点的地址
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>BPHWC</span><span class=keyword>,</span> <span class=variable>0x401000</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.11.11"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.11.11">4.11.11&nbsp;&nbsp;EOB</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>EOB</span> <span class=variable>label</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>EOB的作用是：当OllyMachine运行时遇到了断点，就会跳转到label处继续执行。</span>
+
+<span class=variable>EOB是一个比较特殊的API，注意，调用它的时候不是用push的方式来传递参数，</span>
+<span class=variable>而是直接跟label，例如：EOB</span> <span class=variable>LabelName</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>label ： 遇到断点时跳转到的标号
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>无</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>EOB</span> <span class=variable>Break</span>       <span class=variable>//</span> <span class=variable>set</span> <span class=variable>up</span> <span class=variable>jump</span> <span class=variable>label</span>
+
+<span class=variable>invoke</span> <span class=variable>bp</span><span class=keyword>,</span> <span class=variable>0x40100A</span> <span class=variable>//</span> <span class=variable>set</span> <span class=variable>breakpoint</span> <span class=variable>at</span> <span class=variable>0x40100A</span>
+<span class=variable>run</span>             <span class=variable>//</span> <span class=variable>run!</span> <span class=variable>will</span> <span class=variable>occur</span> <span class=variable>breakpoint</span> <span class=variable>at</span> <span class=variable>0x40100A</span>
+
+<span class=variable>halt</span>
+
+<span class=variable>//</span> ... (<span class=variable>some</span> <span class=variable>other</span> <span class=variable>instructions</span>)
+
+<span class=variable>Break:</span>          <span class=variable>//</span> <span class=variable>jump</span> <span class=variable>to</span> <span class=variable>this</span> <span class=variable>label</span> <span class=keyword>when</span> <span class=variable>occured</span> <span class=variable>breakpoint</span>
+<span class=variable>invoke</span> <span class=variable>msg</span><span class=keyword>,</span> <span class=selfeval>&quot;Breakpoint occured!&quot;</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.11.12"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.11.12">4.11.12&nbsp;&nbsp;EOBINT3</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>EOBINT3</span> <span class=variable>label</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>EOBINT3的作用是：当OllyMachine运行时遇到了int3断点，就会跳转到label处继续执行。</span>
+
+<span class=variable>EOBINT3是一个比较特殊的API，注意，调用它的时候不是用push的方式来传递参数，</span>
+<span class=variable>而是直接跟label，例如：EOBINT3</span> <span class=variable>LabelName</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>label ： 遇到断点时跳转到的标号
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>无</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>EOBINT3</span> <span class=variable>Break</span>   <span class=variable>//</span> <span class=variable>set</span> <span class=variable>up</span> <span class=variable>jump</span> <span class=variable>label</span>
+
+<span class=variable>run</span>             <span class=variable>//</span> <span class=variable>run!</span>
+
+<span class=variable>halt</span>
+
+<span class=variable>//</span> ... (<span class=variable>some</span> <span class=variable>other</span> <span class=variable>instructions</span>)
+
+<span class=variable>Break:</span>          <span class=variable>//</span> <span class=variable>jump</span> <span class=variable>to</span> <span class=variable>this</span> <span class=variable>label</span> <span class=keyword>when</span> <span class=variable>occured</span> <span class=variable>int3</span>
+<span class=variable>invoke</span> <span class=variable>msg</span><span class=keyword>,</span> <span class=selfeval>&quot;Breakpoint occured!&quot;</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.11.13"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.11.13">4.11.13&nbsp;&nbsp;EOBHW</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>EOBHW</span> <span class=variable>label</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>EOBHW的作用是：当OllyMachine运行时遇到了Hardware断点，就会跳转到label处继续执行。</span>
+
+<span class=variable>EOBHW是一个比较特殊的API，注意，调用它的时候不是用push的方式来传递参数，</span>
+<span class=variable>而是直接跟label，例如：EOBHW</span> <span class=variable>LabelName</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>label ： 遇到断点时跳转到的标号
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>无</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>EOBHW</span> <span class=variable>Break</span>     <span class=variable>//</span> <span class=variable>set</span> <span class=variable>up</span> <span class=variable>jump</span> <span class=variable>label</span>
+
+<span class=variable>run</span>             <span class=variable>//</span> <span class=variable>run!</span>
+
+<span class=variable>halt</span>
+
+<span class=variable>//</span> ... (<span class=variable>some</span> <span class=variable>other</span> <span class=variable>instructions</span>)
+
+<span class=variable>Break:</span>          <span class=variable>//</span> <span class=variable>jump</span> <span class=variable>to</span> <span class=variable>this</span> <span class=variable>label</span> <span class=keyword>when</span> <span class=variable>occured</span> <span class=variable>int3</span>
+<span class=variable>invoke</span> <span class=variable>msg</span><span class=keyword>,</span> <span class=selfeval>&quot;Breakpoint occured!&quot;</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.11.14"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.11.14">4.11.14&nbsp;&nbsp;EOBMEM</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>EOBMEM</span> <span class=variable>label</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>EOBMEM的作用是：当OllyMachine运行时遇到了memory断点，就会跳转到label处继续执行。</span>
+
+<span class=variable>EOBMEM是一个比较特殊的API，注意，调用它的时候不是用push的方式来传递参数，</span>
+<span class=variable>而是直接跟label，例如：EOBMEM</span> <span class=variable>LabelName</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>label ： 遇到断点时跳转到的标号
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>无</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>EOBMEM</span> <span class=variable>Break</span>    <span class=variable>//</span> <span class=variable>set</span> <span class=variable>up</span> <span class=variable>jump</span> <span class=variable>label</span>
+
+<span class=variable>run</span>             <span class=variable>//</span> <span class=variable>run!</span>
+
+<span class=variable>halt</span>
+
+<span class=variable>//</span> ... (<span class=variable>some</span> <span class=variable>other</span> <span class=variable>instructions</span>)
+
+<span class=variable>Break:</span>          <span class=variable>//</span> <span class=variable>jump</span> <span class=variable>to</span> <span class=variable>this</span> <span class=variable>label</span> <span class=keyword>when</span> <span class=variable>occured</span> <span class=variable>int3</span>
+<span class=variable>invoke</span> <span class=variable>msg</span><span class=keyword>,</span> <span class=selfeval>&quot;Breakpoint occured!&quot;</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.11.15"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.11.15">4.11.15&nbsp;&nbsp;EOE</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>EOE</span> <span class=variable>label</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>EOE的作用是：当OllyMachine运行时遇到了异常（exception），就会跳转到label处继续执行。</span>
+
+<span class=variable>EOE是一个比较特殊的API，注意，调用它的时候不是用push的方式来传递参数，</span>
+<span class=variable>而是直接跟label，例如：EOE</span> <span class=variable>LabelName</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>label ： 遇到异常时跳转到的标号
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>无</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>EOE</span> <span class=variable>exception1</span>      <span class=variable>//</span> <span class=variable>set</span> <span class=variable>up</span> <span class=variable>jump</span> <span class=variable>label</span>
+
+<span class=variable>run</span>
+
+<span class=variable>halt</span>
+
+<span class=variable>exception1:</span>         <span class=variable>//</span> <span class=keyword>if</span> <span class=variable>any</span> <span class=variable>exceptions</span> <span class=variable>occured</span><span class=keyword>,</span> <span class=variable>jump</span> <span class=variable>to</span> <span class=variable>here</span>
+<span class=variable>invoke</span> <span class=variable>msg</span><span class=keyword>,</span> <span class=selfeval>&quot;Exception occured!&quot;</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.11.16"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.11.16">4.11.16&nbsp;&nbsp;COB</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>COB</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>COB会让脚本在遇到一个断点并处理了该断点后继续回到原位置运行。（清除EOB）</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>无</span>
+</pre><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>无</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>EOB</span> <span class=variable>Break</span>       <span class=variable>//</span> <span class=variable>set</span> <span class=variable>up</span> <span class=variable>jump</span> <span class=variable>label</span>
+
+<span class=variable>invoke</span> <span class=variable>GetNextOpAddr</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>1</span>
+<span class=variable>invoke</span> <span class=variable>bp</span><span class=keyword>,</span> <span class=variable>reg00</span> <span class=variable>//</span> <span class=variable>set</span> <span class=variable>breakpoint</span> <span class=variable>at</span> <span class=variable>next</span> <span class=variable>instruction</span>
+<span class=variable>run</span>             <span class=variable>//</span> <span class=variable>run!</span> <span class=variable>will</span> <span class=variable>occur</span> <span class=variable>breakpoint</span> <span class=variable>at</span> <span class=variable>once!</span>
+
+<span class=variable>invoke</span> <span class=variable>msg</span><span class=keyword>,</span> <span class=selfeval>&quot;Continue!&quot;</span> <span class=variable>//</span> <span class=variable>continue</span> <span class=variable>execution</span> <span class=variable>here</span> <span class=variable>because</span> <span class=variable>of</span> <span class=variable>COB</span>
+
+<span class=variable>halt</span>
+
+<span class=variable>//</span> ... (<span class=variable>some</span> <span class=variable>other</span> <span class=variable>instructions</span>)
+
+<span class=variable>Break:</span>          <span class=variable>//</span> <span class=variable>jump</span> <span class=variable>to</span> <span class=variable>this</span> <span class=variable>label</span> <span class=keyword>when</span> <span class=variable>occured</span> <span class=variable>breakpoint</span>
+<span class=variable>invoke</span> <span class=variable>msg</span><span class=keyword>,</span> <span class=selfeval>&quot;Breakpoint occured!&quot;</span>
+
+<span class=variable>COB</span>             <span class=variable>//</span> <span class=variable>removes</span> <span class=variable>EOB</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.11.17"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.11.17">4.11.17&nbsp;&nbsp;COE</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>COE</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>COE会让脚本在遇到一个异常并处理了该异常后继续回到原位置运行。（清除EOE）</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>无</span>
+</pre><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>无</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>EOE</span> <span class=variable>exception1</span>      <span class=variable>//</span> <span class=variable>set</span> <span class=variable>up</span> <span class=variable>jump</span> <span class=variable>label</span>
+
+<span class=variable>run</span>
+
+<span class=variable>invoke</span> <span class=variable>msg</span><span class=keyword>,</span> <span class=selfeval>&quot;Continue!&quot;</span> <span class=variable>//</span> <span class=variable>continue</span> <span class=variable>execution</span> <span class=variable>here</span> <span class=variable>because</span> <span class=variable>of</span> <span class=variable>COE</span>
+
+<span class=variable>halt</span>
+
+<span class=variable>exception1:</span>         <span class=variable>//</span> <span class=keyword>if</span> <span class=variable>any</span> <span class=variable>exceptions</span> <span class=variable>occured</span><span class=keyword>,</span> <span class=variable>jump</span> <span class=variable>to</span> <span class=variable>here</span>
+<span class=variable>invoke</span> <span class=variable>msg</span><span class=keyword>,</span> <span class=selfeval>&quot;Exception occured!&quot;</span>
+
+<span class=variable>COE</span>                 <span class=variable>//</span> <span class=variable>removes</span> <span class=variable>EOE</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.12"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_4.12">4.12&nbsp;&nbsp;模块API</a></h2>
+<p>这些API与模块（module）有关。</p>
+<p>
+</p>
+<a name="node_sec_4.12.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.12.1">4.12.1&nbsp;&nbsp;GMI</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>GMI</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>info</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>GMI返回一个位于address地址处的模块（module）的信息。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>address ： 模块所在的地址
+</p>
+<li><p>info ： 信息类型，可以为“MODULEBASE”、“MODULESIZE”、“CODEBASE”、“CODESIZE”、“ENTRYPOINT”
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：相应的地址</span>
+<span class=variable>失败：-1</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>GMI</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>&quot;ENTRYPOINT&quot;</span>
+<span class=variable>invoke</span> <span class=variable>PrintNum</span><span class=keyword>,</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>16</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.13"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_4.13">4.13&nbsp;&nbsp;注释与标号API</a></h2>
+<p>这些API用来进行注释和标号操作：</p>
+<p>
+</p>
+<a name="node_sec_4.13.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.13.1">4.13.1&nbsp;&nbsp;Comment</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Comment</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>text</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Comment函数在address地址处写入注释text。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>address ： 要写入注释的地址
+</p>
+<li><p>text ： 注释字符串
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>Comment</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>&quot;This is a comment!&quot;</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.13.2"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.13.2">4.13.2&nbsp;&nbsp;SetLbl</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>SetLbl</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>LabelName</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>SetLbl函数在address地址处添加一个LabelName。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>address ： 要添加LabelName的地址
+</p>
+<li><p>LabelName ： 标号名称
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>SetLbl</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>&quot;This is a new label!&quot;</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.14"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_4.14">4.14&nbsp;&nbsp;日志API</a></h2>
+<p>这些API用来进行日志操作：</p>
+<p>
+</p>
+<a name="node_sec_4.14.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.14.1">4.14.1&nbsp;&nbsp;LogText</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>LogText</span> <span class=variable>text</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>LogText函数把text写到Log窗口。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>text ： 要写入log窗口的字符串
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>LogText</span><span class=keyword>,</span> <span class=selfeval>&quot;This is a log!&quot;</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.14.2"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.14.2">4.14.2&nbsp;&nbsp;LogLong</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>LogLong</span> <span class=variable>value</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>LogLong函数把long类型的value数值写到Log窗口。</span>
+<span class=variable>写入的数值以“LOG</span> <span class=variable>VALUE:</span> <span class=variable>0xXXXXXXXX”的形式表示。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>value ： 要写入log窗口的数值
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>LogLong</span><span class=keyword>,</span> <span class=variable>eip</span>
+<span class=variable>invoke</span> <span class=variable>LogLong</span><span class=keyword>,</span> <span class=variable>0x12345678</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.15"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_4.15">4.15&nbsp;&nbsp;反反调试API</a></h2>
+<p>反反调试API，用来对抗反调试技巧：</p>
+<p>
+</p>
+<a name="node_sec_4.15.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.15.1">4.15.1&nbsp;&nbsp;HideOD</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>HideOD</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>HideOD改写</span> <span class=variable>fs:</span>[<span class=selfeval>30</span>]<span class=selfeval>+2</span> <span class=variable>处的值为0，使被调试进程无法得知OllyDbg的存在。</span>
+<span class=variable>Windows</span> <span class=variable>XP</span> <span class=variable>Sp2</span> <span class=variable>下同样有效。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>无</span>
+</pre><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>HideOD</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.15.2"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.15.2">4.15.2&nbsp;&nbsp;UnHideOD</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>UnHideOD</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>UnHideOD取消HideOD的作用。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>无</span>
+</pre><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>UnHideOD</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.16"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_4.16">4.16&nbsp;&nbsp;缓冲区API</a></h2>
+<p>字符串、缓冲区的API。</p>
+<p>
+</p>
+<a name="node_sec_4.16.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.16.1">4.16.1&nbsp;&nbsp;malloc</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>malloc</span> <span class=variable>size</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>malloc分配一块size大小的内存空间给reg。</span>
+<span class=variable>注意：1、必须使用indexof作为reg的前缀，以便让汇编器知道reg的序号。2、reg不得为reg00！</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>size ： 要分配的内存区域大小，是(char *)类型。
+</p>
+<li><p>reg ： 分配好的空间传递给哪个寄存器。注意：不得使用reg00！
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>alloc</span> <span class=selfeval>100</span> <span class=variable>bytes</span> <span class=variable>memory</span> <span class=variable>to</span> <span class=variable>reg01</span>
+<span class=variable>invoke</span> <span class=variable>malloc</span><span class=keyword>,</span> <span class=selfeval>100</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.16.2"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.16.2">4.16.2&nbsp;&nbsp;free</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>free</span> <span class=variable>indexof</span> <span class=variable>reg</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>free用来释放通过malloc得到的内存空间。</span>
+<span class=variable>注意：1、必须使用indexof作为reg的前缀，以便让汇编器知道reg的序号。2、reg不得为reg00！</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>reg ： 要释放的内存空间所在的寄存器。注意：不得使用reg00！
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>alloc</span> <span class=selfeval>100</span> <span class=variable>bytes</span> <span class=variable>memory</span> <span class=variable>to</span> <span class=variable>reg01</span>
+<span class=variable>invoke</span> <span class=variable>malloc</span><span class=keyword>,</span> <span class=selfeval>100</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span>
+
+<span class=variable>//</span> ...
+
+<span class=variable>//</span> <span class=variable>now</span> <span class=variable>free</span> <span class=variable>the</span> <span class=variable>space:</span>
+<span class=variable>invoke</span> <span class=variable>free</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.16.3"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.16.3">4.16.3&nbsp;&nbsp;VirtualAllocEx</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>VirtualAllocEx</span> <span class=variable>size</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>分配一块size大小的内存空间给reg，该内存的属性为PAGE_EXECUTE_READWRITE。</span>
+<span class=variable>注意：1、必须使用indexof作为reg的前缀，以便让汇编器知道reg的序号。2、reg不得为reg00！</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>size ： 要分配的内存区域大小。属性为PAGE_EXECUTE_READWRITE。
+</p>
+<li><p>reg ： 分配好的空间传递给哪个寄存器。注意：不得使用reg00！
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>alloc</span> <span class=selfeval>100</span> <span class=variable>bytes</span> <span class=variable>memory</span> <span class=variable>to</span> <span class=variable>reg01</span>
+<span class=variable>invoke</span> <span class=variable>VirtualAllocEx</span><span class=keyword>,</span> <span class=selfeval>100</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.16.4"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.16.4">4.16.4&nbsp;&nbsp;VirtualFreeEx</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>VirtualFreeEx</span> <span class=variable>indexof</span> <span class=variable>reg</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>释放通过VirtualAllocEx得到的内存空间。</span>
+<span class=variable>注意：1、必须使用indexof作为reg的前缀，以便让汇编器知道reg的序号。2、reg不得为reg00！</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>reg ： 要释放的内存空间所在的寄存器。注意：不得使用reg00！
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>alloc</span> <span class=selfeval>100</span> <span class=variable>bytes</span> <span class=variable>memory</span> <span class=variable>to</span> <span class=variable>reg01</span>
+<span class=variable>invoke</span> <span class=variable>VirtualAllocEx</span><span class=keyword>,</span> <span class=selfeval>100</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span>
+
+<span class=variable>//</span> ...
+
+<span class=variable>//</span> <span class=variable>now</span> <span class=variable>free</span> <span class=variable>the</span> <span class=variable>space:</span>
+<span class=variable>invoke</span> <span class=variable>VirtualFreeEx</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.16.5"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.16.5">4.16.5&nbsp;&nbsp;strcpy</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>strcpy</span> <span class=variable>indexof</span> <span class=variable>reg</span><span class=keyword>,</span> <span class=variable>text</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>strcpy拷贝text到reg所在的内存空间。</span>
+<span class=variable>注意：1、必须使用indexof作为reg的前缀，以便让汇编器知道reg的序号。2、reg不得为reg00！</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>reg ： 目标内存空间所在的寄存器。注意：不得使用reg00！
+</p>
+<li><p>text ： 要拷贝的字符串
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>alloc</span> <span class=selfeval>100</span> <span class=variable>bytes</span> <span class=variable>memory</span> <span class=variable>to</span> <span class=variable>reg01</span>
+<span class=variable>invoke</span> <span class=variable>malloc</span><span class=keyword>,</span> <span class=selfeval>100</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span>
+
+<span class=variable>invoke</span> <span class=variable>strcpy</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=selfeval>&quot;test&quot;</span>
+
+<span class=variable>//</span> <span class=variable>now</span> <span class=variable>free</span> <span class=variable>the</span> <span class=variable>space:</span>
+<span class=variable>invoke</span> <span class=variable>free</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.16.6"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.16.6">4.16.6&nbsp;&nbsp;strcat</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>strcat</span> <span class=variable>indexof</span> <span class=variable>reg</span><span class=keyword>,</span> <span class=variable>text</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>strcat把text添加到reg所在的内存空间的末尾。</span>
+<span class=variable>注意：1、必须使用indexof作为reg的前缀，以便让汇编器知道reg的序号。2、reg不得为reg00！</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>reg ： 目标内存空间所在的寄存器。注意：不得使用reg00！
+</p>
+<li><p>text ： 要添加的字符串
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>alloc</span> <span class=selfeval>100</span> <span class=variable>bytes</span> <span class=variable>memory</span> <span class=variable>to</span> <span class=variable>reg01</span>
+<span class=variable>invoke</span> <span class=variable>malloc</span><span class=keyword>,</span> <span class=selfeval>100</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span>
+
+<span class=variable>invoke</span> <span class=variable>strcpy</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=selfeval>&quot;test&quot;</span>
+<span class=variable>invoke</span> <span class=variable>strcat</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=selfeval>&quot;1234&quot;</span>
+
+<span class=variable>//</span> <span class=variable>now</span> <span class=variable>free</span> <span class=variable>the</span> <span class=variable>space:</span>
+<span class=variable>invoke</span> <span class=variable>free</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.16.7"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.16.7">4.16.7&nbsp;&nbsp;strlen</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>strlen</span> <span class=variable>mode</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg</span> <span class=variable>/</span> <span class=variable>text</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>strlen计算reg所在的内存空间的字符串的长度，或者是text的长度。</span>
+<span class=variable>注意：1、必须使用indexof作为reg的前缀，以便让汇编器知道reg的序号。2、reg不得为reg00！</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>mode ： 模式，0表示计算reg所在的内存空间的字符串长度，1表示计算text的长度
+</p>
+<li><p>text ： 字符串
+</p>
+<li><p>reg ： 内存空间所在的寄存器。注意：不得使用reg00！
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：字符串的长度</span>
+<span class=variable>失败：-1</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>alloc</span> <span class=selfeval>100</span> <span class=variable>bytes</span> <span class=variable>memory</span> <span class=variable>to</span> <span class=variable>reg01</span>
+<span class=variable>invoke</span> <span class=variable>malloc</span><span class=keyword>,</span> <span class=selfeval>100</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span>
+
+<span class=variable>invoke</span> <span class=variable>strcpy</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=selfeval>&quot;test&quot;</span>
+<span class=variable>invoke</span> <span class=variable>strlen</span><span class=keyword>,</span> <span class=selfeval>0</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span>     <span class=variable>//</span> <span class=variable>reg</span> <span class=variable>mode</span>
+<span class=variable>invoke</span> <span class=variable>PrintNum</span><span class=keyword>,</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>10</span>
+
+<span class=variable>invoke</span> <span class=variable>strlen</span><span class=keyword>,</span> <span class=selfeval>1</span><span class=keyword>,</span> <span class=selfeval>&quot;1234567890&quot;</span>      <span class=variable>//</span> <span class=variable>text</span> <span class=variable>mode</span>
+<span class=variable>invoke</span> <span class=variable>PrintNum</span><span class=keyword>,</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>10</span>
+
+<span class=variable>//</span> <span class=variable>now</span> <span class=variable>free</span> <span class=variable>the</span> <span class=variable>space:</span>
+<span class=variable>invoke</span> <span class=variable>free</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.16.8"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.16.8">4.16.8&nbsp;&nbsp;ltoa</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>ltoa</span> <span class=variable>value</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg</span><span class=keyword>,</span> <span class=variable>radix</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>ltoa把数值value用radix进制转换到reg所在的内存空间去。</span>
+<span class=variable>注意：1、必须使用indexof作为reg的前缀，以便让汇编器知道reg的序号。2、reg不得为reg00！</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>value ： 要转换的数值
+</p>
+<li><p>reg ： 内存空间所在的寄存器。注意：不得使用reg00！
+</p>
+<li><p>radix ： 进制
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>alloc</span> <span class=selfeval>100</span> <span class=variable>bytes</span> <span class=variable>memory</span> <span class=variable>to</span> <span class=variable>reg01</span>
+<span class=variable>invoke</span> <span class=variable>malloc</span><span class=keyword>,</span> <span class=selfeval>100</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span>
+
+<span class=variable>//</span> <span class=variable>converts</span> <span class=variable>decimal</span> <span class=variable>value</span> <span class=selfeval>874</span> <span class=variable>to</span> <span class=variable>string</span><span class=keyword>,</span> <span class=variable>store</span> <span class=variable>in</span> <span class=variable>reg01</span>
+<span class=variable>invoke</span> <span class=variable>ltoa</span><span class=keyword>,</span> <span class=selfeval>874</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=selfeval>10</span>
+
+<span class=variable>//</span> <span class=variable>what</span> <span class=variable>we</span> <span class=variable>got?</span>
+<span class=variable>invoke</span> <span class=variable>msg</span><span class=keyword>,</span> <span class=variable>reg01</span>
+
+<span class=variable>//</span> <span class=variable>now</span> <span class=variable>free</span> <span class=variable>the</span> <span class=variable>space:</span>
+<span class=variable>invoke</span> <span class=variable>free</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.16.9"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.16.9">4.16.9&nbsp;&nbsp;memcpy</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>memcpy</span> <span class=variable>indexof</span> <span class=variable>reg</span><span class=keyword>,</span> <span class=variable>buffer</span><span class=keyword>,</span> <span class=variable>len</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>memcpy拷贝buffer到reg所在的内存空间，长度为len。</span>
+<span class=variable>注意：1、必须使用indexof作为reg的前缀，以便让汇编器知道reg的序号。2、reg不得为reg00！</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>reg ： 目标内存空间所在的寄存器。注意：不得使用reg00！
+</p>
+<li><p>buffer ： 要拷贝的内容
+</p>
+<li><p>len ： 要拷贝的长度
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>alloc</span> <span class=selfeval>100</span> <span class=variable>bytes</span> <span class=variable>memory</span> <span class=variable>to</span> <span class=variable>reg01</span>
+<span class=variable>invoke</span> <span class=variable>malloc</span><span class=keyword>,</span> <span class=selfeval>100</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span>
+
+<span class=variable>invoke</span> <span class=variable>memcpy</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=selfeval>&quot;test&quot;</span><span class=keyword>,</span> <span class=selfeval>4</span>
+
+<span class=variable>//</span> <span class=variable>now</span> <span class=variable>free</span> <span class=variable>the</span> <span class=variable>space:</span>
+<span class=variable>invoke</span> <span class=variable>free</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.17"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_4.17">4.17&nbsp;&nbsp;辅助调试API</a></h2>
+<p></p>
+<a name="node_sec_4.17.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.17.1">4.17.1&nbsp;&nbsp;FindProcBegin</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>FindProcBegin</span> <span class=variable>address</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>FindProcBegin返回内存单元address所在的函数体的起始地址。</span>
+<span class=variable>注意，如果模块没有被分析过（analyze），或者address不在某个函数体内，则会失败。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>address ： 在函数体中的地址
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：函数体的起始地址</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>FindProcBegin</span><span class=keyword>,</span> <span class=variable>eip</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.17.2"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.17.2">4.17.2&nbsp;&nbsp;FindProcEnd</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>FindProcEnd</span> <span class=variable>address</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>FindProcEnd返回内存单元address所在的函数体的终止地址。</span>
+<span class=variable>注意，如果模块没有被分析过（analyze），或者address不在某个函数体内，则会失败。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>address ： 在函数体中的地址
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：函数体的终止地址</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>FindProcEnd</span><span class=keyword>,</span> <span class=variable>eip</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.17.3"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.17.3">4.17.3&nbsp;&nbsp;FindPrevProc</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>FindPrevProc</span> <span class=variable>address</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>FindPrevProc返回内存单元address所在的函数体的上一个函数的起始地址。</span>
+<span class=variable>注意，如果模块没有被分析过（analyze），或者address不在某个函数体内，则会失败。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>address ： 在函数体中的地址
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：函数体的起始地址</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>FindPrevProc</span><span class=keyword>,</span> <span class=variable>eip</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.17.4"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.17.4">4.17.4&nbsp;&nbsp;FindNextProc</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>FindNextProc</span> <span class=variable>address</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>FindNextProc返回内存单元address所在的函数体的下一个函数的起始地址。</span>
+<span class=variable>注意，如果模块没有被分析过（analyze），或者address不在某个函数体内，则会失败。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>address ： 在函数体中的地址
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：函数体的起始地址</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>FindNextProc</span><span class=keyword>,</span> <span class=variable>eip</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.17.5"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.17.5">4.17.5&nbsp;&nbsp;FollowCall</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>FollowCall</span> <span class=variable>address</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>FollowCall跳过一系列的jmp指令，直到：</span>
+<span class=variable>1、某个不是jmp指令为止</span>
+<span class=variable>2、或者某个指令是在另一个模块中</span>
+<span class=variable>3、或者有连续超过10个jmp指令</span>
+<span class=variable>然后返回最后停止的地方所在的地址。</span>
+
+<span class=variable>注意，如果模块没有被分析过（analyze），或者address不在某个函数体内，则会失败。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>address ： 第一个jmp指令所在的地址。
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：最后停止的地方所在的地址。</span>
+<span class=variable>失败：0</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>FollowCall</span><span class=keyword>,</span> <span class=variable>eip</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.18"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_4.18">4.18&nbsp;&nbsp;杂项API</a></h2>
+<p>这些API我不知道应该分到哪个类别中：</p>
+<p>
+</p>
+<a name="node_sec_4.18.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.18.1">4.18.1&nbsp;&nbsp;IsWinNTKernel</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>IsWinNTKernel</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>用来得到当前操作系统是否为NT内核。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>无</span>
+</pre><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>成功：1</span> <span class=variable>表示是NT内核（Windows</span> <span class=variable>NT/2000/XP），0</span> <span class=variable>表示不是（Windows</span> <span class=variable>95/98/Me）。</span>
+<span class=variable>失败：没有失败的返回值。</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>IsWinNTKernel</span>
+<span class=variable>cmp</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>1</span>    <span class=variable>//</span> <span class=variable>it</span> <span class=variable>is</span> <span class=variable>NT</span> <span class=variable>kernel!</span>
+<span class=variable>je</span> <span class=variable>WinNT</span>
+<span class=variable>//</span> ...
+<span class=variable>WinNT:</span>
+<span class=variable>//</span> ...
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.18.2"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.18.2">4.18.2&nbsp;&nbsp;GotoCpuAddr</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>GotoCpuAddr</span> <span class=variable>address</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>用来跳转到反汇编窗口的address地址处。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>address ： 希望跳转到的地址。
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>无</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>GotoCpuAddr</span><span class=keyword>,</span> <span class=variable>0x401300</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.18.3"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.18.3">4.18.3&nbsp;&nbsp;GotoDumpAddr</a></h3>
+<p><strong>函数原型</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>GotoDumpAddr</span> <span class=variable>address</span>
+</pre><p></p>
+<p>
+<strong>说明</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>用来跳转到Dump窗口的address地址处。</span>
+</pre><p></p>
+<p>
+<strong>参数</strong>：</p>
+<p>
+</p>
+<ul>
+<li><p>address ： 希望跳转到的地址。
+</p>
+</ul><p></p>
+<p>
+<strong>返回值</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>无</span>
+</pre><p></p>
+<p>
+<strong>示例</strong>：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>GotoDumpAddr</span><span class=keyword>,</span> <span class=variable>0x401300</span>
+</pre><p>
+</p>
+<p>
+</p>
+<div align=right class=navigation><i>[<span><a href="index.htm">首页</a>, <a href="index-Z-H-4.htm">上一页</a></span><span class=disable>, 下一页</span><span>; &nbsp;&nbsp;</span><span><a href="index-Z-H-1.htm#node_toc_start">目录 </a></span>]</i></div><p></p>
+</body>
+</html>

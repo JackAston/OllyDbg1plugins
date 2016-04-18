@@ -1,0 +1,106 @@
+
+       -= Memory Dump for Olly Debugger by AeoN =-
+       -=========================================-
+
+
+
+Installation
+============
+ Copy plugin into Olly's plugin directory.
+
+
+Usage & Help
+============
+
+ In the dump window right click and select 'Memory Dump' in the popup menu 
+ pick your choice.
+
+ Possible choices are:
+
+ - File
+    Copies selected bytes from dump into a file.
+			
+ - Clipboard
+    Copies selected bytes from dump into a clipboard (text only).
+
+ - Delphi/Pascal Table
+    Generates table of selected bytes which can be easily used in Delphi/Pascal
+
+ - C/C++ Table
+    Generates table of selected bytes which can be easily used in C/C++
+
+ - ASM Table
+    Generates table of selected bytes which can be easily used in Assembler 
+    (MASM Tested)
+
+ - Visual Basic Table
+    Generates table of selected bytes which can be easily used in Visual Basic 
+
+ - Range Dump
+    Dumps Range of defined bytes by: 
+
+	- Lenght : Tick End Address/Lenght
+        - End Address : Untick End Address/Lenght
+
+    Xor Dump With: Self-explanatory 
+	
+    Button with [<] symbol enters address of last byte clicked(not selected) in the dump,
+    it's more convenient than entering addresses manually.
+
+
+ - Xor Selection
+    Xors Selection and shows dumped data in Olly's window. This window cannot be used 
+    for another byte manipulation with plugin because dump is created in your Win's 
+    temporary folder and not in memory.
+
+
+
+History
+=======
+
+ v0.9 - [Dec. 2007]
+  - 2 bugs in ASM Table fixed
+
+ v0.8 - [Nov. 2007]
+  + Xor Selection
+  + Visual Basic Table
+  + Updated Range Dump With Xor
+  - Removed bug which allocated space in memory
+
+ v0.7 - [Nov. 2007]
+  + Updated Range Dump Again
+
+ v0.6 - [Nov. 2007]
+  + Updated Range Dump
+
+ v0.5 - [Nov. 2007]
+  + Range Dump
+  - Bug Fixed
+
+ v0.4 - [Oct. 2007]
+  + ASM Table
+
+ v0.3 - [Sept. 2007] 
+  + Delphi/Pascal Table 
+  + C/C++ Table
+  + Version for Immunity Debugger
+
+ v0.2 - [Sept. 2007] 
+  + Copies Selected Strings form Dump Window into clipboard
+  + Version for Immunity Debugger
+
+ v0.1 - [July 2007] - Initial Private Build
+  + Copies Selected Strings form Dump Window into a file
+
+
+Thanks to
+=========
+
+ DARKER - for VB table specification
+ pr0p4g4nd4 - for pointing out some bugs 
+
+
+
+Contact
+========
+ comer@mail2expert.com

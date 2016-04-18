@@ -1,0 +1,326 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<!--
+
+Generated from index.tex by tex2page, v 2004-09-11
+(running on MzScheme 205, windows), 
+(c) Dorai Sitaram, 
+http://www.ccs.neu.edu/~dorai/tex2page/tex2page-doc.html
+
+-->
+<head>
+<title>
+OllyMachine 手册
+</title>
+<link rel="stylesheet" type="text/css" href="css/main.css" title=default>
+<link rel="stylesheet" type="text/css" href="index-Z-S.css" title=default>
+<meta name=robots content="noindex,follow">
+<meta http-equiv="Content-Type" content="text/html;charset=gb2312"></head>
+<body>
+<div align=right class=navigation><i>[<span><a href="index.htm">首页</a>, <a href="index-Z-H-1.htm">上一页</a></span><span>, <a href="index-Z-H-3.htm">下一页</a></span><span>; &nbsp;&nbsp;</span><span><a href="index-Z-H-1.htm#node_toc_start">目录 </a></span>]</i></div><p></p>
+<a name="node_chap_1"></a>
+<h1 class=chapter>
+<div class=chapterheading><a href="index-Z-H-1.htm#node_toc_node_chap_1">第一章</a></div><br>
+<a href="index-Z-H-1.htm#node_toc_node_chap_1">概述</a></h1>
+<p></p>
+<a name="node_sec_1.1"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_1.1">1.1&nbsp;&nbsp;简介</a></h2>
+<p>OllyMachine是调试器<a href="http://home.t-online.de/home/Ollydbg">OllyDbg</a>的一个插件。可以通过使用一套汇编语言——OllyMachine Script来编写脚本，并编译成字节码提交给OllyMachine虚拟机执行，以达到操纵OllyDbg的目的。</p>
+<p>
+</p>
+<a name="node_sec_1.2"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_1.2">1.2&nbsp;&nbsp;主页</a></h2>
+<p><a href="http://www.luocong.com/om">OllyMachine</a></p>
+<p>
+</p>
+<a name="node_sec_1.3"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_1.3">1.3&nbsp;&nbsp;安装</a></h2>
+<p>拷贝OllyMachine.dll到OllyDbg的Plugin目录下。</p>
+<p>
+</p>
+<a name="node_sec_1.4"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_1.4">1.4&nbsp;&nbsp;运行</a></h2>
+<p>安装完毕后，在OllyDbg的Plugins目录中会出现OllyMachine的菜单项，选择里面的对应项即可。</p>
+<p>
+</p>
+<a name="node_sec_1.4.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_1.4.1">1.4.1&nbsp;&nbsp;运行脚本</a></h3>
+<p>默认的脚本文件的扩展名为“.oms”，表示“OllyMachine Script”。在运行时打开这种文件，就可以由汇编器把源代码汇编成字节码并送入虚拟机执行。</p>
+<p>
+</p>
+<a name="node_sec_1.4.2"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_1.4.2">1.4.2&nbsp;&nbsp;运行字节码文件</a></h3>
+<p>默认的字节码文件的扩展名为“.omb”，表示“OllyMachine Binary”。在运行时打开这种文件，就会由内置的Loader载入字节码并送入虚拟机执行。</p>
+<p>
+值得注意的是：</p>
+<p>
+</p>
+<ol>
+<li><p>OllyMachine会自动判断读入的文件是否为字节码文件，如果是的话，就会在内部走字节码文件的流程，否则就会走脚本文件的流程。
+</p>
+<li><p>在执行脚本或字节码文件之前，必须要保证在OllyDbg中至少已经打开了一个PE文件进行调试，否则可能会导致OllyMachine产生运行期异常。
+</p>
+</ol><p></p>
+<p>
+</p>
+<a name="node_sec_1.5"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_1.5">1.5&nbsp;&nbsp;关于</a></h2>
+<p>OllyMachine是免费软件，作者保留其版权，但不保留任何其他权利。</p>
+<p>
+</p>
+<a name="node_sec_1.6"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_1.6">1.6&nbsp;&nbsp;历史</a></h2>
+<p><strong>[2004-12-07] 0.20版。</strong>
+</p>
+<ol>
+<li><p>新增：四个新的API：
+</p>
+<ul>
+<li><p>WriteMemHexes
+</p>
+<li><p>ReadFileIntoMem
+</p>
+<li><p>VirtualAllocEx
+</p>
+<li><p>VirtualFreeEx
+</p>
+</ul><p>
+</p>
+<li><p>新增：可以对标志位CF, PF, AF, ZF, SF, DF, OF进行操作，例如：
+</p>
+<pre class=scheme><span class=variable>not</span> <span class=variable>cf</span>
+<span class=variable>mov</span> <span class=variable>zf</span><span class=keyword>,</span> <span class=selfeval>0</span>
+<span class=variable>mov</span> <span class=variable>pf</span><span class=keyword>,</span> <span class=selfeval>1</span>
+</pre><p>
+</p>
+<li><p>新增：可以用别的插件调用OllyMachine，调用方式：
+</p>
+<pre class=scheme><span class=variable>HMODULE</span> <span class=variable>hOMDll</span><span class=comment>;</span>
+<span class=variable>typedef</span> <span class=variable>void</span> (<span class=variable>__cdecl</span> <span class=variable>*RUNOMFILE</span>)(<span class=variable>const</span> <span class=variable>char</span> <span class=variable>*</span>)<span class=comment>;</span>
+<span class=variable>RUNOMFILE</span> <span class=variable>RunOMFile</span><span class=comment>;</span>
+
+<span class=variable>hOMDll</span> <span class=variable>=</span> <span class=variable>GetModuleHandle</span>(<span class=selfeval>&quot;OllyMachine.dll&quot;</span>)<span class=comment>;</span>
+<span class=variable>//</span> <span class=variable>Check</span> <span class=variable>that</span> <span class=variable>the</span> <span class=variable>other</span> <span class=variable>plugin</span> <span class=variable>is</span> <span class=variable>present</span> <span class=keyword>and</span> <span class=variable>loaded</span>
+<span class=keyword>if</span> (<span class=variable>hOMDll</span>)
+{
+    <span class=variable>//</span> <span class=variable>Get</span> <span class=variable>address</span> <span class=variable>of</span> <span class=variable>exported</span> <span class=variable>function</span>
+    <span class=variable>RunOMFile</span> <span class=variable>=</span> (<span class=variable>RUNOMFILE</span>)<span class=variable>GetProcAddress</span>(<span class=variable>hOMDll</span><span class=keyword>,</span> <span class=selfeval>&quot;RunOMFile&quot;</span>)<span class=comment>;</span>
+    <span class=variable>//</span> <span class=variable>Check</span> <span class=variable>that</span> <span class=variable>the</span> <span class=variable>other</span> <span class=variable>plugin</span> <span class=variable>exports</span> <span class=variable>the</span> <span class=variable>correct</span> <span class=variable>function</span>
+    <span class=keyword>if</span> (<span class=variable>RunOMFile</span>)
+    {
+        <span class=variable>RunOMFile</span>(<span class=selfeval>&quot;test.oms&quot;</span>)<span class=comment>;  // Execute script</span>
+        <span class=variable>RunOMFile</span>(<span class=selfeval>&quot;test.omb&quot;</span>)<span class=comment>;  // Execute binary</span>
+    }
+}
+</pre><p>
+</p>
+<li><p>修正：在双引号中的双斜线的bug。
+</p>
+<li><p>修正：在某些算术操作中没有对OllyDbg的寄存器进行操作的bug。
+</p>
+</ol><p></p>
+<p>
+<strong>[2004-12-01] 0.19版。</strong>
+</p>
+<ol>
+<li><p>新增：一个新的输出API：
+</p>
+<ul>
+<li><p>UpdateDumpBuf
+</p>
+</ul><p>
+</p>
+<li><p>新增：三个新的跟断点相关的API：
+</p>
+<ul>
+<li><p>EOBINT3
+</p>
+<li><p>EOBHW
+</p>
+<li><p>EOBMEM
+</p>
+</ul><p>
+</p>
+</ol><p></p>
+<p>
+<strong>[2004-11-30] 0.18版。</strong>
+</p>
+<ol>
+<li><p>新增：两个新的搜索API：
+</p>
+<ul>
+<li><p>ReverseFind
+</p>
+<li><p>ReverseSearch
+</p>
+</ul><p>
+</p>
+<li><p>新增：两个新的替换API：
+</p>
+<ul>
+<li><p>CopyBytesTo
+</p>
+<li><p>ReplaceBytesEx
+</p>
+</ul><p>
+</p>
+<li><p>修正：在Search中的一个bug，有时会导致无法找到正确的地址。
+</p>
+</ol><p></p>
+<p>
+<strong>[2004-11-29] 0.17版。</strong>
+</p>
+<ol>
+<li><p>修正：内嵌汇编功能，我重写了内嵌汇编的词法和语法分析器，修正了几个bug。
+</p>
+<li><p>修正：以前的版本中，OllyMachine.ini会保留在OllyDbg的主目录下，现在修正为放在OllyMachine.dll的同一目录下。
+</p>
+<li><p>修正：对处理异常的同步错误。
+</p>
+</ol><p></p>
+<p>
+<strong>[2004-11-28] 0.16版。</strong>
+</p>
+<ol>
+<li><p>新增：内嵌汇编功能：__asm { }
+</p>
+<li><p>新增：三个新的API：
+</p>
+<ul>
+<li><p>IsWinNTKernel
+</p>
+<li><p>GotoCpuAddr
+</p>
+<li><p>GotoDumpAddr
+</p>
+</ul><p>
+</p>
+</ol><p></p>
+<p>
+<strong>[2004-11-27] 0.15版。</strong>
+</p>
+<ol>
+<li><p>新增：一个新的搜索API：
+</p>
+<ul>
+<li><p>Search
+</p>
+</ul><p>
+</p>
+<li><p>新增：两个新的运行API：
+</p>
+<ul>
+<li><p>StepIntoS
+</p>
+<li><p>StepOverS
+</p>
+</ul><p>
+</p>
+<li><p>新增：五个新的辅助调试API：
+</p>
+<ul>
+<li><p>FindProcBegin
+</p>
+<li><p>FindProcEnd
+</p>
+<li><p>FindPrevProc
+</p>
+<li><p>FindNextProc
+</p>
+<li><p>FollowCall
+</p>
+</ul><p>
+</p>
+</ol><p></p>
+<p>
+<strong>[2004-11-26] 0.14版。</strong>
+</p>
+<ol>
+<li><p>新增：两个新的输出API：
+</p>
+<ul>
+<li><p>PrintBufToDump
+</p>
+<li><p>PrintBufToNewDump
+</p>
+</ul><p>
+</p>
+<li><p>激活：DumpAsPE，但目前的版本还不能修正引入表。(special thanks to Blue)
+</p>
+<li><p>修正：双引号字符串中的斜杠问题。
+</p>
+</ol><p></p>
+<p>
+<strong>[2004-11-24] 0.13版。</strong>
+</p>
+<ol>
+<li><p>新增：一系列的缓冲区API：
+</p>
+<ul>
+<li><p>malloc
+</p>
+<li><p>free
+</p>
+<li><p>strcpy
+</p>
+<li><p>strcat
+</p>
+<li><p>strlen
+</p>
+<li><p>ltoa
+</p>
+<li><p>memcpy
+</p>
+</ul><p>
+</p>
+<li><p>新增：在Compile时，如果.omb文件已存在，提示是否覆盖。
+</p>
+<li><p>修正：GetProcAddress这个API的返回地址错误。
+</p>
+<li><p>修正：对int3和memory breakpoint的同步错误。
+</p>
+</ol><p></p>
+<p>
+<strong>[2004-11-23] 0.12版。</strong>
+</p>
+<ol>
+<li><p>新增：直接支持对双引号字符串的引用，例如：invoke Msg, &quot;Hello!&quot;
+</p>
+<li><p>新增：Find，支持通配符。
+</p>
+<li><p>新增：HideOD和UnHideOD，用来隐藏OllyDbg，在WinXP Sp2下同样有效。
+</p>
+<li><p>修改：对ReadMemLong和WriteMemLong增加字节数的限制。
+</p>
+<li><p>修正：最近文件列表退出时没有更新。
+</p>
+<li><p>修正：FindOpcode和ReplaceBytes的bug。
+</p>
+</ol><p></p>
+<p>
+<strong>[2004-11-21] 0.11版。</strong>
+</p>
+<ol>
+<li><p>新增：invoke宏调用API方式。
+</p>
+<li><p>新增：“最近文件”列表功能。(thanks to pll621)
+</p>
+<li><p>修正：一个虚拟机同步的bug。
+</p>
+</ol><p></p>
+<p>
+<strong>[2004-11-15] 0.10版。</strong></p>
+<p>
+</p>
+<a name="node_sec_1.7"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_1.7">1.7&nbsp;&nbsp;联系方式</a></h2>
+<p>作者：罗聪<br>
+地址：广东省珠海市吉大景山路莲山巷8号金山软件公司毒霸引擎组<br>
+邮编：519015<br>
+主页：<a href="http://www.luocong.com">http://www.luocong.com</a><br>
+E-Mail：admin[AT]luocong.com
+
+</p>
+<div align=right class=navigation><i>[<span><a href="index.htm">首页</a>, <a href="index-Z-H-1.htm">上一页</a></span><span>, <a href="index-Z-H-3.htm">下一页</a></span><span>; &nbsp;&nbsp;</span><span><a href="index-Z-H-1.htm#node_toc_start">目录 </a></span>]</i></div><p></p>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: Clear UDD - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP8EB.tmp" with contents
+[
+/nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "CLEARUDD_EXPORTS" /FR"Release/" /Fp"Release/Clear UDD.pch" /Yu"stdafx.h" /Fo"Release/" /Fd"Release/" /J /FD /c 
+"C:\Documents and Settings\Administrator\×ÀÃæ\Code\Clear UDD.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP8EB.tmp" 
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP8EC.tmp" with contents
+[
+/nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "CLEARUDD_EXPORTS" /FR"Release/" /Fp"Release/Clear UDD.pch" /Yc"stdafx.h" /Fo"Release/" /Fd"Release/" /J /FD /c 
+"C:\Documents and Settings\Administrator\×ÀÃæ\Code\StdAfx.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP8EC.tmp" 
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP8ED.tmp" with contents
+[
+kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib Shlwapi.lib /nologo /dll /incremental:no /pdb:"Release/Clear UDD.pdb" /machine:I386 /out:"Release/Clear UDD.dll" /implib:"Release/Clear UDD.lib" 
+".\Release\Clear UDD.obj"
+".\Release\StdAfx.obj"
+".\Ollydbg.lib"
+]
+Creating command line "link.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP8ED.tmp"
+<h3>Output Window</h3>
+Compiling...
+StdAfx.cpp
+Compiling...
+Clear UDD.cpp
+C:\Documents and Settings\Administrator\×ÀÃæ\Code\Clear UDD.cpp(19) : warning C4129: 'd' : unrecognized character escape sequence
+Linking...
+   Creating library Release/Clear UDD.lib and object Release/Clear UDD.exp
+
+
+
+<h3>Results</h3>
+Clear UDD.dll - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

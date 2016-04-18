@@ -1,0 +1,37 @@
+===============================================================================
+
+OllyDbg/ImmDbg MSDN Online Help Plugin
+Copyright (C) 2012 Mario Vilas <mvilas@gmail.com>
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License, or (at your option)
+any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+more details.
+
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+Place, Suite 330, Boston, MA 02111-1307 USA
+
+===============================================================================
+
+This plugin will replace WIN32.HLP with online help from the MSDN website.
+
+To install:
+    1) Copy OllyMSDN.dll to OllyDbg's or ImmDbg's plugin directory.
+    2) Start the debugger.
+    3) If you haven't done so already, go to Help -> Select API help file
+       and select WIN32.HLP as usual. It doesn't need to be the real file,
+       just one named like that.
+
+To use:
+    *) When you click on Help -> Open API help file, the MSDN online website
+       will be opened instead.
+    *) To get help on individual API calls, right-click on the CALL instruction
+       in the CPU pane and click on "Help on symbolic name".
+
+===============================================================================

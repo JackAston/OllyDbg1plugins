@@ -1,0 +1,45 @@
+HzorInline Helper Plugin v1.0 for OllyDbg v1.10
+===============================================
+
+1. Owerview
+2. How to use
+3. How to compile
+4. Contacts
+
+
+1. Owerview
+===========
+This plugin is created to automate the process of
+generating patch commands for HzorInline tool.
+
+2. How to use
+=============
+Unpack/Crack the target and generate patch strings
+by selecting patched area either in CPU or in
+any DUMP window, right-clicking on it and selecting
+the "HzorInline Helper -> Add to list" command.
+After you successfully add all needed areas, in the
+table list window do right-click and select "Copy all".
+Now you have all you need in your own clipboard, just
+paste it's contents in the HzorInline patch editing window.
+
+3. How to compile
+=================
+The plugin was successfully compiled with Open Watcom C/C++ v1.6
+compiler. Before, you need to set in Compiler Options the
+structure alignment to "1-byte alignment" ("-zp1" compiler option)
+and also set the "80386 stack based calling" option ("-3s" 
+compiler option).
+
+I suppose this plugin can be also successfully compiled with Mingw32, 
+lcc32, M$ and Borland compilers if needed.
+
+4. Contacts
+===========
+Only E-mail atm...
+arnix.at@gmail.com
+
+---
+(C) arnix
+
+May 21, 2007

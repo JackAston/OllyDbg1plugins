@@ -1,0 +1,200 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<!--
+
+Generated from index.tex by tex2page, v 2004-09-11
+(running on MzScheme 205, windows), 
+(c) Dorai Sitaram, 
+http://www.ccs.neu.edu/~dorai/tex2page/tex2page-doc.html
+
+-->
+<head>
+<title>
+OllyMachine 手册
+</title>
+<link rel="stylesheet" type="text/css" href="css/main.css" title=default>
+<link rel="stylesheet" type="text/css" href="index-Z-S.css" title=default>
+<meta name=robots content="noindex,follow">
+<meta http-equiv="Content-Type" content="text/html;charset=gb2312"></head>
+<body>
+<div align=right class=navigation><i>[<span><a href="index.htm">首页</a>, <a href="index-Z-H-2.htm">上一页</a></span><span>, <a href="index-Z-H-4.htm">下一页</a></span><span>; &nbsp;&nbsp;</span><span><a href="index-Z-H-1.htm#node_toc_start">目录 </a></span>]</i></div><p></p>
+<a name="node_chap_2"></a>
+<h1 class=chapter>
+<div class=chapterheading><a href="index-Z-H-1.htm#node_toc_node_chap_2">第二章</a></div><br>
+<a href="index-Z-H-1.htm#node_toc_node_chap_2">OllyMachine体系</a></h1>
+<p></p>
+<a name="node_sec_2.1"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_2.1">2.1&nbsp;&nbsp;核心</a></h2>
+<p>OllyMachine由一个汇编器（Assembler）和一个32位虚拟机（Virtual Machine）所组成。其核心为寄存器虚拟机（Register-Machine），拥有堆栈、寄存器结构以及相关的寻址方式，与x86 CPU比较相似。</p>
+<p>
+</p>
+<a name="node_sec_2.1.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_2.1.1">2.1.1&nbsp;&nbsp;寻址空间</a></h3>
+<p>OllyMachine是32位虚拟机，因此，它的有效寻址空间为：</p>
+<p>
+</p>
+<ul>
+<li><p>有符号数 ： -2GB ～ +2GB
+</p>
+<li><p>无符号数 ： 0 ～ 4GB
+</p>
+</ul><p></p>
+<p>
+但是，在实际中可能达不到这么大的寻址空间（例如，现在大部分的机器的物理内存只有512MB），因此这只是一个理论值。</p>
+<p>
+</p>
+<a name="node_sec_2.1.2"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_2.1.2">2.1.2&nbsp;&nbsp;寄存器</a></h3>
+<p>在OllyMachine虚拟机中，有83个通用寄存器以及3个隐含的寄存器。其中：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>reg00、reg01、reg02</span> ... <span class=variable>reg64、FreeBufferReg、FreeBufferSizeReg</span>
+</pre><p></p>
+<p>
+以上这67个寄存器可以供用户自由使用。FreeBufferReg和FreeBufferSizeReg有其特殊用途，留待后面再说。</p>
+<p>
+以及9个寄存器为：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>eax、ecx、edx、ebx、esp、ebp、esi、edi、eip</span>
+</pre><p></p>
+<p>
+这9个寄存器比较特殊，它们是我在设计OllyMachine时，为了方便程序员与OllyDbg进行交互而定义的特殊寄存器，对它们的操作将直接反映到OllyDbg的当前被调试进程上。</p>
+<p>
+还有7个标志位寄存器：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>CF、PF、AF、ZF、SF、DF、OF</span>
+</pre><p></p>
+<p>
+这7个标志位寄存器对应着OllyDbg里面的相应的标志位，举例如下：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>not</span> <span class=variable>cf</span>
+<span class=variable>mov</span> <span class=variable>zf</span><span class=keyword>,</span> <span class=selfeval>0</span>
+<span class=variable>mov</span> <span class=variable>pf</span><span class=keyword>,</span> <span class=selfeval>1</span>
+</pre><p> </p>
+<p>
+另外，OllyMachine中还有2个隐含的寄存器，它们是：eip和esp。eip为指令指针寄存器，用来存放代码段中的偏移地址；esp为堆栈指针寄存器，用来指示栈顶的偏移地址。</p>
+<p>
+注意！这2个隐含的寄存器必须区分于上面提到的那9个寄存器中的同名寄存器。主要的区别在于：上面那9个寄存器其实是引用自OllyDbg的当前被调试进程，程序员可以直接操纵它们，其结果相当于在OllyDbg中直接操纵对应的寄存器；而这2个隐含的寄存器则是属于OllyMachine CPU内部的，不能被程序员直接访问，我给它们取名为eip和esp只是由于我对x86 CPU体系的个人喜好。</p>
+<p>
+</p>
+<a name="node_sec_2.1.3"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_2.1.3">2.1.3&nbsp;&nbsp;标志位</a></h3>
+<p>OllyMachine CPU内部，还有一个隐含的EFlags寄存器，它是标志位寄存器。标志位往往用来作为后续条件转移指令的转移控制条件，所以称为条件码。在OllyMachine CPU内部，有以下2位标志位：</p>
+<p>
+</p>
+<ul>
+<li><p>CF (Carry Flag) ： 进位标志，记录运算时从最高有效位产生的进位值。
+</p>
+<li><p>ZF (Zero Flag) ： 零标志，运算结果为0时ZF位置1，否则置0。
+</p>
+</ul><p></p>
+<p>
+</p>
+<a name="node_sec_2.2"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_2.2">2.2&nbsp;&nbsp;工作流程</a></h2>
+<p>OllyMachine拥有自己的一套指令集（opcode），它与用户的接口是一套被称为OllyMachine Script的汇编语言，用户通过编写汇编语言与OllyMachine打交道。</p>
+<p>
+在运行前，OllyMachine会首先通过内置的Assembler把汇编语言源代码编译成字节码（byte codes），其工作流程如下图所示：</p>
+<p>
+</p>
+<a name="node_fig_Temp_2"></a>
+<div class=figure align=center><table width=100%><tr><td align=center><div align=center><table><tr><td>
+
+<img src="images/assembler.png">
+</td></tr>
+<tr><td align=center><b>图 1:</b>&nbsp;&nbsp;Assembler工作流程</td></tr>
+<tr><td>
+</td></tr></table></div>
+
+</td></tr></table></div><p></p>
+<p>
+通过Assembler生成字节码后，字节码即可送进虚拟机内部进行执行。</p>
+<p>
+因此，实际上OllyMachine的工作流程是分成两个独立的步骤：</p>
+<p>
+</p>
+<ul>
+<li><p>汇编（Assemble）
+</p>
+<li><p>执行（Run in Virtual Machine）
+</p>
+</ul><p></p>
+<p>
+我们也可以事先执行好汇编的步骤，即把源代码编译成一个字节码文件并保存起来，以后就可以直接用OllyMachine载入这个字节码文件而无需再次汇编，达到节省时间的目的。</p>
+<p>
+</p>
+<a name="node_sec_2.3"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_2.3">2.3&nbsp;&nbsp;编译期错误</a></h2>
+<p>OllyMachine有一个内置的汇编器，它是一个两遍扫描的LL(1)语法驱动汇编器。如果源程序中有词法、语法错误，会在编译期间被检测出来，并提示出错文件、行、单词以及出错类型给程序员，方便程序员进行debug。</p>
+<p>
+请看下面这个例子程序：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>mov</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>reg73</span>    <span class=variable>//</span> <span class=variable>Error:</span> <span class=selfeval>&quot;reg73&quot;</span> <span class=variable>is</span> <span class=variable>invalid</span>
+<span class=variable>inc</span> <span class=variable>reg00</span>
+<span class=variable>inc</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>1</span>        <span class=variable>//</span> <span class=variable>Error:</span> <span class=selfeval>&quot;inc&quot;</span> <span class=variable>doesn</span><span class=keyword>'</span><span class=variable>t</span> <span class=variable>need</span> <span class=variable>second</span> <span class=variable>operand</span>
+
+<span class=variable>exit:</span>               <span class=variable>//</span> <span class=variable>Warning:</span> <span class=variable>unreferenced</span> <span class=variable>label</span>
+</pre><p></p>
+<p>
+OllyMachine的汇编器会报错：</p>
+<p>
+</p>
+<a name="node_fig_Temp_3"></a>
+<div class=figure align=center><table width=100%><tr><td align=center><div align=center><table><tr><td>
+
+<img src="images/compileerror.png">
+</td></tr>
+<tr><td align=center><b>图 2:</b>&nbsp;&nbsp;编译期错误示例</td></tr>
+<tr><td>
+</td></tr></table></div>
+
+</td></tr></table></div><p></p>
+<p>
+</p>
+<a name="node_sec_2.4"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_2.4">2.4&nbsp;&nbsp;运行期异常</a></h2>
+<p>OllyMachine在运行期如产生异常，会被捕捉（例如除0异常等），并且会给出导致异常的指令名称，以及dump出所有的字节码，供程序员进行debug。</p>
+<p>
+请看下面这个例子程序：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>mov</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>9</span>
+<span class=variable>mov</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=selfeval>3</span>
+<span class=variable>sub</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=selfeval>3</span>        <span class=variable>//</span> <span class=variable>now</span> <span class=variable>reg01</span> <span class=variable>is</span> <span class=selfeval>0</span>
+<span class=variable>div</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>reg01</span>    <span class=variable>//</span> <span class=variable>oh</span> <span class=variable>shit!</span>
+</pre><p></p>
+<p>
+由于程序员的粗心产生了除0错误，于是就会导致OllyMachine捕获这个异常（依次显示下面的两个报错对话框）：</p>
+<p>
+</p>
+<a name="node_fig_Temp_4"></a>
+<div class=figure align=center><table width=100%><tr><td align=center><div align=center><table><tr><td>
+
+<img src="images/exception1.png">
+</td></tr>
+<tr><td align=center><b>图 3:</b>&nbsp;&nbsp;运行期异常示例1</td></tr>
+<tr><td>
+</td></tr></table></div>
+
+</td></tr></table></div><p></p>
+<p>
+</p>
+<a name="node_fig_Temp_5"></a>
+<div class=figure align=center><table width=100%><tr><td align=center><div align=center><table><tr><td>
+
+<img src="images/exception2.png">
+</td></tr>
+<tr><td align=center><b>图 4:</b>&nbsp;&nbsp;运行期异常示例2</td></tr>
+<tr><td>
+</td></tr></table></div>
+
+</td></tr></table></div><p>
+
+</p>
+<div align=right class=navigation><i>[<span><a href="index.htm">首页</a>, <a href="index-Z-H-2.htm">上一页</a></span><span>, <a href="index-Z-H-4.htm">下一页</a></span><span>; &nbsp;&nbsp;</span><span><a href="index-Z-H-1.htm#node_toc_start">目录 </a></span>]</i></div><p></p>
+</body>
+</html>

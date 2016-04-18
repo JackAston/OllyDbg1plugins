@@ -1,0 +1,7 @@
+LIBRARY HideDebugger
+EXPORTS
+_ODBG_Plugininit
+_ODBG_Plugindata
+_ODBG_Pluginmenu
+_ODBG_Pluginaction
+_ODBG_Pluginreset

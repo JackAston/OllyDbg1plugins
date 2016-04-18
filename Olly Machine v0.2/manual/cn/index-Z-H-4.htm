@@ -1,0 +1,886 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<!--
+
+Generated from index.tex by tex2page, v 2004-09-11
+(running on MzScheme 205, windows), 
+(c) Dorai Sitaram, 
+http://www.ccs.neu.edu/~dorai/tex2page/tex2page-doc.html
+
+-->
+<head>
+<title>
+OllyMachine 手册
+</title>
+<link rel="stylesheet" type="text/css" href="css/main.css" title=default>
+<link rel="stylesheet" type="text/css" href="index-Z-S.css" title=default>
+<meta name=robots content="noindex,follow">
+<meta http-equiv="Content-Type" content="text/html;charset=gb2312"></head>
+<body>
+<div align=right class=navigation><i>[<span><a href="index.htm">首页</a>, <a href="index-Z-H-3.htm">上一页</a></span><span>, <a href="index-Z-H-5.htm">下一页</a></span><span>; &nbsp;&nbsp;</span><span><a href="index-Z-H-1.htm#node_toc_start">目录 </a></span>]</i></div><p></p>
+<a name="node_chap_3"></a>
+<h1 class=chapter>
+<div class=chapterheading><a href="index-Z-H-1.htm#node_toc_node_chap_3">第三章</a></div><br>
+<a href="index-Z-H-1.htm#node_toc_node_chap_3">OllyMachine汇编语言</a></h1>
+<p>终于来到最有意思的部分了！OllyMachine Script是我定义的一套汇编语言，它是用户与OllyMachine虚拟机打交道的最重要的接口（当然，如果你不嫌麻烦，也可以用16进制编辑器直接编写字节码，不过我想应该没有什么人会这样做吧。^_^）。实际上，编写一个Assembler比编写一个Virtual Machine要难得多，我花费在这个汇编器上的时间足足有半个多月。</p>
+<p>
+</p>
+<a name="node_sec_3.1"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_3.1">3.1&nbsp;&nbsp;基本元素</a></h2>
+<p>每一个OllyMachine汇编语言源程序都可以被分解成一系列的语句，而每条语句将在汇编语言源文件里面占用一个独立的文本行，即一行只能写一条语句，语句行的长度没有最大限制。语句又可以分成两种不同的形式：</p>
+<p>
+</p>
+<ul>
+<li><p>指令（instruction）
+</p>
+<li><p>注释（comment）
+</p>
+</ul><p></p>
+<p>
+请注意：OllyMachine汇编语言中所有的指令都是不区分大小写的。</p>
+<p>
+</p>
+<a name="node_sec_3.1.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_3.1.1">3.1.1&nbsp;&nbsp;指令</a></h3>
+<p>指令是用来给汇编器转换为字节码的语句。一条指令由一个操作码（opcode）和零个或多个操作数（operand）组成：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>指令</span> <span class=variable>=</span> <span class=variable>操作码</span> [ <span class=variable>操作数</span> [ <span class=variable>操作数</span> ... ] ]
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_3.1.1.1"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.1.1.1">3.1.1.1&nbsp;&nbsp;操作码</a></h4>
+<p>操作码是一个符号，它定义了指令将要采取的操作动作和整条指令的格式。我为OllyMachine汇编语言所定义的操作码能够完全决定其操作数的个数和这些操作数的类型。</p>
+<p>
+请看下面这两条指令：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>add</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>0x1234</span>
+<span class=variable>add</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=variable>reg00</span>
+</pre><p></p>
+<p>
+操作码add要求自己的后面跟有一个通用寄存器，一个逗号，以及一个立即数或者一个通用寄存器，它同时还规定了要把0x1234或者reg00里面的值放入寄存器reg00或者reg01。也就是说，操作码add既给出了这条指令将要采取的操作动作，又给出了这条指令的完整格式。</p>
+<p>
+</p>
+<a name="node_sec_3.1.1.2"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.1.1.2">3.1.1.2&nbsp;&nbsp;操作数</a></h4>
+<p>操作数给出的是指令将要对其进行操作的数据。OllyMachine汇编语言能够识别3种不同类型的指令操作数。这些操作数的类型如下图所示：</p>
+<p>
+</p>
+<a name="node_fig_Temp_6"></a>
+<div class=figure align=center><table width=100%><tr><td align=center><div align=center><table><tr><td>
+
+<table width=100% border=1><tr><td valign=top align=center ><strong>操作数类型</strong> </td><td valign=top align=center ><strong>示例</strong> </td></tr>
+<tr><td valign=top align=center>寄存器 </td><td valign=top align=center >reg00、eax </td></tr>
+<tr><td valign=top align=center>标识符 </td><td valign=top align=center >loop1、_continue </td></tr>
+<tr><td valign=top align=center>整数常数 </td><td valign=top align=center >-100、0x100
+</td></tr></table>
+</td></tr>
+<tr><td align=center><b>图 5:</b>&nbsp;&nbsp;OllyMachine汇编语言的指令操作数</td></tr>
+<tr><td>
+</td></tr></table></div>
+
+</td></tr></table></div><p></p>
+<p>
+</p>
+<a name="node_sec_Temp_7"></a>
+<h5><a href="index-Z-H-1.htm#node_toc_node_sec_Temp_7">寄存器</a></h5>
+<p>OllyMachine虚拟机一共有83个通用寄存器，它们全都是32位的，寻址范围为：无符号类型：0～4GB，有符号类型：-2GB～+2GB。其中：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>reg00、reg01、reg02</span> ... <span class=variable>reg64、FreeBufferReg、FreeBufferSizeReg</span>
+</pre><p></p>
+<p>
+这67个寄存器可以供用户自由使用。FreeBufferReg和FreeBufferSizeReg有其特殊用途。</p>
+<p>
+FreeBufferReg指向一个提供给脚本解码、临时存放数据使用的长度为4K的缓冲区；FreeBufferSizeReg表示FreeBuffer的当前长度。例如，如果需要获得一段字符串，这两个寄存器就可以派上用场了。</p>
+<p>
+注意！程序员在编程时，应尽量避免对FreeBufferReg和FreeBufferSizeReg直接进行写操作，从语法上来说对它们进行的操作是跟别的寄存器一样的（即允许读、写操作），但由于这两个寄存器有其特殊含义，它们一般是由相关的API在内部进行维护的，所以如果由程序员显式地改写了它们的值，可能会导致无法预期的程序运行结果。</p>
+<p>
+以及9个寄存器为：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>eax、ecx、edx、ebx、esp、ebp、esi、edi、eip</span>
+</pre><p></p>
+<p>
+对这9个寄存器的使用必须小心谨慎，因为对它们的操作将直接反映到OllyDbg的当前被调试进程上。例如：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>mov</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>eax</span>
+</pre><p></p>
+<p>
+将会把当前调试进程的eax寄存器的值赋值给reg00。</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>mov</span> <span class=variable>eax</span><span class=keyword>,</span> <span class=variable>0x12345678</span>
+</pre><p></p>
+<p>
+将会把0x12345678赋值给当前调试进程的eax寄存器。</p>
+<p>
+还有7个标志位寄存器：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>CF、PF、AF、ZF、SF、DF、OF</span>
+</pre><p></p>
+<p>
+这7个标志位寄存器对应着OllyDbg里面的相应的标志位，举例如下：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>not</span> <span class=variable>cf</span>
+<span class=variable>mov</span> <span class=variable>zf</span><span class=keyword>,</span> <span class=selfeval>0</span>
+<span class=variable>mov</span> <span class=variable>pf</span><span class=keyword>,</span> <span class=selfeval>1</span>
+</pre><p> </p>
+<p>
+</p>
+<a name="node_sec_Temp_8"></a>
+<h5><a href="index-Z-H-1.htm#node_toc_node_sec_Temp_8">标识符</a></h5>
+<p>标识符是由一组字符构成的符号。标识符的作用是命名标号（label）。标识符的第一个字符必须是一个字母（即a-z和A-Z之中的一个字符），或者一个下划线（“_”）。跟在第一个字符后面的其余字符可以是字母、下划线或者数字，即：</p>
+<p>
+</p>
+<ul>
+<li><p>第一个字符：a-z、A-Z、_
+</p>
+<li><p>后 续 字符：a-z、A-Z、_、0-9
+</p>
+</ul><p></p>
+<p>
+下面是一些合法的标识符：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>_1continue</span>
+<span class=variable>exit0</span>
+<span class=variable>loop1</span>
+</pre><p></p>
+<p>
+下面是一些非法的标识符：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>1continue</span>
+<span class=variable>.exit0</span>
+<span class=variable>my_#_loop2</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_Temp_9"></a>
+<h5><a href="index-Z-H-1.htm#node_toc_node_sec_Temp_9">整数常数</a></h5>
+<p>整数常数可以分为两种类型：10进制和16进制。</p>
+<p>
+10进制数不需要任何前缀，例如：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>100、-1234</span>
+</pre><p></p>
+<p>
+16进制数要加上“0x”或者“0X”作为前缀，例如：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>0x100、-0x1234</span>
+</pre><p></p>
+<p>
+10进制数和16进制数都可以由正数和负数表示，正数无需加“+”号（加了反而会编译不通过），负数需要加上“-”号。注意，整数常数最大不能超过0xFFFFFFFF。</p>
+<p>
+</p>
+<a name="node_sec_3.1.2"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_3.1.2">3.1.2&nbsp;&nbsp;注释</a></h3>
+<p>注释的作用就不必多说了。注释的重要特点是汇编器将完全忽略它们，不对它们做任何处理。通常来说，注释是夹杂在源代码中的说明文档。</p>
+<p>
+OllyMachine汇编语言中的注释分为两种：行注释和块注释。</p>
+<p>
+行注释：以“//”或“;”开头，一直到行尾，例如：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>line</span> <span class=variable>comment</span> <span class=selfeval>1.</span>
+<span class=comment>; line comment 2.</span>
+</pre><p></p>
+<p>
+块注释：以“/*”开头，直到遇到“*/”为止，可以占据多行，例如：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>/*</span>
+   <span class=variable>this</span> <span class=variable>is</span> <span class=variable>a</span> <span class=variable>block</span> <span class=variable>comment.</span>
+<span class=variable>*/</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_3.2"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_3.2">3.2&nbsp;&nbsp;标号</a></h2>
+<p>从程序设计的布局来说，一个汇编语言程序无非是一个由多个过程组成的集合体。那么我们该如何控制过程呢？我定义了标号（label）这种结构。</p>
+<p>
+标号的格式是在标识符的后面加上一个冒号，例如：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Error0:</span>
+</pre><p></p>
+<p>
+注意，OllyMachine汇编语言中的标号必须是独一无二的，它们不得与任何其他的名字重复。</p>
+<p>
+定义好标号之后，就可以通过跳转指令（后面再详细介绍）来控制过程了，例如：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>jmp</span> <span class=variable>Error0</span>
+<span class=variable>//</span> <span class=variable>instructions</span> ...
+<span class=variable>Error0:</span>
+<span class=variable>//</span> <span class=variable>other</span> <span class=variable>instructions</span> ...
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_3.3"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_3.3">3.3&nbsp;&nbsp;数据传送指令</a></h2>
+<p>数据传送指令负责把数据、地址或立即数传送到寄存器中。它可以分成：</p>
+<p>
+</p>
+<ul>
+<li><p>MOV (Move) 传送
+</p>
+<li><p>XCHG (Exchange) 交换
+</p>
+<li><p>LDS (Load String) 载入字符串
+</p>
+<li><p>PUSH (Push onto the stack) 进栈
+</p>
+<li><p>POP (Pop from the stack) 出栈
+</p>
+</ul><p></p>
+<p>
+</p>
+<a name="node_sec_3.3.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_3.3.1">3.3.1&nbsp;&nbsp;MOV</a></h3>
+<p>格式为：MOV DST, SRC<br>
+执行操作：(DST) &lt;- (SRC)</p>
+<p>
+它有两种格式：</p>
+<p>
+</p>
+<ul>
+<li><p>MOV 寄存器, 立即数
+</p>
+<li><p>MOV 寄存器, 寄存器
+</p>
+</ul><p></p>
+<p>
+例如：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>MOV</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>0x100</span>
+<span class=variable>MOV</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>reg01</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_3.3.2"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_3.3.2">3.3.2&nbsp;&nbsp;XCHG</a></h3>
+<p>格式为：XCHG OPR1, OPR2<br>
+执行操作：(OPR1) &lt;-&gt; (OPR2)</p>
+<p>
+它只有一种格式：</p>
+<p>
+</p>
+<ul>
+<li><p>XCHG 寄存器, 寄存器
+</p>
+</ul><p></p>
+<p>
+例如：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>mov</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=selfeval>1</span>
+<span class=variable>mov</span> <span class=variable>reg02</span><span class=keyword>,</span> <span class=selfeval>2</span>
+<span class=variable>XCHG</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=variable>reg02</span>   <span class=variable>//</span> <span class=variable>now</span> <span class=variable>reg01</span> <span class=variable>==</span> <span class=selfeval>2</span><span class=keyword>,</span> <span class=variable>reg02</span> <span class=variable>==</span> <span class=selfeval>1</span>
+</pre><p></p>
+<p>
+XCHG指令不会影响虚拟机的标志位。</p>
+<p>
+</p>
+<a name="node_sec_3.3.3"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_3.3.3">3.3.3&nbsp;&nbsp;LDS</a></h3>
+<p>格式为：LDS 寄存器, &quot;字符串&quot;</p>
+<p>
+例如：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>LDS</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>&quot;Hello World!&quot;</span>
+</pre><p></p>
+<p>
+可以把LDS记忆成：LoaD String，即载入字符串到寄存器的意思，这样比较容易记住。^_^</p>
+<p>
+</p>
+<a name="node_sec_3.3.4"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_3.3.4">3.3.4&nbsp;&nbsp;PUSH</a></h3>
+<p>格式为：PUSH SRC<br>
+执行操作：(ESP) &lt;- (ESP) - 4<br>
+　　　　　((ESP) + 4, (ESP)) &lt;- (SRC)</p>
+<p>
+它有两种格式：</p>
+<p>
+</p>
+<ul>
+<li><p>PUSH 立即数
+</p>
+<li><p>PUSH 寄存器
+</p>
+</ul><p></p>
+<p>
+例如：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>PUSH</span> <span class=variable>0x100</span>
+<span class=variable>PUSH</span> <span class=variable>reg00</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_3.3.5"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_3.3.5">3.3.5&nbsp;&nbsp;POP</a></h3>
+<p>格式为：POP DST<br>
+执行操作：(DST) &lt;- ((ESP) + 4, (ESP))<br>
+　　　　　(ESP) &lt;- (ESP) + 4</p>
+<p>
+它只有一种格式：</p>
+<p>
+</p>
+<ul>
+<li><p>POP 寄存器
+</p>
+</ul><p></p>
+<p>
+例如：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>POP</span> <span class=variable>reg00</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_3.4"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_3.4">3.4&nbsp;&nbsp;算术指令</a></h2>
+<p>算术运算指令用来执行算术运算，它们当中有双操作数指令，也有单操作数指令。</p>
+<p>
+</p>
+<a name="node_sec_3.4.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_3.4.1">3.4.1&nbsp;&nbsp;加法指令</a></h3>
+<p></p>
+<ul>
+<li><p>ADD (add) 加法
+</p>
+<li><p>INC (increment) 加1
+</p>
+</ul><p></p>
+<p>
+</p>
+<a name="node_sec_3.4.1.1"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.4.1.1">3.4.1.1&nbsp;&nbsp;ADD</a></h4>
+<p>格式：ADD DST, SRC<br>
+执行操作：(DST) &lt;- (SRC) + (DST)</p>
+<p>
+它有两种格式：</p>
+<p>
+</p>
+<ul>
+<li><p>ADD 寄存器, 立即数
+</p>
+<li><p>ADD 寄存器, 寄存器
+</p>
+</ul><p></p>
+<p>
+例如：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>ADD</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>0x100</span>
+<span class=variable>ADD</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>reg01</span>
+</pre><p></p>
+<p>
+注意：ADD指令会影响虚拟机的CF标志位。</p>
+<p>
+</p>
+<a name="node_sec_3.4.1.2"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.4.1.2">3.4.1.2&nbsp;&nbsp;INC</a></h4>
+<p>格式：INC DST<br>
+执行操作：(DST) &lt;- (DST) + 1</p>
+<p>
+它只有一种格式：</p>
+<p>
+</p>
+<ul>
+<li><p>INC 寄存器
+</p>
+</ul><p></p>
+<p>
+例如：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>INC</span> <span class=variable>reg00</span>
+</pre><p></p>
+<p>
+INC指令不影响虚拟机的标志位。</p>
+<p>
+</p>
+<a name="node_sec_3.4.2"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_3.4.2">3.4.2&nbsp;&nbsp;减法指令</a></h3>
+<p></p>
+<ul>
+<li><p>SUB (subtract) 减法
+</p>
+<li><p>DEC (increment) 减1
+</p>
+<li><p>CMP (Compare) 比较
+</p>
+</ul><p></p>
+<p>
+</p>
+<a name="node_sec_3.4.2.1"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.4.2.1">3.4.2.1&nbsp;&nbsp;SUB</a></h4>
+<p>格式：SUB DST, SRC<br>
+执行操作：(DST) &lt;- (DST) - (SRC)</p>
+<p>
+它有两种格式：</p>
+<p>
+</p>
+<ul>
+<li><p>SUB 寄存器, 立即数
+</p>
+<li><p>SUB 寄存器, 寄存器
+</p>
+</ul><p></p>
+<p>
+例如：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>SUB</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>0x100</span>
+<span class=variable>SUB</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>reg01</span>
+</pre><p></p>
+<p>
+注意：SUB指令会影响虚拟机的CF和ZF标志位。</p>
+<p>
+</p>
+<a name="node_sec_3.4.2.2"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.4.2.2">3.4.2.2&nbsp;&nbsp;DEC</a></h4>
+<p>格式：DEC DST<br>
+执行操作：(DST) &lt;- (DST) － 1</p>
+<p>
+它只有一种格式：</p>
+<p>
+</p>
+<ul>
+<li><p>DEC 寄存器
+</p>
+</ul><p></p>
+<p>
+例如：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>DEC</span> <span class=variable>reg00</span>
+</pre><p></p>
+<p>
+DEC指令不影响虚拟机的CF标志位，但会影响ZF标志位。</p>
+<p>
+</p>
+<a name="node_sec_3.4.2.3"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.4.2.3">3.4.2.3&nbsp;&nbsp;CMP</a></h4>
+<p>格式：CMP OPR1, OPR2<br>
+执行操作：(OPR1) - (OPR2)</p>
+<p>
+它有两种格式：</p>
+<p>
+</p>
+<ul>
+<li><p>CMP 寄存器, 立即数
+</p>
+<li><p>CMP 寄存器, 寄存器
+</p>
+</ul><p></p>
+<p>
+例如：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>CMP</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>0x100</span>
+<span class=variable>CMP</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>reg01</span>
+</pre><p></p>
+<p>
+注意：该指令与SUB指令一样执行减法操作，但它并不保存结果，只是根据结果设置条件标志位CF和ZF，CMP指令后往往跟着一条条件转移指令，根据比较结果产生不同的程序分支。</p>
+<p>
+</p>
+<a name="node_sec_3.4.3"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_3.4.3">3.4.3&nbsp;&nbsp;乘法指令</a></h3>
+<p></p>
+<ul>
+<li><p>MUL (mltiple) 乘法
+</p>
+</ul><p></p>
+<p>
+</p>
+<a name="node_sec_3.4.3.1"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.4.3.1">3.4.3.1&nbsp;&nbsp;MUL</a></h4>
+<p>格式：MUL DST, SRC<br>
+执行操作：(DST) &lt;- (DST) * (SRC)</p>
+<p>
+它有两种格式：</p>
+<p>
+</p>
+<ul>
+<li><p>MUL 寄存器, 立即数
+</p>
+<li><p>MUL 寄存器, 寄存器
+</p>
+</ul><p></p>
+<p>
+例如：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>MUL</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>0x100</span>
+<span class=variable>MUL</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>reg01</span>
+</pre><p></p>
+<p>
+MUL指令不会影响虚拟机的标志位。</p>
+<p>
+</p>
+<a name="node_sec_3.4.4"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_3.4.4">3.4.4&nbsp;&nbsp;除法指令</a></h3>
+<p></p>
+<ul>
+<li><p>DIV (divide) 除法
+</p>
+</ul><p></p>
+<p>
+</p>
+<a name="node_sec_3.4.4.1"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.4.4.1">3.4.4.1&nbsp;&nbsp;MUL</a></h4>
+<p>格式：DIV DST, SRC<br>
+执行操作：(DST) &lt;- (DST) / (SRC)</p>
+<p>
+它有两种格式：</p>
+<p>
+</p>
+<ul>
+<li><p>DIV 寄存器, 立即数
+</p>
+<li><p>DIV 寄存器, 寄存器
+</p>
+</ul><p></p>
+<p>
+例如：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>DIV</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>0x100</span>
+<span class=variable>DIV</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>reg01</span>
+</pre><p></p>
+<p>
+DIV指令不会影响虚拟机的标志位。</p>
+<p>
+注意：不能把0当作除数，否则虚拟机在运行时会检测出来并报错。</p>
+<p>
+</p>
+<a name="node_sec_3.5"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_3.5">3.5&nbsp;&nbsp;逻辑指令</a></h2>
+<p></p>
+<a name="node_sec_3.5.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_3.5.1">3.5.1&nbsp;&nbsp;逻辑运算指令</a></h3>
+<p></p>
+<ul>
+<li><p>AND (and) 逻辑与
+</p>
+<li><p>OR (or) 逻辑或
+</p>
+<li><p>NOT (not) 逻辑非
+</p>
+<li><p>XOR (exclusive or) 异或
+</p>
+</ul><p></p>
+<p>
+</p>
+<a name="node_sec_3.5.1.1"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.5.1.1">3.5.1.1&nbsp;&nbsp;AND</a></h4>
+<p>格式：AND DST, SRC<br>
+执行操作：(DST) &lt;- (DST) &amp; (SRC)</p>
+<p>
+它有两种格式：</p>
+<p>
+</p>
+<ul>
+<li><p>AND 寄存器, 立即数
+</p>
+<li><p>AND 寄存器, 寄存器
+</p>
+</ul><p></p>
+<p>
+例如：</p>
+<p>
+</p>
+<pre class=scheme><span class=keyword>AND</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>0x100</span>
+<span class=keyword>AND</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>reg01</span>
+</pre><p></p>
+<p>
+注意：AND指令会影响虚拟机的ZF标志位，并把CF标志位置为0。</p>
+<p>
+</p>
+<a name="node_sec_3.5.1.2"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.5.1.2">3.5.1.2&nbsp;&nbsp;OR</a></h4>
+<p>格式：OR DST, SRC<br>
+执行操作：(DST) &lt;- (DST) | (SRC)</p>
+<p>
+它有两种格式：</p>
+<p>
+</p>
+<ul>
+<li><p>OR 寄存器, 立即数
+</p>
+<li><p>OR 寄存器, 寄存器
+</p>
+</ul><p></p>
+<p>
+例如：</p>
+<p>
+</p>
+<pre class=scheme><span class=keyword>OR</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>0x100</span>
+<span class=keyword>OR</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>reg01</span>
+</pre><p></p>
+<p>
+注意：OR指令会影响虚拟机的ZF标志位，并把CF标志位置为0。</p>
+<p>
+</p>
+<a name="node_sec_3.5.1.3"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.5.1.3">3.5.1.3&nbsp;&nbsp;NOT</a></h4>
+<p>格式：NOT DST<br>
+执行操作：(DST) &lt;- !(DST)</p>
+<p>
+它只有一种格式：</p>
+<p>
+</p>
+<ul>
+<li><p>NOT 寄存器
+</p>
+</ul><p></p>
+<p>
+例如：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>NOT</span> <span class=variable>reg00</span>
+</pre><p></p>
+<p>
+NOT指令不会影响虚拟机的标志位。</p>
+<p>
+</p>
+<a name="node_sec_3.5.1.4"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.5.1.4">3.5.1.4&nbsp;&nbsp;XOR</a></h4>
+<p>格式：XOR DST, SRC<br>
+执行操作：(DST) &lt;- (DST) ^ (SRC)</p>
+<p>
+它有两种格式：</p>
+<p>
+</p>
+<ul>
+<li><p>XOR 寄存器, 立即数
+</p>
+<li><p>XOR 寄存器, 寄存器
+</p>
+</ul><p></p>
+<p>
+例如：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>XOR</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>0x100</span>
+<span class=variable>XOR</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>reg01</span>
+</pre><p></p>
+<p>
+注意：XOR指令会影响虚拟机的ZF标志位，并把CF标志位置为0。</p>
+<p>
+</p>
+<a name="node_sec_3.5.2"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_3.5.2">3.5.2&nbsp;&nbsp;移位指令</a></h3>
+<p></p>
+<ul>
+<li><p>SHL (shift left) 逻辑左移
+</p>
+<li><p>SHR (shift right) 逻辑右移
+</p>
+</ul><p></p>
+<p>
+</p>
+<a name="node_sec_3.5.2.1"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.5.2.1">3.5.2.1&nbsp;&nbsp;SHL</a></h4>
+<p>格式：SHL DST, SRC<br>
+</p>
+<p>
+它有两种格式：</p>
+<p>
+</p>
+<ul>
+<li><p>SHL 寄存器, 立即数
+</p>
+<li><p>SHL 寄存器, 寄存器
+</p>
+</ul><p></p>
+<p>
+例如：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>MOV</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>0x10</span>
+<span class=variable>SHL</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>8</span>        <span class=variable>//</span> <span class=variable>reg00</span> <span class=variable>is</span> <span class=variable>now</span> <span class=variable>0x1000</span>
+
+<span class=variable>MOV</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>0x10</span>
+<span class=variable>MOV</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=selfeval>8</span>
+<span class=variable>SHL</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>reg01</span>    <span class=variable>//</span> <span class=variable>reg00</span> <span class=variable>is</span> <span class=variable>now</span> <span class=variable>0x1000</span>
+</pre><p></p>
+<p>
+注意：SHL指令不会影响虚拟机的标志位。</p>
+<p>
+</p>
+<a name="node_sec_3.5.2.2"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.5.2.2">3.5.2.2&nbsp;&nbsp;SHR</a></h4>
+<p>格式：SHR DST, SRC<br>
+</p>
+<p>
+它有两种格式：</p>
+<p>
+</p>
+<ul>
+<li><p>SHR 寄存器, 立即数
+</p>
+<li><p>SHR 寄存器, 寄存器
+</p>
+</ul><p></p>
+<p>
+例如：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>MOV</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>0x1000</span>
+<span class=variable>SHR</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>8</span>        <span class=variable>//</span> <span class=variable>reg00</span> <span class=variable>is</span> <span class=variable>now</span> <span class=variable>0x10</span>
+
+<span class=variable>MOV</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>0x1000</span>
+<span class=variable>MOV</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=selfeval>8</span>
+<span class=variable>SHR</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>reg01</span>    <span class=variable>//</span> <span class=variable>reg00</span> <span class=variable>is</span> <span class=variable>now</span> <span class=variable>0x10</span>
+</pre><p></p>
+<p>
+注意：SHR指令不会影响虚拟机的标志位。</p>
+<p>
+</p>
+<a name="node_sec_3.6"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_3.6">3.6&nbsp;&nbsp;控制转移指令</a></h2>
+<p>一般情况下指令是顺序地逐条执行的，但实际上程序不可能全部顺序执行而经常需要改变其执行流程，在这里我们要介绍的控制转移指令就是用来控制程序的执行流程的。</p>
+<p>
+</p>
+<a name="node_sec_3.6.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_3.6.1">3.6.1&nbsp;&nbsp;无条件转移指令</a></h3>
+<p></p>
+<a name="node_sec_3.6.1.1"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.6.1.1">3.6.1.1&nbsp;&nbsp;JMP</a></h4>
+<p>格式：JMP label<br>
+执行操作：(EIP) &lt;- (EIP) + 32位偏移量</p>
+<p>
+无条件地转移到指令指定的地址去执行从该地址开始的指令，呵呵，好拗口啊。举个例子如下：</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>jmp</span> <span class=variable>Error0</span>
+<span class=variable>mov</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=variable>0x200</span>
+<span class=variable>Error0:</span>
+<span class=variable>mov</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=variable>0x100</span>
+</pre><p></p>
+<p>
+当程序运行到 jmp Error0 的时候，程序的执行流程就会跳转到 mov reg00, 0x100 处，因此，mov reg01, 0x200 将不会执行。</p>
+<p>
+</p>
+<a name="node_sec_3.6.2"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_3.6.2">3.6.2&nbsp;&nbsp;条件转移指令</a></h3>
+<p></p>
+<a name="node_sec_3.6.2.1"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.6.2.1">3.6.2.1&nbsp;&nbsp;JE</a></h4>
+<p>结果为零（或相等）则转移。</p>
+<p>
+测试条件：ZF = 1</p>
+<p>
+</p>
+<a name="node_sec_3.6.2.2"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.6.2.2">3.6.2.2&nbsp;&nbsp;JNE</a></h4>
+<p>结果不为零（或不相等）则转移。</p>
+<p>
+测试条件：ZF = 0</p>
+<p>
+</p>
+<a name="node_sec_3.6.2.3"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.6.2.3">3.6.2.3&nbsp;&nbsp;JB</a></h4>
+<p>低于，或者不高于或者等于，或进位为1则转移。</p>
+<p>
+测试条件：CF = 1</p>
+<p>
+</p>
+<a name="node_sec_3.6.2.4"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.6.2.4">3.6.2.4&nbsp;&nbsp;JNAE</a></h4>
+<p>同JB。</p>
+<p>
+</p>
+<a name="node_sec_3.6.2.5"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.6.2.5">3.6.2.5&nbsp;&nbsp;JNB</a></h4>
+<p>不低于，或者高于或等于，或进位位为0则转移。</p>
+<p>
+测试条件：CF = 0</p>
+<p>
+</p>
+<a name="node_sec_3.6.2.6"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.6.2.6">3.6.2.6&nbsp;&nbsp;JAE</a></h4>
+<p>同JNB。</p>
+<p>
+</p>
+<a name="node_sec_3.6.2.7"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.6.2.7">3.6.2.7&nbsp;&nbsp;JBE</a></h4>
+<p>低于或等于，或不高于则转移。</p>
+<p>
+测试条件：CF = 1 or ZF = 1</p>
+<p>
+</p>
+<a name="node_sec_3.6.2.8"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.6.2.8">3.6.2.8&nbsp;&nbsp;JNA</a></h4>
+<p>同JBE。</p>
+<p>
+</p>
+<a name="node_sec_3.6.2.9"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.6.2.9">3.6.2.9&nbsp;&nbsp;JNBE</a></h4>
+<p>不低于或等于，或者高于则转移。</p>
+<p>
+测试条件：CF = 0 and ZF = 0</p>
+<p>
+</p>
+<a name="node_sec_3.6.2.10"></a>
+<h4><a href="index-Z-H-1.htm#node_toc_node_sec_3.6.2.10">3.6.2.10&nbsp;&nbsp;JA</a></h4>
+<p>同JNBE。</p>
+<p>
+</p>
+<a name="node_sec_3.7"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_3.7">3.7&nbsp;&nbsp;其他指令</a></h2>
+<p>还有一些其他的指令是无法归类到上面的指令集中的，它们是：</p>
+<p>
+</p>
+<a name="node_sec_3.7.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_3.7.1">3.7.1&nbsp;&nbsp;INCLUDE</a></h3>
+<p>格式：INCLUDE &quot;filename.oms&quot;</p>
+<p>
+INCLUDE指令可以包含另外一个汇编语言源文件一同进行汇编。</p>
+<p>
+</p>
+<a name="node_sec_3.7.2"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_3.7.2">3.7.2&nbsp;&nbsp;NOP</a></h3>
+<p>格式：NOP</p>
+<p>
+NOP指令什么都不做，仅仅是空耗费一次虚拟机CPU运行周期，不会影响任何标志位，它所造成的影响是使虚拟机CPU的EIP加1。</p>
+<p>
+</p>
+<a name="node_sec_3.7.3"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_3.7.3">3.7.3&nbsp;&nbsp;PAUSE</a></h3>
+<p>格式：PAUSE</p>
+<p>
+PAUSE指令会使虚拟机暂时停止运行，如要让虚拟机继续运行，请选择Plugins菜单中的“OllyMachine -&gt; Resume”。</p>
+<p>
+</p>
+<a name="node_sec_3.7.4"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_3.7.4">3.7.4&nbsp;&nbsp;HALT</a></h3>
+<p>格式：HALT</p>
+<p>
+HALT是停机指令，OllyMachine运行时只要一遇到HALT指令，就会立即停机，并且以正常状态退出。</p>
+<p>
+</p>
+<a name="node_sec_3.7.5"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_3.7.5">3.7.5&nbsp;&nbsp;INVOKE</a></h3>
+<p>格式 INVOKE Api_Name, parameter1, parameter2, ...</p>
+<p>
+INVOKE宏用来调用API，类似MASM32中的INVOKE宏。
+
+</p>
+<div align=right class=navigation><i>[<span><a href="index.htm">首页</a>, <a href="index-Z-H-3.htm">上一页</a></span><span>, <a href="index-Z-H-5.htm">下一页</a></span><span>; &nbsp;&nbsp;</span><span><a href="index-Z-H-1.htm#node_toc_start">目录 </a></span>]</i></div><p></p>
+</body>
+</html>

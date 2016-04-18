@@ -1,0 +1,50 @@
+robin v0.01
+
+Plugin for OllyDbg coded by mirz.
+Please send me all opinions, bugs etc. on my email address:
+
+mirz@o2.pl
+
+Robin Protect Against:
+
+1. IsDebuggerPresent:
+
+	MOV EAX,DWORD PTR FS:[18]
+	MOV EAX,DWORD PTR DS:[EAX+30]
+	MOVZX EAX,BYTE PTR DS:[EAX+2]
+
+	return value is 0
+
+
+2. OutputDebugString
+
+	PUSH OutputDe.00403000                   ; /String = "%s%s%....%s%s%s%s"
+	CALL <JMP.&kernel32.OutputDebugStringA>  ; \OutputDebugStringA
+
+3. ProcessHeap
+
+	MOV EAX,DWORD PTR FS:[18]
+	MOV EAX,DWORD PTR DS:[EAX+30]
+	MOV EAX,DWORD PTR DS:[EAX+18]
+	CMP DWORD PTR DS:[EAX+10],0
+
+	return value is 0
+
+4. NtGlobalFlag
+
+	MOV EAX,DWORD PTR FS:[30h]
+	ADD EAX,68h
+	MOV EAX,DWORD PTR DS:[EAX]
+	CMP EAX,70h
+
+All antyDebug tricks you can find:
+
+http://ap0x.jezgra.net/protection.html
+
+Copyright 2007 mirz
+
+
+
+
+
+

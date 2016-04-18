@@ -1,0 +1,1 @@
+AutoPath is a oldish plugin for Ollydbg, but it has pretty nice feature. It allow you to turn on or off plugins, so they dont load or do load at startup of olly. It also creates a drop down menu, where you can add links to lets say Ollydbg, lordPe, Dup, and ... which makes it so you never have to leave Ollydbg.

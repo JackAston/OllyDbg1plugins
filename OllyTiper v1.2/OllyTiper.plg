@@ -1,0 +1,36 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: OllyTiper - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP3F2.tmp" with contents
+[
+OLLYDBG.LIB libctiny.lib /nologo /subsystem:windows /dll /incremental:no /pdb:"Release/OllyTiper.pdb" /machine:I386 /def:".\OllyTiper.def" /out:"F:\Crack Tools\调试工具\FishODBG\Plugin\OllyTiper.dll" /implib:"Release/OllyTiper.lib" 
+".\Release\OllyTiper.obj"
+".\Release\StdAfx.obj"
+".\Release\OllyTiper.res"
+]
+Creating command line "link.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP3F2.tmp"
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP3F3.bat" with contents
+[
+@echo off
+copy \Crack Tools\调试工具\FishODBG\Plugin\OllyTiper.dll "E:\od\Plug\"
+]
+Creating command line "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP3F3.bat"
+Linking...
+   Creating library Release/OllyTiper.lib and object Release/OllyTiper.exp
+<h3>Output Window</h3>
+Performing Custom Build Step on \Crack Tools\调试工具\FishODBG\Plugin\OllyTiper.dll
+系统找不到指定的文件。
+执行 c:\windows\system32\cmd.exe 时出错.
+
+
+
+<h3>Results</h3>
+OllyTiper.dll - 1 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

@@ -1,0 +1,10 @@
+OllyBugfix - Plugin to fix some of the problems in OD
+
+This is the reason why I wrote a few days ago a small plug-in, mainly the amendment of OD bugs. Not many functions, because OD2 will be out, so I did not continue to code. However, the final thought for a little while, to share with you this release.
+
+Very simple to use the plug-in, place in the plug-ins folder, running OD, entered Options,???.
+
+Amendment problems: floating-point and DebugString formatting errors.
+GCC and the use of plug-in wxDev - Cpp prepared.
+
+Please exhibitions.

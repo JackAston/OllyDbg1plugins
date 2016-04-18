@@ -1,0 +1,1 @@
+TfrmMain = class(TObj)

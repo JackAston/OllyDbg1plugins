@@ -1,0 +1,136 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_FORMVIEW DIALOG DISCARDABLE  0, 0, 295, 119
+STYLE DS_SETFOREGROUND | DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
+    WS_SYSMENU
+CAPTION "Break @ Module Plugin - dzzie"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Index       Module        BP_RVA",IDC_STATIC,37,27,100,
+                    8
+    LISTBOX         IDC_LIST2,33,38,182,74,LBS_SORT | LBS_NOINTEGRALHEIGHT | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Module",IDC_STATIC,7,7,28,13
+    PUSHBUTTON      "Delete Selected",IDC_BUTTON1,231,39,57,16
+    PUSHBUTTON      "Add",IDC_BUTTON2,229,7,55,14
+    EDITTEXT        IDC_EDIT1,37,7,90,14
+    EDITTEXT        IDC_EDIT2,158,7,62,16,ES_AUTOHSCROLL
+    LTEXT           "Rva",IDC_STATIC,136,7,15,13
+    PUSHBUTTON      "Save List",IDC_BUTTON3,232,88,56,14
+    PUSHBUTTON      "Load List",IDC_BUTTON4,231,74,57,14
+    CONTROL         "Debug Mode",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,232,103,56,9
+    PUSHBUTTON      "Clear List",IDC_BUTTON5,232,56,56,14
+    PUSHBUTTON      "Calc",IDC_BUTTON6,229,25,59,13
+END
+
+IDD_DIALOG1 DIALOG DISCARDABLE  0, 0, 230, 61
+STYLE DS_SYSMODAL | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | 
+    WS_SYSMENU
+CAPTION "Calculate RVA for Module"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "Calc",IDOK,132,36,37,14
+    LTEXT           "Module",IDC_STATIC,15,13,25,14
+    LTEXT           "VA",IDC_STATIC,133,13,14,16
+    LTEXT           "RVA",IDC_STATIC,15,36,18,15
+    EDITTEXT        IDC_EDIT1,44,13,64,17,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT2,153,13,62,18,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT3,44,35,63,16,ES_AUTOHSCROLL
+    PUSHBUTTON      "ADD",IDC_BUTTON1,171,37,43,13
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_FORMVIEW, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 288
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 112
+    END
+
+    IDD_DIALOG1, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 223
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 54
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

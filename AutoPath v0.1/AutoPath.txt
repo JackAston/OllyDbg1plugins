@@ -1,0 +1,52 @@
+AutoPath for OllyDbg(FixOD) by freecat
+最棒的OD辅助工具.....可以让你使用OllyDbg调试时更顺手。。
+
+使用方法：
+可用LordPE或PETools等工具给OllyDbg的输入表增加AutoPath.DLL，函数 FixOdPath 即可使用，不使用就去掉就行
+
+更新：
+2005.11.21
+1.躲过OpenProcess的反调试(thx simonzh2000)。
+2005.10.15
+1. 修改了od不能加载非标准pe头的bug
+2005.09.24
+1. 再次修正了一下当exe不为ollydbg.exe时不能用的bug
+2005.09.23
+1. 修改了一下不再引用ollydbg.exe的导出函数
+2005.09.22
+1. 加入自定义类名的功能
+(请修改ini中的设置.注:不要超过20个字符)
+2005.09.17
+1. 修了一点小bug
+2. 增加禁止对配置ini[History]中的Executable[]操作的设定
+2005.05.16
+1. 加入
+LoaderFlags: 0xABDBFFDE <--- Bogus Value
+NumberOfRvaAndSizes: 0xDFFFDDDE <--- Bogus Value
+不是正常值令OD出错时尝试自动修复
+2005.04.24
+1. 修正当运行的od文件名不为OllyDbg.exe时调用
+(OllyScript等)需要 OllyDbg.exe为基址的
+插件的内存出错的Bug.
+2005.04.13
+1. 加入一个插件管理的功能,附加一点插件信息
+2005.04.13
+1. 加入刷新按钮
+(本想用回调函数ODBG_Pluginmainloop自动刷新,
+考虑到可能影响速度...)
+2005.04.08
+1.把内存观察窗口改为可调大小
+2.加入自定义工具菜单(在AutoPath.ini在设置程序的路径,可加n个)
+
+2005.04.06 作了比较大的修改
+1.不使用在原OD增加一个段的方法修正插件数量的Bug，
+　采用动态申请内存，然后计算修正的方式，
+这样方便点　
+(注:可用LordPE或其它的工具改引入表增加
+　 AutoPath.DLL 函数 FixOdPath 即可使用
+　　不使用就去掉就行)
+2.可自定义插件最大支持的数量，在AutoPath.ini中
+PluginCount=100 默认支持了100个
+　用不了这么多的可设少点...省点内存 
+3.OD一个内存观察窗口是不是少了点 
+加了一个内存观察窗口,方便点了吧...

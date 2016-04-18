@@ -1,0 +1,37 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: InjectHookLib - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\Users\ADMINI~1\AppData\Local\Temp\RSP34F6.tmp" with contents
+[
+/nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "INJECTHOOKLIB_EXPORTS" /Fp"Debug/InjectHookLib.pch" /Yu"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /c 
+"F:\projects\InjectHookLib_Project\InjectHookLib_Win7SP0SP1_XPSP2SP3_final\InjectHookLib.cpp"
+]
+Creating command line "cl.exe @C:\Users\ADMINI~1\AppData\Local\Temp\RSP34F6.tmp" 
+Creating temporary file "C:\Users\ADMINI~1\AppData\Local\Temp\RSP34F7.tmp" with contents
+[
+kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ollydbg.lib msvcrt.lib ntdll.lib /nologo /entry:"Dllmain" /dll /incremental:no /pdb:"Debug/InjectHookLib.pdb" /machine:I386 /nodefaultlib /out:"Debug/InjectHookLib.dll" /implib:"Debug/InjectHookLib.lib" /pdbtype:sept 
+.\Debug\InjectHookLib.obj
+.\Debug\StdAfx.obj
+.\Debug\Script1.res
+]
+Creating command line "link.exe @C:\Users\ADMINI~1\AppData\Local\Temp\RSP34F7.tmp"
+<h3>Output Window</h3>
+Compiling...
+InjectHookLib.cpp
+F:\projects\InjectHookLib_Project\InjectHookLib_Win7SP0SP1_XPSP2SP3_final\InjectHookLib.cpp(21) : warning C4146: unary minus operator applied to unsigned type, result still unsigned
+Linking...
+LINK : warning LNK4075: ignoring /EDITANDCONTINUE due to /INCREMENTAL:NO specification
+   Creating library Debug/InjectHookLib.lib and object Debug/InjectHookLib.exp
+
+
+
+<h3>Results</h3>
+InjectHookLib.dll - 0 error(s), 2 warning(s)
+</pre>
+</body>
+</html>

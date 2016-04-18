@@ -1,0 +1,55 @@
+
+
+What's new in uhooker v1.3?
+===========================
+
+-Several bug fixes, everything should work better than before :)
+
+-Fixed bug with readunicode() API where reading empty multibyte strings,
+resulted in the plugin freezing for ever.
+
+-Now you can load multiple .CFG files (load one, then load another to hook
+something else, etc). Previously, you were only allowed to load one .CFG file
+with breakpoints/handlers definitions. Now you can load as many as you like
+whenever you want.
+
+	-If a .CFG file overlaps previously set hooks, you have the chance
+	to redefine them (for example, you can dinamically change the
+        file/function handling the breakpoint. This adds to the feature
+        present since the first version of uhooker that allows runtime rewriting
+        of the handler's code).
+
+
+-Errors in the code of the handlers (written in python) are now correctly handled.
+		
+		-Previously, if you had an error in the code you wrote to handle
+		certain breakpoint, this caused the 'uhooker's python server' to
+ 		'crash', and you needed to restart your debugging session all over
+		again.
+
+		This scenario was very common, particuarly if you were developing
+		your own handler/script for the first time, or if you were
+		modifying at runtime the code of a handler/script.
+
+
+		Well, no more! :), Now if you have an error (syntax error,
+		identation error, general programming error,etc), the error that
+		your handler has will be displayed on the uhooker's console, and
+		you'll be able to recover from that error. This improvement means:
+
+				1-If an error occurs on the code, you don't 
+				need to restart the debugger's session (and lose
+				the state of the program, etc.). 
+
+				2-If you are changing in runtime the code of the
+				handler, and you makee a mistake, you'll see what
+				caused the error, and you can fix the script/handler
+				and move on!.
+
+		
+-and there are probably more things but I didn't write them down and now I dont't remember :).
+		
+
+
+Comments to Hernan Ochoa (hochoa[at corest.com] and hernan[at gmail.com]).
+

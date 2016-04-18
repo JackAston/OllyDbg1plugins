@@ -1,0 +1,81 @@
+/***********************
+   Sample ODbg Script
+   
+   Log Driver I/O Calls
+
+          by Epsylon3          
+***********************/
+
+//mov test, #0102030405#
+//log test,""
+//pause
+    
+    cmp $VERSION, "1.38"
+    jae version_ok
+		msg "ERROR: ODbgScript 1.38 needed !"
+		ret
+		version_ok:
+
+		// Clear log window
+    //lclr
+
+    // === break on load module ===
+    mov sApi, "CreateFileA"
+    mov sDLL, "kernel32"
+    gpa sApi, sDLL
+    
+    // store address
+    mov handle, $RESULT
+
+		cmp handle, 0
+		je abort
+		
+    // create a new breakpoint
+    go handle
+
+// === break on load module ===
+    mov sApi, "DeviceIoControl"
+    mov sDLL, "kernel32"
+    gpa sApi, sDLL
+    
+    // store address
+    mov handle, $RESULT
+
+		cmp handle, 0
+		je abort
+		
+lbl_bp:
+
+    // run
+    go handle
+    
+		mov adrRet, [esp]
+		mov hDevice, [esp+4.]
+		mov IoControlCode, [esp+8.]
+		mov InBuffer, [esp+12.]
+		mov InBufferSize, [esp+16.]
+		mov OutBuffer, [esp+20.]
+		mov OutBufferSize, [esp+24.]
+		mov pReturnedBytes, [esp+28.]
+		mov pOverlapped, [esp+32.]
+		eval "{sApi}({hDevice},{IoControlCode},[{InBuffer}],{InBufferSize},[{OutBuffer}],{OutBufferSize},[{pReturnedBytes}],[{pOverlapped}]);"
+		log $RESULT, ""
+		
+		cmp InBuffer,0
+		je noIn
+		mov IN, [InBuffer], InBufferSize
+		log IN
+    noIn:
+
+    go adrRet
+		
+		cmp OutBuffer,0
+		je noOut
+		mov OUT, [OutBuffer], [pReturnedBytes]
+		log OUT
+		noOut:
+		
+		log ""
+    jmp lbl_bp
+
+abort:

@@ -1,0 +1,17 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LabelArgs", "LabelArgs\LabelArgs.vcproj", "{AB10E256-6D6D-40C6-8B9B-2ACBA02AB639}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AB10E256-6D6D-40C6-8B9B-2ACBA02AB639}.Release|Win32.ActiveCfg = Release|Win32
+		{AB10E256-6D6D-40C6-8B9B-2ACBA02AB639}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,20 @@
+
+v0.24 (22-12-2009)
+	[fix] no module loaded crash bug
+
+v0.23 (22-12-2009)
+	[fix] dep hooking bug
+
+v0.22 (21-12-2009)
+	[fix] bug not being able to read entry point with 8 chars
+
+v0.21 (21-12-2009)
+	[fix] bug not able to recognize lowercase hex-chars
+	[add] add new module window initializes entry point to current thread's eip
+
+v0.2 (21-12-2009)
+	[add]	able to analyze code with no module associated with it,
+				by making a new module at specified memory section, and adding to module table
+
+v0.1
+	initial version by Joe Stewart

@@ -1,0 +1,3743 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<!--
+
+Generated from index.tex by tex2page, v 2004-09-11
+(running on MzScheme 205, windows), 
+(c) Dorai Sitaram, 
+http://www.ccs.neu.edu/~dorai/tex2page/tex2page-doc.html
+
+-->
+<head>
+<title>
+OllyMachine Manual
+</title>
+<link rel="stylesheet" type="text/css" href="css/main.css" title=default>
+<link rel="stylesheet" type="text/css" href="index-Z-S.css" title=default>
+<meta name=robots content="noindex,follow">
+</head>
+<body>
+<div align=right class=navigation><i>[Go to <span><a href="index.htm">first</a>, <a href="index-Z-H-4.htm">previous</a></span><span class=disable>, next</span> page<span>; &nbsp;&nbsp;</span><span><a href="index-Z-H-1.htm#node_toc_start">contents</a></span>]</i></div><p></p>
+<a name="node_chap_4"></a>
+<h1 class=chapter>
+<div class=chapterheading><a href="index-Z-H-1.htm#node_toc_node_chap_4">Chapter4</a></div><br>
+<a href="index-Z-H-1.htm#node_toc_node_chap_4">OllyMachine API</a></h1>
+<p>When I designing the Virtual Machine, I strongly felt that the basic instructions could not accomplish the high-level operations. So, I wrote some libraries which called API for programmers.</p>
+<p>
+</p>
+<a name="node_sec_4.1"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_4.1">4.1&nbsp;&nbsp;Hello World!</a></h2>
+<p>Following Dennis Ritchie's example, it has become typical to begin learning a new programming language by creating the simple &quot;Hello, World!&quot; program. We aren't going to sidestep this tradition. Let's see a &quot;Hello, World!&quot; in OllyMachine:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>Method</span> <span class=variable>1:</span>
+<span class=variable>lds</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=selfeval>&quot;Hello World!&quot;</span>
+<span class=variable>push</span> <span class=variable>reg01</span>
+<span class=variable>msg</span>
+
+<span class=variable>//</span> <span class=variable>Method</span> <span class=variable>2:</span>
+<span class=variable>push</span> <span class=selfeval>&quot;Hello World!&quot;</span>
+<span class=variable>msg</span>
+
+<span class=variable>//</span> <span class=variable>Method</span> <span class=variable>3:</span>
+<span class=variable>invoke</span> <span class=variable>msg</span><span class=keyword>,</span> <span class=selfeval>&quot;Hello World!&quot;</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.2"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_4.2">4.2&nbsp;&nbsp;Invoking Method</a></h2>
+<p>The invoking method I designed is like x86 machine - use stack to pass parameters. Let's take the &quot;Hello, World!&quot; for example:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>lds</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=selfeval>&quot;Hello World!&quot;</span>
+<span class=variable>push</span> <span class=variable>reg01</span>
+<span class=variable>msg</span>
+
+<span class=variable>//</span> <span class=variable>another</span> <span class=variable>way:</span>
+<span class=variable>push</span> <span class=selfeval>&quot;Hello World!&quot;</span>
+<span class=variable>msg</span>
+</pre><p></p>
+<p>
+&quot;msg&quot; is an API to print a string. It has only one parameter, this parameter must be a register, storing string's offset address, or a quote string.</p>
+<p>
+Aha, when invoking APIs, if there're parameters, we must use PUSH instruction to push the parameters from right to left, then calling the API's name. When the API runs over, stack will balance automatically, we needn't deal with it.</p>
+<p>
+So what the hell is &quot;push the parameters from right to left&quot;? Let's make an example:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>push</span> <span class=selfeval>16</span>
+<span class=variable>push</span> <span class=variable>0xFF</span>
+<span class=variable>PrintNum</span>
+</pre><p></p>
+<p>
+This program's result is popping a MessageBox to show the hex 0xFF.</p>
+<p>
+We invoked API: PrintNum, it has two parameters, its prototype is:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>PrintNum</span> <span class=variable>Value</span><span class=keyword>,</span> <span class=variable>Base</span>
+</pre><p></p>
+<p>
+If we push the parameters from right to left, then the &quot;Base&quot; should be first, later is &quot;Value&quot;. We can see, in this example, we're surely push &quot;16&quot;(Base) first, then the &quot;0xFF&quot;(Value), and finally the API's name, it's match case with our invoking method.</p>
+<p>
+</p>
+<a name="node_sec_4.3"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_4.3">4.3&nbsp;&nbsp;Handy Invoking Method</a></h2>
+<p>From version 0.11, we could use INVOKE macro for API invoking, for example:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>push</span> <span class=selfeval>16</span>
+<span class=variable>push</span> <span class=variable>0xFF</span>
+<span class=variable>PrintNum</span>
+
+<span class=variable>invoke</span> <span class=variable>PrintNum</span><span class=keyword>,</span> <span class=variable>0xFF</span><span class=keyword>,</span> <span class=selfeval>16</span>
+</pre><p></p>
+<p>
+Just like the same with MASM32's INVOKE macro, is it more easier to use? ^_^</p>
+<p>
+</p>
+<a name="node_sec_4.4"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_4.4">4.4&nbsp;&nbsp;Return Value</a></h2>
+<p>Sometimes, we need to know what the API returns us, for example:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>lds</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=selfeval>&quot;Are you sure?&quot;</span>
+<span class=variable>push</span> <span class=variable>reg01</span>
+<span class=variable>msgyn</span>
+
+<span class=variable>//</span> <span class=variable>another</span> <span class=variable>way:</span>
+<span class=variable>push</span> <span class=selfeval>&quot;Are you sure?&quot;</span>
+<span class=variable>msgyn</span>
+
+<span class=variable>//</span> <span class=variable>yet</span> <span class=variable>another</span> <span class=variable>way:</span>
+<span class=variable>invoke</span> <span class=variable>msgyn</span><span class=keyword>,</span> <span class=selfeval>&quot;Are you sure?&quot;</span>
+</pre><p></p>
+<p>
+The API &quot;MsgYN&quot; will show a dialog to let the user choose &quot;Y/N&quot;, and we must know what the user chosed to decided what to do next.</p>
+<p>
+In OllyMachine Virtual Machine, all API functions follow this rule:</p>
+<p>
+</p>
+<pre class=scheme><span class=keyword>If</span> <span class=variable>the</span> <span class=variable>API</span> <span class=variable>has</span> <span class=variable>return</span> <span class=variable>value</span><span class=keyword>,</span> <span class=variable>it</span> <span class=variable>will</span> <span class=variable>be</span> <span class=variable>stored</span> <span class=variable>in</span> <span class=variable>register</span> <span class=variable>REG00.</span>
+</pre><p></p>
+<p>
+In the example above, if user chosed &quot;Y&quot;, then REG00 will be 1 (means success), if user chosed &quot;N&quot;, then REG00 will be 0 (means fail).</p>
+<p>
+</p>
+<a name="node_sec_4.5"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_4.5">4.5&nbsp;&nbsp;Basic Input Output API</a></h2>
+<p>OllyMachine Virtual Machine supports some input &amp; output APIs:</p>
+<p>
+</p>
+<a name="node_sec_4.5.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.5.1">4.5.1&nbsp;&nbsp;MSG</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>MSG</span> <span class=variable>message</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>MSG</span> <span class=variable>pops</span> <span class=variable>up</span> <span class=variable>a</span> <span class=variable>MessageBox</span> <span class=variable>to</span> <span class=variable>disaplay</span> <span class=variable>a</span> <span class=variable>message.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>message : what we want to display
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>None</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>msg</span><span class=keyword>,</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=selfeval>&quot;Hello World!&quot;</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.5.2"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.5.2">4.5.2&nbsp;&nbsp;MSGYN</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>MSGYN</span> <span class=variable>message</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>MSGYN</span> <span class=variable>pops</span> <span class=variable>up</span> <span class=variable>a</span> <span class=variable>MessageBox</span> <span class=variable>to</span> <span class=variable>display</span> <span class=variable>a</span> <span class=variable>message</span><span class=keyword>,</span> <span class=keyword>and</span> <span class=variable>request</span> <span class=variable>user</span> <span class=variable>to</span> <span class=variable>input</span> <span class=variable>Y/N</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>message : what we want to display
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>msgyn</span><span class=keyword>,</span> <span class=selfeval>&quot;Are you sure to continue?&quot;</span>
+
+<span class=variable>cmp</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>1</span>
+<span class=variable>je</span> <span class=variable>Continue</span>
+<span class=variable>halt</span>
+<span class=variable>Continue:</span>
+<span class=variable>//</span> ...
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.5.3"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.5.3">4.5.3&nbsp;&nbsp;PrintNum</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>PrintNum</span> <span class=variable>Value</span><span class=keyword>,</span> <span class=variable>Base</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>PrintNum</span> <span class=variable>use</span> <span class=variable>Base</span> <span class=variable>radix</span> <span class=variable>to</span> <span class=variable>calculate</span> <span class=variable>Value</span><span class=keyword>,</span> <span class=keyword>and</span> <span class=variable>display</span> <span class=variable>the</span> <span class=variable>result</span> <span class=variable>in</span> <span class=variable>a</span> <span class=variable>MessageBox</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>Value : value to calculate
+</p>
+<li><p>Base : radix
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>None</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>PrintNum</span><span class=keyword>,</span> <span class=variable>0x100</span><span class=keyword>,</span> <span class=selfeval>16</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.5.4"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.5.4">4.5.4&nbsp;&nbsp;PrintBuf</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>PrintBuf</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>len</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>PrintBuf</span> <span class=variable>pops</span> <span class=variable>up</span> <span class=variable>a</span> <span class=variable>MessageBox</span> <span class=variable>to</span> <span class=variable>display</span> <span class=variable>len</span> <span class=variable>bytes</span> <span class=variable>starting</span> <span class=variable>at</span> <span class=variable>address.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>address : memory address starting at
+</p>
+<li><p>len : length
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>None</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>PrintBuf</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>10</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.5.5"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.5.5">4.5.5&nbsp;&nbsp;PrintBufToDump</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>PrintBufToDump</span> <span class=variable>address</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>PrintBufToDump</span> <span class=variable>prints</span> <span class=variable>the</span> <span class=variable>buffer</span> <span class=variable>starting</span> <span class=variable>at</span> <span class=variable>address</span> <span class=variable>to</span> <span class=variable>dump</span> <span class=variable>window.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>address : buffer starting at
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>PrintBufToDump</span><span class=keyword>,</span> <span class=variable>eip</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.5.6"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.5.6">4.5.6&nbsp;&nbsp;PrintBufToNewDump</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>PrintBufToNewDump</span> <span class=variable>title</span><span class=keyword>,</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>len</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>PrintBufToNewDump</span> <span class=variable>firstly</span> <span class=variable>creates</span> <span class=variable>a</span> <span class=variable>new</span> <span class=variable>dump</span> <span class=variable>window</span><span class=keyword>,</span> <span class=variable>which</span> <span class=variable>has</span> <span class=variable>a</span> <span class=variable>title</span><span class=keyword>,</span>
+<span class=variable>then</span> <span class=variable>prints</span> <span class=variable>the</span> <span class=variable>buffer</span> <span class=variable>starting</span> <span class=variable>at</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>length</span> <span class=variable>is</span> <span class=variable>len</span><span class=keyword>,</span> <span class=variable>to</span> <span class=variable>the</span> <span class=variable>new</span> <span class=variable>dump</span> <span class=variable>window.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>title : title of the new dump window
+</p>
+<li><p>address : buffer start at
+</p>
+<li><p>len : length of the buffer
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=variable>HWND</span> <span class=variable>of</span> <span class=variable>new</span> <span class=variable>dump</span> <span class=variable>window</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>PrintBufToNewDump</span><span class=keyword>,</span> <span class=selfeval>&quot;New Dump Window&quot;</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=variable>0x100</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.5.7"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.5.7">4.5.7&nbsp;&nbsp;UpdateDumpBuf</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>UpdateDumpBuf</span> <span class=variable>hwnd</span><span class=keyword>,</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>len</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Update</span> <span class=variable>buffer</span> <span class=variable>which</span> <span class=variable>starting</span> <span class=variable>at</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>length</span> <span class=variable>is</span> <span class=variable>len</span><span class=keyword>,</span> <span class=variable>to</span> <span class=variable>an</span> <span class=variable>existing</span> <span class=variable>dump</span> <span class=variable>window.</span>
+<span class=variable>Usually</span><span class=keyword>,</span> <span class=variable>the</span> <span class=variable>dump</span> <span class=variable>window</span><span class=keyword>'</span><span class=variable>s</span> <span class=variable>hwnd</span> <span class=variable>is</span> <span class=variable>getted</span> <span class=variable>from</span> <span class=variable>PrintBufToNewDump</span><span class=keyword>'</span><span class=variable>s</span> <span class=variable>return</span> <span class=variable>value.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>hwnd : handle of dump window
+</p>
+<li><p>address : buffer start at
+</p>
+<li><p>len : length of the buffer
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>Create</span> <span class=variable>a</span> <span class=variable>new</span> <span class=variable>dump</span> <span class=variable>window:</span>
+<span class=variable>invoke</span> <span class=variable>PrintBufToNewDump</span><span class=keyword>,</span> <span class=selfeval>&quot;New Dump Window&quot;</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=variable>0x100</span>
+<span class=variable>//</span> <span class=variable>Save</span> <span class=variable>its</span> <span class=variable>hwnd:</span>
+<span class=variable>mov</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=variable>reg00</span>
+<span class=variable>//...</span>
+<span class=variable>//</span> <span class=variable>Update</span> <span class=variable>it:</span>
+<span class=variable>invoke</span> <span class=variable>UpdateDumpBuf</span><span class=keyword>,</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=variable>0x200</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.5.8"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.5.8">4.5.8&nbsp;&nbsp;InputText</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>InputText</span> <span class=variable>title</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>InputText</span> <span class=variable>pop</span> <span class=variable>up</span> <span class=variable>a</span> <span class=variable>dialog</span> <span class=variable>to</span> <span class=keyword>let</span> <span class=variable>user</span> <span class=variable>input</span> <span class=variable>a</span> <span class=variable>string.</span>
+<span class=variable>Attention:</span> <span class=variable>title</span><span class=keyword>'</span><span class=variable>s</span> <span class=variable>length</span> <span class=variable>can</span><span class=keyword>'</span><span class=variable>t</span> <span class=variable>larger</span> <span class=variable>than</span> <span class=selfeval>256</span> <span class=variable>bytes</span><span class=keyword>,</span>
+           <span class=variable>user</span><span class=keyword>'</span><span class=variable>s</span> <span class=variable>inputed</span> <span class=variable>string</span> <span class=variable>can</span><span class=keyword>'</span><span class=variable>t</span> <span class=variable>larger</span> <span class=variable>than</span> <span class=selfeval>4096</span> <span class=variable>bytes.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>title : the title of the dialog
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span> (<span class=variable>User</span> <span class=variable>pressed</span> <span class=variable>CANCEL</span> <span class=variable>button</span><span class=keyword>,</span> <span class=keyword>or</span> <span class=variable>user</span><span class=keyword>'</span><span class=variable>s</span> <span class=variable>inputed</span> <span class=variable>string</span> <span class=variable>larger</span> <span class=variable>than</span> <span class=selfeval>4096</span> <span class=variable>bytes.</span>)
+
+<span class=keyword>If</span> <span class=variable>succeed</span><span class=keyword>,</span> <span class=variable>user</span><span class=keyword>'</span><span class=variable>s</span> <span class=variable>inputed</span> <span class=variable>string</span> <span class=variable>could</span> <span class=variable>be</span> <span class=variable>access</span> <span class=variable>by</span> <span class=variable>FreeBufferReg</span><span class=keyword>,</span>
+<span class=variable>the</span> <span class=variable>size</span> <span class=variable>of</span> <span class=variable>the</span> <span class=variable>string</span> <span class=variable>is</span> <span class=variable>stored</span> <span class=variable>in</span> <span class=variable>FreeBufferSizeReg.</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>ask</span> <span class=variable>user</span><span class=keyword>'</span><span class=variable>s</span> <span class=variable>name</span>
+<span class=variable>invoke</span> <span class=variable>InputText</span><span class=keyword>,</span> <span class=selfeval>&quot;Please input your name&quot;</span>
+
+<span class=variable>//</span> <span class=variable>print</span> <span class=variable>user</span><span class=keyword>'</span><span class=variable>s</span> <span class=variable>name</span>
+<span class=variable>invoke</span> <span class=variable>msg</span><span class=keyword>,</span> <span class=variable>FreeBufferReg</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.5.9"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.5.9">4.5.9&nbsp;&nbsp;InputHexLong</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>InputHexLong</span> <span class=variable>value</span><span class=keyword>,</span> <span class=variable>title</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>InputHexLong</span> <span class=variable>pops</span> <span class=variable>up</span> <span class=variable>a</span> <span class=variable>dialog</span> <span class=variable>to</span> <span class=keyword>let</span> <span class=variable>user</span> <span class=variable>input</span> <span class=variable>a</span> <span class=variable>hex</span> <span class=variable>number</span><span class=keyword>,</span> <span class=variable>which</span> <span class=variable>is</span> <span class=variable>initialized</span> <span class=variable>to</span> <span class=variable>value.</span>
+<span class=variable>Attention:</span> <span class=variable>title</span> <span class=variable>can</span><span class=keyword>'</span><span class=variable>t</span> <span class=variable>larget</span> <span class=variable>than</span> <span class=selfeval>256</span> <span class=variable>bytes.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>value : initialized value
+</p>
+<li><p>title : title of the dialog
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=variable>store</span> <span class=variable>user</span><span class=keyword>'</span><span class=variable>s</span> <span class=variable>inputed</span> <span class=variable>hex</span> <span class=variable>number</span> <span class=variable>in</span> <span class=variable>reg00</span>
+<span class=variable>Fails:</span> <span class=keyword>if</span> <span class=variable>user</span> <span class=variable>pressed</span> <span class=variable>CANCEL</span> <span class=variable>button</span><span class=keyword>,</span> <span class=variable>store</span> <span class=variable>initialized</span> <span class=variable>value</span> <span class=variable>to</span> <span class=variable>reg00</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>InputHexLong</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>&quot;Please input EIP&quot;</span>
+<span class=variable>invoke</span> <span class=variable>PrintNum</span><span class=keyword>,</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>16</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.6"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_4.6">4.6&nbsp;&nbsp;Memory Process API</a></h2>
+<p></p>
+<a name="node_sec_4.6.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.6.1">4.6.1&nbsp;&nbsp;ReadMemLong</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>ReadMemLong</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>len</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>ReadMemLong</span> <span class=variable>reads</span> <span class=variable>len</span> <span class=variable>bytes</span> <span class=variable>starting</span> <span class=variable>at</span> <span class=variable>address.</span>
+<span class=keyword>If</span> <span class=variable>len</span> <span class=variable>&lt;</span> <span class=selfeval>1</span><span class=keyword>,</span> <span class=variable>it</span> <span class=variable>will</span> <span class=variable>be</span> <span class=variable>set</span> <span class=variable>to</span> <span class=selfeval>1</span><span class=keyword>,</span> <span class=keyword>if</span> <span class=variable>len</span> <span class=variable>&gt;</span> <span class=selfeval>4</span><span class=keyword>,</span> <span class=variable>it</span> <span class=variable>will</span> <span class=variable>be</span> <span class=variable>set</span> <span class=variable>to</span> <span class=selfeval>4.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>address : memory address starting at
+</p>
+<li><p>len : length of data
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=variable>len</span> <span class=variable>bytes</span> <span class=variable>read</span>
+<span class=variable>Fails:</span> <span class=selfeval>-1</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>ReadMemLong</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>4</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.6.2"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.6.2">4.6.2&nbsp;&nbsp;WriteMemLong</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>WriteMemLong</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>valua</span><span class=keyword>,</span> <span class=variable>len</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>WriteMemLong</span> <span class=variable>writes</span> <span class=variable>len</span> <span class=variable>bytes</span> <span class=variable>value</span> <span class=variable>to</span> <span class=variable>memory</span> <span class=variable>address</span> <span class=variable>starting</span> <span class=variable>at</span> <span class=variable>address.</span>
+<span class=keyword>If</span> <span class=variable>len</span> <span class=variable>&lt;</span> <span class=selfeval>1</span><span class=keyword>,</span> <span class=variable>it</span> <span class=variable>will</span> <span class=variable>be</span> <span class=variable>set</span> <span class=variable>to</span> <span class=selfeval>1</span><span class=keyword>,</span> <span class=keyword>if</span> <span class=variable>len</span> <span class=variable>&gt;</span> <span class=selfeval>4</span><span class=keyword>,</span> <span class=variable>it</span> <span class=variable>will</span> <span class=variable>be</span> <span class=variable>set</span> <span class=variable>to</span> <span class=selfeval>4.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>address : memory address starting at
+</p>
+<li><p>value : what we want to write in
+</p>
+<li><p>len : length of data
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>WriteMemLong</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=variable>0x9090</span><span class=keyword>,</span> <span class=selfeval>2</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.6.3"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.6.3">4.6.3&nbsp;&nbsp;WriteMemHexes</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>WriteMemHexes</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>hexes</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Write</span> <span class=variable>hexes</span> <span class=variable>to</span> <span class=variable>address.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>address : memory address starting at
+</p>
+<li><p>hexes : data to write
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>WriteMemHexes</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>&quot;e800000000&quot;</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.6.4"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.6.4">4.6.4&nbsp;&nbsp;ReadFileIntoMem</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>ReadFileIntoMem</span> <span class=variable>filename</span><span class=keyword>,</span> <span class=variable>addrbase</span><span class=keyword>,</span> <span class=variable>filesize</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Read</span> <span class=variable>file</span>(<span class=variable>filename</span>) <span class=variable>into</span> <span class=variable>memory</span><span class=keyword>,</span> <span class=variable>allocated</span> <span class=variable>memory</span> <span class=variable>for</span> <span class=variable>it.</span>
+<span class=variable>The</span> <span class=variable>starting</span> <span class=variable>address</span> <span class=variable>of</span> <span class=variable>memory</span> <span class=variable>which</span> <span class=variable>allocated</span> <span class=variable>for</span> <span class=variable>file</span> <span class=variable>is</span> <span class=variable>stored</span> <span class=variable>in</span> <span class=variable>addrbase</span><span class=keyword>,</span>
+<span class=variable>file</span><span class=keyword>'</span><span class=variable>s</span> <span class=variable>size</span> <span class=variable>is</span> <span class=variable>in</span> <span class=variable>filesize.</span>
+<span class=variable>ATTENTION!</span> <span class=variable>MUST</span> <span class=variable>use</span> <span class=variable>VirtualFreeEx</span> <span class=variable>to</span> <span class=variable>free</span> <span class=variable>the</span> <span class=variable>memory!</span> <span class=keyword>Or</span> <span class=variable>it</span> <span class=variable>will</span> <span class=variable>cause</span> <span class=variable>memory</span> <span class=variable>leak!</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>filename : [in], filename to read
+</p>
+<li><p>addrbase : [out], the starting address of memory which allocated for file
+</p>
+<li><p>filesize : [out], file's size
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>Read</span> <span class=variable>the</span> <span class=variable>file</span> <span class=variable>into</span> <span class=variable>the</span> <span class=variable>memory</span>
+<span class=variable>//</span> <span class=variable>reg01</span> <span class=variable>=</span> <span class=variable>memory</span> <span class=variable>starting</span> <span class=variable>address</span>
+<span class=variable>//</span> <span class=variable>reg02</span> <span class=variable>=</span> <span class=variable>filesize</span>
+<span class=variable>invoke</span> <span class=variable>ReadFileIntoMem</span><span class=keyword>,</span> <span class=selfeval>&quot;test.exe&quot;</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg02</span>
+
+<span class=variable>//</span> <span class=variable>Print</span> <span class=variable>the</span> <span class=variable>file</span> <span class=variable>contents</span> <span class=variable>byte</span> <span class=variable>by</span> <span class=variable>byte</span>
+<span class=variable>mov</span> <span class=variable>reg10</span><span class=keyword>,</span> <span class=variable>reg01</span>
+<span class=variable>read_file_contents:</span>
+    <span class=variable>invoke</span> <span class=variable>ReadMemLong</span><span class=keyword>,</span> <span class=variable>reg10</span><span class=keyword>,</span> <span class=selfeval>1</span>
+    <span class=variable>invoke</span> <span class=variable>PrintNum</span><span class=keyword>,</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>16</span>
+    <span class=variable>inc</span> <span class=variable>reg10</span>
+    <span class=variable>dec</span> <span class=variable>reg02</span>
+    <span class=variable>cmp</span> <span class=variable>reg02</span><span class=keyword>,</span> <span class=selfeval>0</span>
+    <span class=variable>jne</span> <span class=variable>read_file_contents</span>
+
+<span class=variable>//</span> <span class=variable>Remember</span> <span class=variable>to</span> <span class=variable>free</span> <span class=variable>the</span> <span class=variable>memory!!!</span>
+<span class=variable>invoke</span> <span class=variable>VirtualFreeEx</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.6.5"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.6.5">4.6.5&nbsp;&nbsp;DumpMem</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>DumpMem</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>len</span><span class=keyword>,</span> <span class=variable>filename</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Dumps</span> <span class=variable>memory</span> <span class=variable>of</span> <span class=variable>specified</span> <span class=variable>size</span> <span class=variable>from</span> <span class=variable>specified</span> <span class=variable>address</span> <span class=variable>to</span> <span class=variable>specified</span> <span class=variable>file</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>address : memory starting at
+</p>
+<li><p>len : length
+</p>
+<li><p>filename : filename
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>example1:</span>
+<span class=variable>invoke</span> <span class=variable>DumpMem</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>10</span><span class=keyword>,</span> <span class=selfeval>&quot;c:\test.bin&quot;</span>
+
+<span class=variable>//</span> <span class=variable>example2:</span>
+<span class=variable>invoke</span> <span class=variable>InputText</span><span class=keyword>,</span> <span class=selfeval>&quot;Please input filename&quot;</span>
+<span class=variable>invoke</span> <span class=variable>DumpMem</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>10</span><span class=keyword>,</span> <span class=variable>FreeBufferReg</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.6.6"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.6.6">4.6.6&nbsp;&nbsp;DumpMemAppend</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>DumpMemAppend</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>len</span><span class=keyword>,</span> <span class=variable>filename</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Dumps</span> <span class=variable>memory</span> <span class=variable>of</span> <span class=variable>specified</span> <span class=variable>size</span> <span class=variable>from</span> <span class=variable>specified</span> <span class=variable>address</span> <span class=variable>to</span> <span class=variable>specified</span> <span class=variable>file</span><span class=keyword>,</span>
+<span class=variable>appending</span> <span class=variable>to</span> <span class=variable>that</span> <span class=variable>file</span> <span class=keyword>if</span> <span class=variable>it</span> <span class=variable>exists.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>address : memory startint at
+</p>
+<li><p>len : length
+</p>
+<li><p>filename : filename
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>example1:</span>
+<span class=variable>invoke</span> <span class=variable>DumpMemAppend</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>10</span><span class=keyword>,</span> <span class=selfeval>&quot;c:\test.bin&quot;</span>
+
+<span class=variable>//</span> <span class=variable>example2:</span>
+<span class=variable>invoke</span> <span class=variable>InputText</span><span class=keyword>,</span> <span class=selfeval>&quot;Please input filename&quot;</span>
+<span class=variable>invoke</span> <span class=variable>DumpMemAppend</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>10</span><span class=keyword>,</span> <span class=variable>FreeBufferReg</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.6.7"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.6.7">4.6.7&nbsp;&nbsp;DumpAsPE</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>DumpAsPE</span> <span class=variable>filename</span><span class=keyword>,</span> <span class=variable>eip</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Dumps</span> <span class=variable>the</span> <span class=variable>executable</span> <span class=variable>to</span> <span class=variable>file</span> <span class=keyword>with</span> <span class=variable>specified</span> <span class=variable>name.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>filename : filename
+</p>
+<li><p>eip : Entry Point
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>DumpAsPE</span><span class=keyword>,</span> <span class=selfeval>&quot;c:\test.exe&quot;</span><span class=keyword>,</span> <span class=variable>eip</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.7"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_4.7">4.7&nbsp;&nbsp;Search and Replace API</a></h2>
+<p></p>
+<a name="node_sec_4.7.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.7.1">4.7.1&nbsp;&nbsp;FindOpcode</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>FindOpcode</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>opcode</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Finds</span> <span class=variable>opcode</span> <span class=variable>starting</span> <span class=variable>at</span> <span class=variable>address</span> <span class=variable>for</span> <span class=variable>an</span> <span class=variable>instruction</span> <span class=variable>that</span> <span class=variable>begins</span> <span class=keyword>with</span> <span class=variable>the</span> <span class=variable>specified</span> <span class=variable>bytes.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>address : memory starting at
+</p>
+<li><p>opcode : what we looking for
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=variable>address</span> <span class=variable>found</span>
+<span class=variable>Fails:</span> <span class=selfeval>-1</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>FindOpcode</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=variable>0x90</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.7.2"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.7.2">4.7.2&nbsp;&nbsp;Find</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Find</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>code</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Finds</span> <span class=variable>code</span> <span class=variable>starting</span> <span class=variable>at</span> <span class=variable>address</span> <span class=variable>for</span> <span class=variable>an</span> <span class=variable>instruction</span> <span class=variable>that</span> <span class=variable>begins</span> <span class=keyword>with</span> <span class=variable>the</span> <span class=variable>specified</span> <span class=variable>bytes.</span>
+<span class=variable>Supports</span> <span class=variable>wildcard</span> <span class=selfeval>&quot;??&quot;</span>. <span class=variable>One</span> <span class=selfeval>&quot;??&quot;</span> <span class=variable>for</span> <span class=variable>one</span> <span class=variable>byte.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>address : memory starting at
+</p>
+<li><p>code : what we looking for
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=variable>address</span> <span class=variable>found</span>
+<span class=variable>Fails:</span> <span class=selfeval>-1</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>Find</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>&quot;e8????????&quot;</span>   <span class=variable>//</span> <span class=variable>find</span> <span class=variable>a</span> <span class=variable>CALL</span> <span class=variable>XXXXXXXX</span>
+<span class=variable>invoke</span> <span class=variable>PrintNum</span><span class=keyword>,</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>16</span>
+
+<span class=variable>//</span> <span class=variable>find:</span>
+<span class=variable>//</span>   <span class=variable>CALL</span> <span class=variable>XXXXXXXX</span>
+<span class=variable>//</span>   <span class=variable>PUSH</span> <span class=selfeval>0</span>
+<span class=variable>invoke</span> <span class=variable>Find</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>&quot;e8????????6a00&quot;</span>
+<span class=variable>invoke</span> <span class=variable>PrintNum</span><span class=keyword>,</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>16</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.7.3"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.7.3">4.7.3&nbsp;&nbsp;ReverseFind</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>ReverseFind</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>code</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Reverse</span> <span class=variable>finds</span> <span class=variable>code</span> <span class=variable>starting</span> <span class=variable>at</span> <span class=variable>address</span> <span class=variable>for</span> <span class=variable>an</span> <span class=variable>instruction</span> <span class=variable>that</span> <span class=variable>begins</span>
+<span class=keyword>with</span> <span class=variable>the</span> <span class=variable>specified</span> <span class=variable>bytes.</span> <span class=variable>Supports</span> <span class=variable>wildcard</span> <span class=selfeval>&quot;??&quot;</span>. <span class=variable>One</span> <span class=selfeval>&quot;??&quot;</span> <span class=variable>for</span> <span class=variable>one</span> <span class=variable>byte.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>address : memory starting at
+</p>
+<li><p>code : what we looking for
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=variable>address</span> <span class=variable>found</span>
+<span class=variable>Fails:</span> <span class=selfeval>-1</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>Reverse</span> <span class=variable>find</span> <span class=variable>a</span> <span class=variable>CALL</span> <span class=variable>XXXXXXXX</span>
+<span class=variable>invoke</span> <span class=variable>ReverseFind</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>&quot;e8????????&quot;</span>
+<span class=variable>invoke</span> <span class=variable>PrintNum</span><span class=keyword>,</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>16</span>
+
+<span class=variable>//</span> <span class=variable>Reverse</span> <span class=variable>find:</span>
+<span class=variable>//</span>   <span class=variable>CALL</span> <span class=variable>XXXXXXXX</span>
+<span class=variable>//</span>   <span class=variable>PUSH</span> <span class=selfeval>0</span>
+<span class=variable>invoke</span> <span class=variable>ReverseFind</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>&quot;e8????????6a00&quot;</span>
+<span class=variable>invoke</span> <span class=variable>PrintNum</span><span class=keyword>,</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>16</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.7.4"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.7.4">4.7.4&nbsp;&nbsp;Search</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Search</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>code</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Searches</span> <span class=variable>code</span> <span class=variable>starting</span> <span class=variable>at</span> <span class=variable>address</span> <span class=variable>for</span> <span class=variable>an</span> <span class=variable>instruction</span> <span class=variable>that</span> <span class=variable>begins</span> <span class=keyword>with</span> <span class=variable>the</span> <span class=variable>specified</span> <span class=variable>bytes.</span>
+<span class=variable>Supports</span> <span class=variable>wildcard</span> <span class=selfeval>&quot;??&quot;</span>. <span class=variable>One</span> <span class=selfeval>&quot;??&quot;</span> <span class=variable>for</span> <span class=variable>one</span> <span class=variable>byte.</span>
+
+<span class=variable>The</span> <span class=variable>differences</span> <span class=variable>between</span> <span class=selfeval>&quot;Search&quot;</span> <span class=keyword>and</span> <span class=selfeval>&quot;Find&quot;</span> <span class=variable>are</span><span class=keyword>,</span> <span class=selfeval>&quot;Search&quot;</span> <span class=variable>will</span> <span class=variable>not</span> <span class=variable>search</span> <span class=variable>from</span> <span class=variable>a</span> <span class=variable>starting</span>
+<span class=variable>address</span> <span class=variable>of</span> <span class=variable>a</span> <span class=variable>opcode.</span> <span class=variable>For</span> <span class=variable>example:</span>
+
+<span class=variable>004010DC</span> <span class=selfeval>55</span>             <span class=variable>PUSH</span> <span class=variable>EBP</span>
+<span class=variable>004010DD</span> <span class=variable>8BEC</span>           <span class=variable>MOV</span> <span class=variable>EBP</span><span class=keyword>,</span><span class=variable>ESP</span>
+<span class=variable>004010DF</span> <span class=variable>6A</span> <span class=variable>FF</span>          <span class=variable>PUSH</span> <span class=selfeval>-1</span>
+
+<span class=keyword>if</span> <span class=variable>we</span> <span class=variable>use</span> <span class=variable>invoke</span> <span class=variable>Find</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>&quot;EC6AFF&quot;</span><span class=keyword>,</span> <span class=variable>then</span> <span class=variable>will</span> <span class=variable>find</span> <span class=variable>nothing</span><span class=keyword>,</span> <span class=variable>return</span> <span class=selfeval>-1.</span>
+<span class=keyword>if</span> <span class=variable>we</span> <span class=variable>use</span> <span class=variable>invoke</span> <span class=variable>Search</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>&quot;EC6AFF&quot;</span><span class=keyword>,</span> <span class=variable>then</span> <span class=variable>will</span> <span class=variable>return</span> <span class=variable>004010DE.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>address : memory starting at
+</p>
+<li><p>code : what we looking for
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=variable>address</span> <span class=variable>found</span>
+<span class=variable>Fails:</span> <span class=selfeval>-1</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>Search</span> <span class=variable>a</span> <span class=variable>CALL</span> <span class=variable>XXXXXXXX</span>
+<span class=variable>invoke</span> <span class=variable>Search</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>&quot;e8????????&quot;</span>
+<span class=variable>invoke</span> <span class=variable>PrintNum</span><span class=keyword>,</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>16</span>
+
+<span class=variable>//</span> <span class=variable>Search:</span>
+<span class=variable>//</span>   <span class=variable>CALL</span> <span class=variable>XXXXXXXX</span>
+<span class=variable>//</span>   <span class=variable>PUSH</span> <span class=selfeval>0</span>
+<span class=variable>invoke</span> <span class=variable>Search</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>&quot;e8????????6a00&quot;</span>
+<span class=variable>invoke</span> <span class=variable>PrintNum</span><span class=keyword>,</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>16</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.7.5"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.7.5">4.7.5&nbsp;&nbsp;ReverseSearch</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>ReverseSearch</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>code</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Searches</span> <span class=variable>code</span> <span class=variable>starting</span> <span class=variable>at</span> <span class=variable>address</span> <span class=variable>for</span> <span class=variable>an</span> <span class=variable>instruction</span> <span class=variable>that</span> <span class=variable>begins</span> <span class=keyword>with</span> <span class=variable>the</span> <span class=variable>specified</span> <span class=variable>bytes.</span>
+<span class=variable>Supports</span> <span class=variable>wildcard</span> <span class=selfeval>&quot;??&quot;</span>. <span class=variable>One</span> <span class=selfeval>&quot;??&quot;</span> <span class=variable>for</span> <span class=variable>one</span> <span class=variable>byte.</span>
+
+<span class=variable>The</span> <span class=variable>differences</span> <span class=variable>between</span> <span class=selfeval>&quot;ReverseSearch&quot;</span> <span class=keyword>and</span> <span class=selfeval>&quot;ReverseFind&quot;</span> <span class=variable>are</span><span class=keyword>,</span>
+<span class=selfeval>&quot;ReverseSearch&quot;</span> <span class=variable>will</span> <span class=variable>not</span> <span class=variable>search</span> <span class=variable>from</span> <span class=variable>a</span> <span class=variable>starting</span> <span class=variable>address</span> <span class=variable>of</span> <span class=variable>a</span> <span class=variable>opcode.</span>
+<span class=variable>For</span> <span class=variable>example:</span>
+
+<span class=variable>004010DC</span> <span class=selfeval>55</span>             <span class=variable>PUSH</span> <span class=variable>EBP</span>
+<span class=variable>004010DD</span> <span class=variable>8BEC</span>           <span class=variable>MOV</span> <span class=variable>EBP</span><span class=keyword>,</span><span class=variable>ESP</span>
+<span class=variable>004010DF</span> <span class=variable>6A</span> <span class=variable>FF</span>          <span class=variable>PUSH</span> <span class=selfeval>-1</span>
+
+<span class=keyword>if</span> <span class=variable>we</span> <span class=variable>use</span> <span class=variable>invoke</span> <span class=variable>ReverseFind</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>&quot;EC6AFF&quot;</span><span class=keyword>,</span> <span class=variable>then</span> <span class=variable>will</span> <span class=variable>find</span> <span class=variable>nothing</span><span class=keyword>,</span> <span class=variable>return</span> <span class=selfeval>-1.</span>
+<span class=keyword>if</span> <span class=variable>we</span> <span class=variable>use</span> <span class=variable>invoke</span> <span class=variable>ReverseSearch</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>&quot;EC6AFF&quot;</span><span class=keyword>,</span> <span class=variable>then</span> <span class=variable>will</span> <span class=variable>return</span> <span class=variable>004010DE.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>address : memory starting at
+</p>
+<li><p>code : what we looking for
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=variable>address</span> <span class=variable>found</span>
+<span class=variable>Fails:</span> <span class=selfeval>-1</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>Reverse</span> <span class=variable>search</span> <span class=variable>a</span> <span class=variable>CALL</span> <span class=variable>XXXXXXXX</span>
+<span class=variable>invoke</span> <span class=variable>ReverseSearch</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>&quot;e8????????&quot;</span>
+<span class=variable>invoke</span> <span class=variable>PrintNum</span><span class=keyword>,</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>16</span>
+
+<span class=variable>//</span> <span class=variable>Reverse</span> <span class=variable>search:</span>
+<span class=variable>//</span>   <span class=variable>CALL</span> <span class=variable>XXXXXXXX</span>
+<span class=variable>//</span>   <span class=variable>PUSH</span> <span class=selfeval>0</span>
+<span class=variable>invoke</span> <span class=variable>ReverseSearch</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>&quot;e8????????6a00&quot;</span>
+<span class=variable>invoke</span> <span class=variable>PrintNum</span><span class=keyword>,</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>16</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.7.6"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.7.6">4.7.6&nbsp;&nbsp;GetPrevOpAddr</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>GetPrevOpAddr</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>N</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Calculate</span> <span class=variable>address</span> <span class=variable>of</span> <span class=variable>instruction</span> <span class=variable>which</span> <span class=variable>is</span> <span class=variable>N</span> <span class=variable>instructions</span> <span class=variable>forward</span>
+<span class=variable>from</span> <span class=variable>instruction</span> <span class=variable>at</span> <span class=variable>specified</span> <span class=variable>address.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>address : address of current instruction
+</p>
+<li><p>N : number of instructions to walk back
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=variable>address</span> <span class=variable>of</span> <span class=variable>found</span> <span class=variable>instruction</span>
+<span class=variable>Fails:</span> <span class=selfeval>-1</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>GetPrevOpAddr</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>1</span>
+<span class=variable>invoke</span> <span class=variable>PrintNum</span><span class=keyword>,</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>16</span>  <span class=variable>//</span> <span class=keyword>Let</span><span class=keyword>'</span><span class=variable>s</span> <span class=variable>see</span> <span class=variable>what</span> <span class=variable>we</span> <span class=variable>got!</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.7.7"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.7.7">4.7.7&nbsp;&nbsp;GetNextOpAddr</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>GetNextOpAddr</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>N</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Calculate</span> <span class=variable>address</span> <span class=variable>of</span> <span class=variable>assembler</span> <span class=variable>instruction</span> <span class=variable>which</span> <span class=variable>is</span> <span class=variable>N</span> <span class=variable>instructions</span> (<span class=variable>maximally</span> <span class=selfeval>127</span>)
+<span class=variable>back</span> <span class=variable>from</span> <span class=variable>instruction</span> <span class=variable>at</span> <span class=variable>specified</span> <span class=variable>address.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>address : address of current instruction
+</p>
+<li><p>N : number of instructions to walk forward
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=variable>address</span> <span class=variable>of</span> <span class=variable>found</span> <span class=variable>instruction</span>
+<span class=variable>Fails:</span> <span class=selfeval>-1</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>GetNextOpAddr</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>1</span>
+<span class=variable>invoke</span> <span class=variable>PrintNum</span><span class=keyword>,</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>16</span>  <span class=variable>//</span> <span class=keyword>Let</span><span class=keyword>'</span><span class=variable>s</span> <span class=variable>see</span> <span class=variable>what</span> <span class=variable>we</span> <span class=variable>got!</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.7.8"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.7.8">4.7.8&nbsp;&nbsp;GetProcAddress</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>GetProcAddress</span> <span class=variable>funcname</span><span class=keyword>,</span> <span class=variable>dllname</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Return</span> <span class=variable>address</span> <span class=variable>of</span> <span class=variable>funcname</span> <span class=variable>in</span> <span class=variable>dllname.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>funcname : function name
+</p>
+<li><p>dllname : dll name
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=variable>function</span><span class=keyword>'</span><span class=variable>s</span> <span class=variable>address</span>
+<span class=variable>Fails:</span> <span class=selfeval>-1</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>GetProcAddress</span><span class=keyword>,</span> <span class=selfeval>&quot;MessageBoxA&quot;</span><span class=keyword>,</span> <span class=selfeval>&quot;user32.dll&quot;</span>
+<span class=variable>invoke</span> <span class=variable>PrintNum</span><span class=keyword>,</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>16</span>  <span class=variable>//</span> <span class=keyword>Let</span><span class=keyword>'</span><span class=variable>s</span> <span class=variable>see</span> <span class=variable>what</span> <span class=variable>we</span> <span class=variable>got!</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.7.9"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.7.9">4.7.9&nbsp;&nbsp;Fill</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Fill</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>len</span><span class=keyword>,</span> <span class=variable>value</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Fill</span> <span class=variable>writes</span> <span class=variable>len</span> <span class=variable>value</span> <span class=variable>bytes</span> <span class=variable>to</span> <span class=variable>starting</span> <span class=variable>of</span> <span class=variable>address.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>address : memory address starting at
+</p>
+<li><p>len : length
+</p>
+<li><p>value : data written into memory, it will only rserved the lowest byte. (for example: 0x12345678 will only writes 0x78)
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>fill</span> <span class=selfeval>10</span> <span class=variable>bytes</span> <span class=selfeval>&quot;NOP&quot;</span> <span class=variable>to</span> <span class=variable>address</span> <span class=variable>starting</span> <span class=variable>from</span> <span class=variable>EIP</span>
+<span class=variable>invoke</span> <span class=variable>Fill</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>10</span><span class=keyword>,</span> <span class=variable>0x90</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.7.10"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.7.10">4.7.10&nbsp;&nbsp;ReplaceBytes</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>ReplaceBytes</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>find</span><span class=keyword>,</span> <span class=variable>repl</span><span class=keyword>,</span> <span class=variable>len</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>ReplaceBytes</span> <span class=selfeval>&quot;find&quot;</span> <span class=variable>starting</span> <span class=variable>at</span> <span class=variable>address</span><span class=keyword>,</span> <span class=keyword>and</span> <span class=variable>replace</span> <span class=variable>it</span> <span class=keyword>with</span> <span class=selfeval>&quot;repl&quot;</span> <span class=variable>for</span> <span class=variable>len</span> <span class=variable>times.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>address : memory startint at
+</p>
+<li><p>find : data for find
+</p>
+<li><p>repl : replace with
+</p>
+<li><p>len : replace times
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=variable>return</span> <span class=variable>the</span> <span class=selfeval>&quot;find&quot;</span><span class=keyword>'</span><span class=variable>s</span> <span class=variable>address.</span>
+<span class=variable>Fails:</span> <span class=selfeval>-1</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>ReplaceBytes</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=variable>0x90909090</span><span class=keyword>,</span> <span class=variable>0x51515151</span><span class=keyword>,</span> <span class=selfeval>1</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.7.11"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.7.11">4.7.11&nbsp;&nbsp;ReplaceBytesEx</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>ReplaceBytesEx</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>len</span><span class=keyword>,</span> <span class=variable>find</span><span class=keyword>,</span> <span class=variable>repl</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Starting</span> <span class=variable>from</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>replace</span> <span class=selfeval>&quot;find&quot;</span> <span class=variable>to</span> <span class=selfeval>&quot;repl&quot;</span><span class=keyword>,</span> <span class=variable>in</span> <span class=variable>len</span> <span class=variable>bytes.</span>
+<span class=variable>Supports</span> <span class=variable>wildcard</span> <span class=selfeval>&quot;??&quot;</span>. <span class=variable>One</span> <span class=selfeval>&quot;??&quot;</span> <span class=variable>for</span> <span class=variable>one</span> <span class=variable>byte.</span>
+<span class=variable>Attention:</span>
+<span class=selfeval>1.</span> <span class=variable>The</span> <span class=variable>length</span> <span class=variable>of</span> <span class=selfeval>&quot;find&quot;</span> <span class=keyword>and</span> <span class=selfeval>&quot;repl&quot;</span> <span class=variable>must</span> <span class=variable>be</span> <span class=variable>the</span> <span class=variable>same.</span> <span class=variable>For</span> <span class=variable>example</span><span class=keyword>,</span> <span class=keyword>if</span> <span class=selfeval>&quot;find&quot;</span> <span class=variable>is</span> <span class=selfeval>&quot;60e8??&quot;</span><span class=keyword>,</span>
+   <span class=variable>it</span> <span class=variable>is</span> <span class=selfeval>3</span> <span class=variable>bytes</span><span class=keyword>,</span> <span class=variable>then</span> <span class=variable>length</span> <span class=variable>of</span> <span class=selfeval>&quot;repl&quot;</span> <span class=variable>must</span> <span class=variable>also</span> <span class=variable>be</span> <span class=selfeval>3</span> <span class=variable>bytes.</span>
+<span class=selfeval>2.</span> <span class=variable>The</span> <span class=selfeval>&quot;??&quot;</span> <span class=variable>in</span> <span class=selfeval>&quot;find&quot;</span> <span class=variable>will</span> <span class=variable>not</span> <span class=variable>be</span> <span class=variable>replaced.</span> <span class=variable>For</span> <span class=variable>example</span><span class=keyword>,</span> <span class=keyword>if</span> <span class=selfeval>&quot;find&quot;</span> <span class=variable>is</span> <span class=selfeval>&quot;60e8??&quot;</span><span class=keyword>,</span>
+   <span class=selfeval>&quot;repl&quot;</span> <span class=variable>is</span> <span class=selfeval>&quot;123456&quot;</span><span class=keyword>,</span> <span class=variable>then</span> <span class=variable>after</span> <span class=variable>replacement</span><span class=keyword>,</span> <span class=variable>it</span> <span class=variable>will</span> <span class=variable>be</span> <span class=selfeval>&quot;1234??&quot;</span><span class=keyword>,</span>
+   <span class=variable>the</span> <span class=variable>original</span> <span class=variable>byte</span> <span class=variable>of</span> <span class=selfeval>&quot;??&quot;</span> <span class=variable>will</span> <span class=variable>be</span> <span class=variable>kept.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>address : address starting at
+</p>
+<li><p>len : how many bytes?
+</p>
+<li><p>find : bytes to be replaced
+</p>
+<li><p>repl : replacement
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span><span class=keyword>,</span> <span class=variable>have</span> <span class=variable>at</span> <span class=variable>least</span> <span class=variable>one</span> <span class=variable>replacement.</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span><span class=keyword>,</span> <span class=variable>no</span> <span class=variable>replacement.</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>ReplaceBytesEx</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>10</span><span class=keyword>,</span> <span class=selfeval>&quot;60e8??&quot;</span><span class=keyword>,</span> <span class=selfeval>&quot;909090&quot;</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.7.12"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.7.12">4.7.12&nbsp;&nbsp;CopyBytesTo</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>CopyBytesTo</span> <span class=variable>addrsrc</span><span class=keyword>,</span> <span class=variable>addrdest</span><span class=keyword>,</span> <span class=variable>len</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Copy</span> <span class=variable>len</span> <span class=variable>bytes</span> <span class=variable>from</span> <span class=variable>addrsrc</span> <span class=variable>to</span> <span class=variable>addrdest.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>addrsrc : source address
+</p>
+<li><p>addrdest : destination address
+</p>
+<li><p>len : length of bytes
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>CopyBytesTo</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=variable>0x401000</span><span class=keyword>,</span> <span class=selfeval>10</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.8"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_4.8">4.8&nbsp;&nbsp;Assembly API</a></h2>
+<p></p>
+<a name="node_sec_4.8.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.8.1">4.8.1&nbsp;&nbsp;ASM</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>ASM</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>command</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Converts</span> <span class=variable>command</span> <span class=variable>in</span> <span class=variable>ASCII</span> <span class=variable>form</span> <span class=variable>to</span> <span class=variable>binary</span> <span class=variable>32-bit</span> <span class=variable>code.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>address : address of the generated binary in memory
+</p>
+<li><p>command : pointer to zero-terminated ASCII command
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>asm</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>&quot;mov eax, edx&quot;</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.8.2"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.8.2">4.8.2&nbsp;&nbsp;__asm</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>__asm</span> { }
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Embedded</span> <span class=variable>asm</span><span class=keyword>,</span> <span class=variable>must</span> <span class=variable>invoke</span> <span class=variable>like</span> <span class=variable>the</span> <span class=variable>following</span> <span class=variable>type:</span>
+<span class=variable>__asm</span>
+{
+<span class=variable>mov</span> <span class=variable>eax</span><span class=keyword>,</span> <span class=selfeval>1</span>
+<span class=variable>push</span> <span class=selfeval>0</span>
+<span class=variable>call</span> <span class=variable>ExitProcess</span>
+}
+
+<span class=variable>Attention:</span>
+<span class=selfeval>1.</span> <span class=variable>We</span> <span class=variable>can</span> <span class=variable>use</span> <span class=selfeval>&quot;//&quot;</span><span class=keyword>,</span> <span class=selfeval>&quot;;&quot;</span> <span class=variable>for</span> <span class=variable>line</span> <span class=variable>comment</span><span class=keyword>,</span> <span class=selfeval>&quot;/* */&quot;</span> <span class=variable>for</span> <span class=variable>block</span> <span class=variable>comment.</span>
+<span class=selfeval>2.</span> <span class=variable>It</span> <span class=variable>is</span> <span class=variable>not</span> <span class=variable>allowed</span> <span class=variable>to</span> <span class=variable>use</span> <span class=variable>registers</span> <span class=variable>of</span> <span class=variable>OllyMachine.</span>
+<span class=selfeval>3.</span> <span class=variable>Embedded</span> <span class=variable>asm</span> <span class=variable>will</span> <span class=variable>be</span> <span class=variable>compiled</span><span class=keyword>,</span> <span class=keyword>if</span> <span class=variable>the</span> <span class=variable>size</span> <span class=variable>of</span> <span class=variable>the</span> <span class=variable>compiled</span> <span class=variable>code</span> <span class=variable>greater</span> <span class=variable>than</span> <span class=selfeval>2046</span> <span class=variable>bytes</span><span class=keyword>,</span>
+   <span class=variable>then</span> <span class=variable>we</span> <span class=variable>must</span> <span class=variable>separate</span> <span class=variable>a</span> <span class=variable>big</span> <span class=variable>__asm</span>{} <span class=variable>block</span> <span class=variable>into</span> <span class=variable>several</span> <span class=variable>smaller</span> <span class=variable>block.</span>
+
+<span class=variable>For</span> <span class=variable>example:</span>
+
+<span class=variable>__asm</span>
+{
+<span class=variable>mov</span> <span class=variable>eax</span><span class=keyword>,</span> <span class=selfeval>1</span>
+<span class=variable>//</span> ...
+<span class=variable>//</span> ...
+<span class=variable>mov</span> <span class=variable>ecx</span><span class=keyword>,</span> <span class=selfeval>1</span>
+}
+
+<span class=keyword>If</span> <span class=variable>the</span> <span class=variable>assembler</span> <span class=variable>prompt</span> <span class=variable>that</span> <span class=variable>the</span> <span class=variable>size</span> <span class=variable>of</span> <span class=variable>compiled</span> <span class=variable>embedded</span> <span class=variable>asm</span> <span class=variable>is</span> <span class=variable>too</span> <span class=variable>big</span><span class=keyword>,</span>
+<span class=variable>then</span> <span class=variable>we</span> <span class=variable>must</span> <span class=variable>separate</span> <span class=variable>this</span> <span class=variable>big</span> <span class=variable>block</span> <span class=variable>into</span> <span class=variable>several</span> <span class=variable>smaller</span> <span class=variable>blocks:</span>
+
+<span class=variable>__asm</span>
+{
+<span class=variable>mov</span> <span class=variable>eax</span><span class=keyword>,</span> <span class=selfeval>1</span>
+<span class=variable>//</span> ...
+}
+<span class=variable>__asm</span>
+{
+<span class=variable>//</span> ...
+<span class=variable>mov</span> <span class=variable>ecx</span><span class=keyword>,</span> <span class=selfeval>1</span>
+}
+
+<span class=variable>Continue</span> <span class=variable>separating...</span> <span class=variable>until</span> <span class=variable>the</span> <span class=variable>assembler</span> <span class=variable>does</span> <span class=variable>not</span> <span class=variable>give</span> <span class=variable>you</span> <span class=variable>an</span> <span class=variable>error</span> <span class=variable>prompt</span> <span class=variable>any</span> <span class=variable>more.</span>
+<span class=variable>Actually</span> <span class=variable>I</span> <span class=variable>think</span> <span class=selfeval>2046</span> <span class=variable>bytes</span> <span class=variable>is</span> <span class=variable>enough</span> <span class=variable>for</span> <span class=variable>most</span> <span class=variable>of</span> <span class=variable>the</span> <span class=variable>situations</span><span class=keyword>,</span> <span class=keyword>if</span> <span class=variable>not</span><span class=keyword>,</span> <span class=variable>please</span> <span class=keyword>let</span> <span class=variable>me</span> <span class=variable>know.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>None</span>
+</pre><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>None</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>__asm</span>
+{
+<span class=variable>mov</span> <span class=variable>eax</span><span class=keyword>,</span> <span class=selfeval>1</span>
+
+<span class=variable>push</span> <span class=selfeval>0</span>
+<span class=variable>call</span> <span class=variable>ExitProcess</span>
+}
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.8.3"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.8.3">4.8.3&nbsp;&nbsp;Analyse</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Analyse</span> <span class=variable>address</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Analyzes</span> <span class=variable>executable</span> <span class=variable>code</span> <span class=variable>of</span> <span class=variable>specified</span> <span class=variable>module</span> <span class=variable>starting</span> <span class=variable>at</span> <span class=variable>address.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>address : starting memory address
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>Analyse</span><span class=keyword>,</span> <span class=variable>eip</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.9"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_4.9">4.9&nbsp;&nbsp;Running API</a></h2>
+<p></p>
+<a name="node_sec_4.9.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.9.1">4.9.1&nbsp;&nbsp;RunToReturn</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>RunToReturn</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Executes</span> <span class=selfeval>&quot;Run to return&quot;</span> <span class=variable>in</span> <span class=variable>OllyDbg</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>None</span>
+</pre><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>None</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>RunToReturn</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.9.2"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.9.2">4.9.2&nbsp;&nbsp;RunToUserCode</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>RunToUserCode</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Executes</span> <span class=selfeval>&quot;Run to user code&quot;</span> <span class=variable>in</span> <span class=variable>OllyDbg</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>None</span>
+</pre><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>None</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>RunToUserCode</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.9.3"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.9.3">4.9.3&nbsp;&nbsp;Run</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Run</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Executes</span> <span class=variable>F9</span> <span class=variable>in</span> <span class=variable>OllyDbg</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>None</span>
+</pre><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>None</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Run</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.9.4"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.9.4">4.9.4&nbsp;&nbsp;AnimateInto</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>AnimateInto</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Executes</span> <span class=selfeval>&quot;Animate into&quot;</span> <span class=variable>in</span> <span class=variable>OllyDbg</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>None</span>
+</pre><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>None</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>AnimateInto</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.9.5"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.9.5">4.9.5&nbsp;&nbsp;AnimateOver</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>AnimateOver</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Executes</span> <span class=selfeval>&quot;Animate over&quot;</span> <span class=variable>in</span> <span class=variable>OllyDbg</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>None</span>
+</pre><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>None</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>AnimateOver</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.9.6"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.9.6">4.9.6&nbsp;&nbsp;StepInto</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>StepInto</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Execute</span> <span class=variable>F7</span> <span class=variable>in</span> <span class=variable>OllyDbg.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>None</span>
+</pre><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>StepInto</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.9.7"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.9.7">4.9.7&nbsp;&nbsp;StepIntoS</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>StepIntoS</span> <span class=variable>times</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Execute</span> <span class=variable>F7</span> <span class=variable>times</span> <span class=variable>in</span> <span class=variable>OllyDbg.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>times : times to step
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>StepIntoS</span><span class=keyword>,</span> <span class=selfeval>3</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.9.8"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.9.8">4.9.8&nbsp;&nbsp;StepOver</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>StepOver</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Execute</span> <span class=variable>F8</span> <span class=variable>in</span> <span class=variable>OllyDbg.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>None</span>
+</pre><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>StepOver</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.9.9"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.9.9">4.9.9&nbsp;&nbsp;StepOverS</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>StepOverS</span> <span class=variable>times</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Execute</span> <span class=variable>F8</span> <span class=variable>times</span> <span class=variable>in</span> <span class=variable>OllyDbg.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>times : times to step
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>StepOverS</span><span class=keyword>,</span> <span class=selfeval>3</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.9.10"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.9.10">4.9.10&nbsp;&nbsp;ESTI</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>ESTI</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Executes</span> <span class=variable>SHIFT-F7</span> <span class=variable>in</span> <span class=variable>OllyDbg.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>None</span>
+</pre><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>None</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>ESTI</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.9.11"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.9.11">4.9.11&nbsp;&nbsp;ESTO</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>ESTO</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Executes</span> <span class=variable>SHIFT-F9</span> <span class=variable>in</span> <span class=variable>OllyDbg.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>None</span>
+</pre><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>None</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>ESTO</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.9.12"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.9.12">4.9.12&nbsp;&nbsp;GO</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>GO</span> <span class=variable>address</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Executes</span> <span class=variable>to</span> <span class=variable>specified</span> <span class=variable>address</span> (<span class=variable>like</span> <span class=variable>G</span> <span class=variable>in</span> <span class=variable>SoftIce</span>)
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>address : target address
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>go</span><span class=keyword>,</span> <span class=variable>0x401005</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.10"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_4.10">4.10&nbsp;&nbsp;Trace API</a></h2>
+<p>Tracing API:</p>
+<p>
+</p>
+<a name="node_sec_4.10.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.10.1">4.10.1&nbsp;&nbsp;TraceInto</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>TraceInto</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Executes</span> <span class=selfeval>&quot;Trace into&quot;</span> <span class=variable>in</span> <span class=variable>OllyDbg</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>None</span>
+</pre><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>None</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>TraceInto</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.10.2"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.10.2">4.10.2&nbsp;&nbsp;TraceOver</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>TraceOver</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Executes</span> <span class=selfeval>&quot;Trace over&quot;</span> <span class=variable>in</span> <span class=variable>OllyDbg</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>None</span>
+</pre><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>None</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>TraceOver</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.10.3"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.10.3">4.10.3&nbsp;&nbsp;TraceIntoCond</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>TraceIntoCond</span> <span class=variable>condition</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Traces</span> <span class=variable>into</span> <span class=variable>calls</span> <span class=variable>until</span> <span class=keyword>cond</span> <span class=variable>is</span> <span class=variable>true</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>condition : stop condition
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>None</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>Will</span> <span class=variable>stop</span> <span class=keyword>when</span> <span class=variable>eip</span> <span class=variable>&gt;</span> <span class=variable>0x40100A</span>
+<span class=variable>invoke</span> <span class=variable>TraceIntoCond</span><span class=keyword>,</span> <span class=selfeval>&quot;eip &gt; 0x40100A&quot;</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.10.4"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.10.4">4.10.4&nbsp;&nbsp;TraceOverCond</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>TraceOverCond</span> <span class=variable>condition</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Traces</span> <span class=variable>over</span> <span class=variable>calls</span> <span class=variable>until</span> <span class=keyword>cond</span> <span class=variable>is</span> <span class=variable>true.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>condition : stop condition
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>None</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>Will</span> <span class=variable>stop</span> <span class=keyword>when</span> <span class=variable>eip</span> <span class=variable>&gt;</span> <span class=variable>0x40100A</span>
+<span class=variable>invoke</span> <span class=variable>TraceOverCond</span><span class=keyword>,</span> <span class=selfeval>&quot;eip &gt; 0x40100A&quot;</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.11"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_4.11">4.11&nbsp;&nbsp;Breakpoint API</a></h2>
+<p></p>
+<a name="node_sec_4.11.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.11.1">4.11.1&nbsp;&nbsp;BP</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>BP</span> <span class=variable>address</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Set</span> <span class=variable>unconditional</span> <span class=variable>breakpoint</span> <span class=variable>at</span> <span class=variable>address.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>address : memory address
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>BP</span><span class=keyword>,</span> <span class=variable>0x401000</span>
+<span class=variable>invoke</span> <span class=variable>BP</span><span class=keyword>,</span> <span class=variable>eip</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.11.2"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.11.2">4.11.2&nbsp;&nbsp;BC</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>BC</span> <span class=variable>address</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Clear</span> <span class=variable>unconditional</span> <span class=variable>breakpoint</span> <span class=variable>at</span> <span class=variable>addrress.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>address : memory address
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>BC</span><span class=keyword>,</span> <span class=variable>0x401000</span>
+<span class=variable>invoke</span> <span class=variable>BC</span><span class=keyword>,</span> <span class=variable>eip</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.11.3"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.11.3">4.11.3&nbsp;&nbsp;BPCND</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>BPCND</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>condition</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Set</span> <span class=variable>breakpoint</span> <span class=variable>on</span> <span class=variable>address</span> <span class=variable>addr</span> <span class=keyword>with</span> <span class=variable>condition</span> <span class=variable>cond.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>address : memory address
+</p>
+<li><p>condition : condition that in zero-terminated ASCII cmd
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>BPCND</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>&quot;ecx==FFFFFFFF&quot;</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.11.4"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.11.4">4.11.4&nbsp;&nbsp;BPL</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>BPL</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>expression</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Sets</span> <span class=variable>logging</span> <span class=variable>breakpoint</span> <span class=variable>at</span> <span class=variable>address</span> <span class=variable>addr</span> <span class=variable>that</span> <span class=variable>logs</span> <span class=variable>expression</span> <span class=variable>expr.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>address : memory address
+</p>
+<li><p>expression : expression that in zero-terminated ASCII cmd
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>logs</span> <span class=variable>the</span> <span class=variable>value</span> <span class=variable>of</span> <span class=variable>eax</span> <span class=variable>everytime</span> <span class=keyword>when</span> <span class=variable>EIP</span><span class=keyword>'</span><span class=variable>s</span> <span class=variable>address</span> <span class=variable>is</span> <span class=variable>passed</span>
+<span class=variable>invoke</span> <span class=variable>BPL</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>&quot;eax&quot;</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.11.5"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.11.5">4.11.5&nbsp;&nbsp;BPLCND</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>BPLCND</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>expression</span><span class=keyword>,</span> <span class=variable>condition</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Sets</span> <span class=variable>logging</span> <span class=variable>breakpoint</span> <span class=variable>at</span> <span class=variable>address</span> <span class=variable>addr</span> <span class=variable>that</span> <span class=variable>logs</span> <span class=variable>expression</span> <span class=variable>expr</span> <span class=keyword>if</span> <span class=variable>condition</span> <span class=keyword>cond</span> <span class=variable>is</span> <span class=variable>true</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>address : memory address
+</p>
+<li><p>expression : expression that in zero-terminated ASCII cmd
+</p>
+<li><p>condition : condition that in zero-terminated ASCII cmd
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>logs</span> <span class=variable>the</span> <span class=variable>value</span> <span class=variable>of</span> <span class=variable>eax</span> <span class=variable>everytime</span> <span class=keyword>when</span> <span class=variable>EIP</span><span class=keyword>'</span><span class=variable>s</span> <span class=variable>address</span> <span class=variable>is</span> <span class=variable>passed</span> <span class=keyword>and</span> <span class=variable>eax</span> <span class=variable>&gt;</span> <span class=selfeval>1</span>
+<span class=variable>invoke</span> <span class=variable>BPLCND</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>&quot;eax&quot;</span><span class=keyword>,</span> <span class=selfeval>&quot;eax &gt; 1&quot;</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.11.6"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.11.6">4.11.6&nbsp;&nbsp;BPRM</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>BPRM</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>size</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Set</span> <span class=variable>memory</span> <span class=variable>breakpoint</span> <span class=variable>on</span> <span class=variable>read.</span> <span class=variable>Size</span> <span class=variable>is</span> <span class=variable>size</span> <span class=variable>of</span> <span class=variable>memory</span> <span class=variable>in</span> <span class=variable>bytes.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>address : memory address
+</p>
+<li><p>size : size of memory
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>BPRM</span><span class=keyword>,</span> <span class=variable>0x401000</span><span class=keyword>,</span> <span class=variable>0xff</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.11.7"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.11.7">4.11.7&nbsp;&nbsp;BPWM</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>BPWM</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>size</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Set</span> <span class=variable>memory</span> <span class=variable>breakpoint</span> <span class=variable>on</span> <span class=variable>write.</span> <span class=variable>Size</span> <span class=variable>is</span> <span class=variable>size</span> <span class=variable>of</span> <span class=variable>memory</span> <span class=variable>in</span> <span class=variable>bytes.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>address : memory address
+</p>
+<li><p>size : size of memory
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>BPWM</span><span class=keyword>,</span> <span class=variable>0x401000</span><span class=keyword>,</span> <span class=variable>0xff</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.11.8"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.11.8">4.11.8&nbsp;&nbsp;BPMC</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>BPMC</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Clear</span> <span class=variable>memory</span> <span class=variable>breakpoint.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>None</span>
+</pre><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>BPMC</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.11.9"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.11.9">4.11.9&nbsp;&nbsp;BPHWS</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>BPHWS</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>mode</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Set</span> <span class=variable>hardware</span> <span class=variable>breakpoint.</span> <span class=variable>Mode</span> <span class=variable>can</span> <span class=variable>be</span> <span class=selfeval>1</span> <span class=variable>-</span> <span class=selfeval>&quot;Execute&quot;</span><span class=keyword>,</span> <span class=selfeval>2</span> <span class=variable>-</span> <span class=selfeval>&quot;Read&quot;</span><span class=keyword>,</span> <span class=selfeval>3</span> <span class=variable>-</span> <span class=selfeval>&quot;Write&quot;</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>address : breakpoint address
+</p>
+<li><p>mode : 1 - &quot;Execute&quot;, 2 - &quot;Read&quot;, 3 - &quot;Write&quot;
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>BPHWS</span><span class=keyword>,</span> <span class=variable>0x401000</span><span class=keyword>,</span> <span class=selfeval>1</span> <span class=variable>//</span> <span class=variable>mode</span> <span class=variable>-</span> <span class=selfeval>&quot;Execute&quot;</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.11.10"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.11.10">4.11.10&nbsp;&nbsp;BPHWC</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>BPHWC</span> <span class=variable>address</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Delete</span> <span class=variable>hardware</span> <span class=variable>breakpoint</span> <span class=variable>at</span> <span class=variable>a</span> <span class=variable>specified</span> <span class=variable>address</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>address : breakpoint address
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>BPHWC</span><span class=keyword>,</span> <span class=variable>0x401000</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.11.11"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.11.11">4.11.11&nbsp;&nbsp;EOB</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>EOB</span> <span class=variable>label</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Transfer</span> <span class=variable>execution</span> <span class=variable>to</span> <span class=variable>some</span> <span class=variable>label</span> <span class=variable>on</span> <span class=variable>next</span> <span class=variable>breakpoint.</span>
+<span class=variable>Format:</span> <span class=variable>EOB</span> <span class=variable>LabelName</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>label : transfer label name
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>None</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>EOB</span> <span class=variable>Break</span>       <span class=variable>//</span> <span class=variable>set</span> <span class=variable>up</span> <span class=variable>jump</span> <span class=variable>label</span>
+
+<span class=variable>invoke</span> <span class=variable>bp</span><span class=keyword>,</span> <span class=variable>0x40100A</span> <span class=variable>//</span> <span class=variable>set</span> <span class=variable>breakpoint</span> <span class=variable>at</span> <span class=variable>0x40100A</span>
+<span class=variable>run</span>             <span class=variable>//</span> <span class=variable>run!</span> <span class=variable>will</span> <span class=variable>occur</span> <span class=variable>breakpoint</span> <span class=variable>at</span> <span class=variable>0x40100A</span>
+
+<span class=variable>halt</span>
+
+<span class=variable>//</span> ... (<span class=variable>some</span> <span class=variable>other</span> <span class=variable>instructions</span>)
+
+<span class=variable>Break:</span>          <span class=variable>//</span> <span class=variable>jump</span> <span class=variable>to</span> <span class=variable>this</span> <span class=variable>label</span> <span class=keyword>when</span> <span class=variable>occured</span> <span class=variable>breakpoint</span>
+<span class=variable>invoke</span> <span class=variable>msg</span><span class=keyword>,</span> <span class=selfeval>&quot;Breakpoint occured!&quot;</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.11.12"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.11.12">4.11.12&nbsp;&nbsp;EOBINT3</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>EOBINT3</span> <span class=variable>label</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Transfer</span> <span class=variable>execution</span> <span class=variable>to</span> <span class=variable>some</span> <span class=variable>label</span> <span class=variable>on</span> <span class=variable>next</span> <span class=variable>int3</span> <span class=variable>breakpoint.</span>
+<span class=variable>Format:</span> <span class=variable>EOBINT3</span> <span class=variable>LabelName</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>label : transfer label name
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>None</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>EOBINT3</span> <span class=variable>Break</span>   <span class=variable>//</span> <span class=variable>set</span> <span class=variable>up</span> <span class=variable>jump</span> <span class=variable>label</span>
+
+<span class=variable>run</span>             <span class=variable>//</span> <span class=variable>run!</span>
+
+<span class=variable>halt</span>
+
+<span class=variable>//</span> ... (<span class=variable>some</span> <span class=variable>other</span> <span class=variable>instructions</span>)
+
+<span class=variable>Break:</span>          <span class=variable>//</span> <span class=variable>jump</span> <span class=variable>to</span> <span class=variable>this</span> <span class=variable>label</span> <span class=keyword>when</span> <span class=variable>occured</span> <span class=variable>int3</span>
+<span class=variable>invoke</span> <span class=variable>msg</span><span class=keyword>,</span> <span class=selfeval>&quot;Breakpoint occured!&quot;</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.11.13"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.11.13">4.11.13&nbsp;&nbsp;EOBHW</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>EOBHW</span> <span class=variable>label</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Transfer</span> <span class=variable>execution</span> <span class=variable>to</span> <span class=variable>some</span> <span class=variable>label</span> <span class=variable>on</span> <span class=variable>next</span> <span class=variable>hardware</span> <span class=variable>breakpoint.</span>
+<span class=variable>Format:</span> <span class=variable>EOBHW</span> <span class=variable>LabelName</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>label : transfer label name
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>None</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>EOBHW</span> <span class=variable>Break</span>     <span class=variable>//</span> <span class=variable>set</span> <span class=variable>up</span> <span class=variable>jump</span> <span class=variable>label</span>
+
+<span class=variable>run</span>             <span class=variable>//</span> <span class=variable>run!</span>
+
+<span class=variable>halt</span>
+
+<span class=variable>//</span> ... (<span class=variable>some</span> <span class=variable>other</span> <span class=variable>instructions</span>)
+
+<span class=variable>Break:</span>          <span class=variable>//</span> <span class=variable>jump</span> <span class=variable>to</span> <span class=variable>this</span> <span class=variable>label</span> <span class=keyword>when</span> <span class=variable>occured</span> <span class=variable>int3</span>
+<span class=variable>invoke</span> <span class=variable>msg</span><span class=keyword>,</span> <span class=selfeval>&quot;Breakpoint occured!&quot;</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.11.14"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.11.14">4.11.14&nbsp;&nbsp;EOBMEM</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>EOBMEM</span> <span class=variable>label</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Transfer</span> <span class=variable>execution</span> <span class=variable>to</span> <span class=variable>some</span> <span class=variable>label</span> <span class=variable>on</span> <span class=variable>next</span> <span class=variable>memory</span> <span class=variable>breakpoint.</span>
+<span class=variable>Format:</span> <span class=variable>EOBMEM</span> <span class=variable>LabelName</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>label : transfer label name
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>None</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>EOBMEM</span> <span class=variable>Break</span>    <span class=variable>//</span> <span class=variable>set</span> <span class=variable>up</span> <span class=variable>jump</span> <span class=variable>label</span>
+
+<span class=variable>run</span>             <span class=variable>//</span> <span class=variable>run!</span>
+
+<span class=variable>halt</span>
+
+<span class=variable>//</span> ... (<span class=variable>some</span> <span class=variable>other</span> <span class=variable>instructions</span>)
+
+<span class=variable>Break:</span>          <span class=variable>//</span> <span class=variable>jump</span> <span class=variable>to</span> <span class=variable>this</span> <span class=variable>label</span> <span class=keyword>when</span> <span class=variable>occured</span> <span class=variable>int3</span>
+<span class=variable>invoke</span> <span class=variable>msg</span><span class=keyword>,</span> <span class=selfeval>&quot;Breakpoint occured!&quot;</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.11.15"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.11.15">4.11.15&nbsp;&nbsp;EOE</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>EOE</span> <span class=variable>label</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Transfer</span> <span class=variable>execution</span> <span class=variable>to</span> <span class=variable>some</span> <span class=variable>label</span> <span class=variable>on</span> <span class=variable>next</span> <span class=variable>exception.</span>
+<span class=variable>Format:</span> <span class=variable>EOE</span> <span class=variable>LabelName</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>label : transfer label name
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>None</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>EOE</span> <span class=variable>exception1</span>      <span class=variable>//</span> <span class=variable>set</span> <span class=variable>up</span> <span class=variable>jump</span> <span class=variable>label</span>
+
+<span class=variable>run</span>
+
+<span class=variable>halt</span>
+
+<span class=variable>exception1:</span>         <span class=variable>//</span> <span class=keyword>if</span> <span class=variable>any</span> <span class=variable>exceptions</span> <span class=variable>occured</span><span class=keyword>,</span> <span class=variable>jump</span> <span class=variable>to</span> <span class=variable>here</span>
+<span class=variable>invoke</span> <span class=variable>msg</span><span class=keyword>,</span> <span class=selfeval>&quot;Exception occured!&quot;</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.11.16"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.11.16">4.11.16&nbsp;&nbsp;COB</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>COB</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Makes</span> <span class=variable>script</span> <span class=variable>continue</span> <span class=variable>execution</span> <span class=variable>after</span> <span class=variable>a</span> <span class=variable>breakpoint</span> <span class=variable>has</span> <span class=variable>occured</span> (<span class=variable>removes</span> <span class=variable>EOB</span>)
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>None</span>
+</pre><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>None</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>EOB</span> <span class=variable>Break</span>       <span class=variable>//</span> <span class=variable>set</span> <span class=variable>up</span> <span class=variable>jump</span> <span class=variable>label</span>
+
+<span class=variable>invoke</span> <span class=variable>GetNextOpAddr</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>1</span>
+<span class=variable>invoke</span> <span class=variable>bp</span><span class=keyword>,</span> <span class=variable>reg00</span> <span class=variable>//</span> <span class=variable>set</span> <span class=variable>breakpoint</span> <span class=variable>at</span> <span class=variable>next</span> <span class=variable>instruction</span>
+<span class=variable>run</span>             <span class=variable>//</span> <span class=variable>run!</span> <span class=variable>will</span> <span class=variable>occur</span> <span class=variable>breakpoint</span> <span class=variable>at</span> <span class=variable>once!</span>
+
+<span class=variable>invoke</span> <span class=variable>msg</span><span class=keyword>,</span> <span class=selfeval>&quot;Continue!&quot;</span> <span class=variable>//</span> <span class=variable>continue</span> <span class=variable>execution</span> <span class=variable>here</span> <span class=variable>because</span> <span class=variable>of</span> <span class=variable>COB</span>
+
+<span class=variable>halt</span>
+
+<span class=variable>//</span> ... (<span class=variable>some</span> <span class=variable>other</span> <span class=variable>instructions</span>)
+
+<span class=variable>Break:</span>          <span class=variable>//</span> <span class=variable>jump</span> <span class=variable>to</span> <span class=variable>this</span> <span class=variable>label</span> <span class=keyword>when</span> <span class=variable>occured</span> <span class=variable>breakpoint</span>
+<span class=variable>invoke</span> <span class=variable>msg</span><span class=keyword>,</span> <span class=selfeval>&quot;Breakpoint occured!&quot;</span>
+
+<span class=variable>COB</span>             <span class=variable>//</span> <span class=variable>removes</span> <span class=variable>EOB</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.11.17"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.11.17">4.11.17&nbsp;&nbsp;COE</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>COE</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Makes</span> <span class=variable>script</span> <span class=variable>continue</span> <span class=variable>execution</span> <span class=variable>after</span> <span class=variable>an</span> <span class=variable>exception</span> <span class=variable>has</span> <span class=variable>occured</span> (<span class=variable>removes</span> <span class=variable>EOE</span>)
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>None</span>
+</pre><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>None</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>EOE</span> <span class=variable>exception1</span>      <span class=variable>//</span> <span class=variable>set</span> <span class=variable>up</span> <span class=variable>jump</span> <span class=variable>label</span>
+
+<span class=variable>run</span>
+
+<span class=variable>invoke</span> <span class=variable>msg</span><span class=keyword>,</span> <span class=selfeval>&quot;Continue!&quot;</span> <span class=variable>//</span> <span class=variable>continue</span> <span class=variable>execution</span> <span class=variable>here</span> <span class=variable>because</span> <span class=variable>of</span> <span class=variable>COE</span>
+
+<span class=variable>halt</span>
+
+<span class=variable>exception1:</span>         <span class=variable>//</span> <span class=keyword>if</span> <span class=variable>any</span> <span class=variable>exceptions</span> <span class=variable>occured</span><span class=keyword>,</span> <span class=variable>jump</span> <span class=variable>to</span> <span class=variable>here</span>
+<span class=variable>invoke</span> <span class=variable>msg</span><span class=keyword>,</span> <span class=selfeval>&quot;Exception occured!&quot;</span>
+
+<span class=variable>COE</span>                 <span class=variable>//</span> <span class=variable>removes</span> <span class=variable>EOE</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.12"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_4.12">4.12&nbsp;&nbsp;Module API</a></h2>
+<p></p>
+<a name="node_sec_4.12.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.12.1">4.12.1&nbsp;&nbsp;GMI</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>GMI</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>info</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Gets</span> <span class=variable>information</span> <span class=variable>about</span> <span class=variable>a</span> <span class=variable>module</span> <span class=variable>to</span> <span class=variable>which</span> <span class=variable>the</span> <span class=variable>specified</span> <span class=variable>address</span> <span class=variable>belongs.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>address : module's address
+</p>
+<li><p>info : type, can be &quot;MODULEBASE&quot;, &quot;MODULESIZE&quot;, &quot;CODEBASE&quot;, &quot;CODESIZE&quot;, &quot;ENTRYPOINT&quot;
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=variable>address</span> <span class=variable>that</span> <span class=variable>we</span> <span class=variable>request</span>
+<span class=variable>Fails:</span> <span class=selfeval>-1</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>GMI</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>&quot;ENTRYPOINT&quot;</span>
+<span class=variable>invoke</span> <span class=variable>PrintNum</span><span class=keyword>,</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>16</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.13"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_4.13">4.13&nbsp;&nbsp;Comment and LABEL API</a></h2>
+<p></p>
+<a name="node_sec_4.13.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.13.1">4.13.1&nbsp;&nbsp;Comment</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Comment</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>text</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Inserts</span> <span class=variable>a</span> <span class=variable>comment</span> <span class=variable>at</span> <span class=variable>the</span> <span class=variable>specified</span> <span class=variable>address.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>address : comment's address
+</p>
+<li><p>text : comment text
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>Comment</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>&quot;This is a comment!&quot;</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.13.2"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.13.2">4.13.2&nbsp;&nbsp;SetLbl</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>SetLbl</span> <span class=variable>address</span><span class=keyword>,</span> <span class=variable>LabelName</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Inserts</span> <span class=variable>a</span> <span class=variable>label</span> <span class=variable>at</span> <span class=variable>the</span> <span class=variable>specified</span> <span class=variable>address.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>address : label's address
+</p>
+<li><p>LabelName : label's name
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>SetLbl</span><span class=keyword>,</span> <span class=variable>eip</span><span class=keyword>,</span> <span class=selfeval>&quot;This is a new label!&quot;</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.14"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_4.14">4.14&nbsp;&nbsp;LOG API</a></h2>
+<p></p>
+<a name="node_sec_4.14.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.14.1">4.14.1&nbsp;&nbsp;LogText</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>LogText</span> <span class=variable>text</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Logs</span> <span class=variable>text</span> <span class=variable>to</span> <span class=variable>OllyDbg</span> <span class=variable>log</span> <span class=variable>window.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>text : text to log
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>LogText</span><span class=keyword>,</span> <span class=selfeval>&quot;This is a log!&quot;</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.14.2"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.14.2">4.14.2&nbsp;&nbsp;LogLong</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>LogLong</span> <span class=variable>value</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Logs</span> <span class=variable>long</span> <span class=variable>value</span> <span class=variable>to</span> <span class=variable>OllyDbg</span> <span class=variable>log</span> <span class=variable>window.</span>
+<span class=variable>Format</span> <span class=variable>is:</span> <span class=selfeval>&quot;LOG VALUE: 0xXXXXXXXX&quot;</span>.
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>value : long value to log
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>LogLong</span><span class=keyword>,</span> <span class=variable>eip</span>
+<span class=variable>invoke</span> <span class=variable>LogLong</span><span class=keyword>,</span> <span class=variable>0x12345678</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.15"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_4.15">4.15&nbsp;&nbsp;Anti Anti-Debug API</a></h2>
+<p>Anti Anti-Debug:</p>
+<p>
+</p>
+<a name="node_sec_4.15.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.15.1">4.15.1&nbsp;&nbsp;HideOD</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>HideOD</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>HideOD</span> <span class=variable>sets</span> <span class=variable>fs:</span>[<span class=selfeval>30</span>]<span class=selfeval>+2</span> <span class=variable>value</span> <span class=variable>to</span> <span class=variable>zero</span><span class=keyword>,</span> <span class=variable>in</span> <span class=variable>order</span> <span class=variable>to</span> <span class=variable>make</span> <span class=variable>debugging</span> <span class=variable>process</span>
+<span class=variable>doesn</span><span class=keyword>'</span><span class=variable>t</span> <span class=variable>know</span> <span class=variable>OllyDbg</span><span class=keyword>'</span><span class=variable>s</span> <span class=variable>present.</span> <span class=variable>Also</span> <span class=variable>available</span> <span class=variable>in</span> <span class=variable>Windows</span> <span class=variable>XP</span> <span class=variable>Sp2.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>None</span>
+</pre><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>HideOD</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.15.2"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.15.2">4.15.2&nbsp;&nbsp;UnHideOD</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>UnHideOD</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>UnHideOD</span> <span class=variable>removes</span> <span class=variable>HideOD.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>None</span>
+</pre><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>UnHideOD</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.16"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_4.16">4.16&nbsp;&nbsp;Buffer API</a></h2>
+<p>String and buffer API.</p>
+<p>
+</p>
+<a name="node_sec_4.16.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.16.1">4.16.1&nbsp;&nbsp;malloc</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>malloc</span> <span class=variable>size</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>malloc</span> <span class=variable>returns</span> <span class=variable>a</span> (<span class=variable>char</span> <span class=variable>*</span>) <span class=variable>pointer</span> <span class=variable>to</span> <span class=variable>the</span> <span class=variable>allocated</span> <span class=variable>space</span> <span class=variable>in</span> <span class=variable>reg.</span>
+<span class=variable>Attention:</span> <span class=selfeval>1.</span> <span class=variable>must</span> <span class=variable>use</span> <span class=variable>indexof</span> <span class=variable>for</span> <span class=variable>prefix</span> <span class=variable>of</span> <span class=variable>reg.</span> <span class=selfeval>2.</span> <span class=variable>can</span> <span class=variable>not</span> <span class=variable>use</span> <span class=variable>reg00</span> <span class=variable>for</span> <span class=variable>reg!</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>size : bytes to allocate
+</p>
+<li><p>reg : register to store the address
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>alloc</span> <span class=selfeval>100</span> <span class=variable>bytes</span> <span class=variable>memory</span> <span class=variable>to</span> <span class=variable>reg01</span>
+<span class=variable>invoke</span> <span class=variable>malloc</span><span class=keyword>,</span> <span class=selfeval>100</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.16.2"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.16.2">4.16.2&nbsp;&nbsp;free</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>free</span> <span class=variable>indexof</span> <span class=variable>reg</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>free</span> <span class=variable>function</span> <span class=variable>deallocates</span> <span class=variable>a</span> <span class=variable>memory</span> <span class=variable>block</span> <span class=variable>that</span> <span class=variable>was</span> <span class=variable>previously</span> <span class=variable>allocated</span> <span class=variable>by</span> <span class=variable>a</span> <span class=variable>call</span> <span class=variable>to</span> <span class=variable>malloc.</span>
+<span class=variable>Attention:</span> <span class=selfeval>1.</span> <span class=variable>must</span> <span class=variable>use</span> <span class=variable>indexof</span> <span class=variable>for</span> <span class=variable>prefix</span> <span class=variable>of</span> <span class=variable>reg.</span> <span class=selfeval>2.</span> <span class=variable>can</span> <span class=variable>not</span> <span class=variable>use</span> <span class=variable>reg00</span> <span class=variable>for</span> <span class=variable>reg!</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>reg : the memory block's address stored in. DO NOT use reg00!
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>alloc</span> <span class=selfeval>100</span> <span class=variable>bytes</span> <span class=variable>memory</span> <span class=variable>to</span> <span class=variable>reg01</span>
+<span class=variable>invoke</span> <span class=variable>malloc</span><span class=keyword>,</span> <span class=selfeval>100</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span>
+
+<span class=variable>//</span> ...
+
+<span class=variable>//</span> <span class=variable>now</span> <span class=variable>free</span> <span class=variable>the</span> <span class=variable>space:</span>
+<span class=variable>invoke</span> <span class=variable>free</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.16.3"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.16.3">4.16.3&nbsp;&nbsp;VirtualAllocEx</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>VirtualAllocEx</span> <span class=variable>size</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Returns</span> <span class=variable>a</span> <span class=variable>pointer</span> <span class=variable>to</span> <span class=variable>the</span> <span class=variable>allocated</span> <span class=variable>space</span> <span class=variable>in</span> <span class=variable>reg</span><span class=keyword>,</span>
+<span class=variable>the</span> <span class=variable>memory</span><span class=keyword>'</span><span class=variable>s</span> <span class=variable>access</span> <span class=variable>protection</span> <span class=variable>is</span> <span class=variable>PAGE_EXECUTE_READWRITE.</span>
+<span class=variable>Attention:</span> <span class=selfeval>1.</span> <span class=variable>must</span> <span class=variable>use</span> <span class=variable>indexof</span> <span class=variable>for</span> <span class=variable>prefix</span> <span class=variable>of</span> <span class=variable>reg.</span> <span class=selfeval>2.</span> <span class=variable>can</span> <span class=variable>not</span> <span class=variable>use</span> <span class=variable>reg00</span> <span class=variable>for</span> <span class=variable>reg!</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>size : bytes to allocate
+</p>
+<li><p>reg : register to store the address
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>alloc</span> <span class=selfeval>100</span> <span class=variable>bytes</span> <span class=variable>memory</span> <span class=variable>to</span> <span class=variable>reg01</span>
+<span class=variable>invoke</span> <span class=variable>VirtualAllocEx</span><span class=keyword>,</span> <span class=selfeval>100</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.16.4"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.16.4">4.16.4&nbsp;&nbsp;VirtualFreeEx</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>VirtualFreeEx</span> <span class=variable>indexof</span> <span class=variable>reg</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Deallocates</span> <span class=variable>a</span> <span class=variable>memory</span> <span class=variable>block</span> <span class=variable>that</span> <span class=variable>was</span> <span class=variable>previously</span> <span class=variable>allocated</span> <span class=variable>by</span> <span class=variable>a</span> <span class=variable>call</span> <span class=variable>to</span> <span class=variable>VirtualAllocEx.</span>
+<span class=variable>Attention:</span> <span class=selfeval>1.</span> <span class=variable>must</span> <span class=variable>use</span> <span class=variable>indexof</span> <span class=variable>for</span> <span class=variable>prefix</span> <span class=variable>of</span> <span class=variable>reg.</span> <span class=selfeval>2.</span> <span class=variable>can</span> <span class=variable>not</span> <span class=variable>use</span> <span class=variable>reg00</span> <span class=variable>for</span> <span class=variable>reg!</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>reg : the memory block's address stored in. DO NOT use reg00!
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>alloc</span> <span class=selfeval>100</span> <span class=variable>bytes</span> <span class=variable>memory</span> <span class=variable>to</span> <span class=variable>reg01</span>
+<span class=variable>invoke</span> <span class=variable>VirtualAllocEx</span><span class=keyword>,</span> <span class=selfeval>100</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span>
+
+<span class=variable>//</span> ...
+
+<span class=variable>//</span> <span class=variable>now</span> <span class=variable>free</span> <span class=variable>the</span> <span class=variable>space:</span>
+<span class=variable>invoke</span> <span class=variable>VirtualFreeEx</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.16.5"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.16.5">4.16.5&nbsp;&nbsp;strcpy</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>strcpy</span> <span class=variable>indexof</span> <span class=variable>reg</span><span class=keyword>,</span> <span class=variable>text</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>strcpy</span> <span class=variable>copies</span> <span class=variable>a</span> <span class=variable>string</span> <span class=variable>to</span> <span class=variable>the</span> <span class=variable>memory</span> <span class=variable>block</span> <span class=variable>stored</span> <span class=variable>in</span> <span class=variable>reg.</span>
+<span class=variable>Attention:</span> <span class=selfeval>1.</span> <span class=variable>must</span> <span class=variable>use</span> <span class=variable>indexof</span> <span class=variable>for</span> <span class=variable>prefix</span> <span class=variable>of</span> <span class=variable>reg.</span> <span class=selfeval>2.</span> <span class=variable>can</span> <span class=variable>not</span> <span class=variable>use</span> <span class=variable>reg00</span> <span class=variable>for</span> <span class=variable>reg!</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>reg : destination register
+</p>
+<li><p>text : string to copy
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>alloc</span> <span class=selfeval>100</span> <span class=variable>bytes</span> <span class=variable>memory</span> <span class=variable>to</span> <span class=variable>reg01</span>
+<span class=variable>invoke</span> <span class=variable>malloc</span><span class=keyword>,</span> <span class=selfeval>100</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span>
+
+<span class=variable>invoke</span> <span class=variable>strcpy</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=selfeval>&quot;test&quot;</span>
+
+<span class=variable>//</span> <span class=variable>now</span> <span class=variable>free</span> <span class=variable>the</span> <span class=variable>space:</span>
+<span class=variable>invoke</span> <span class=variable>free</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.16.6"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.16.6">4.16.6&nbsp;&nbsp;strcat</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>strcat</span> <span class=variable>indexof</span> <span class=variable>reg</span><span class=keyword>,</span> <span class=variable>text</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>strcat</span> <span class=variable>appends</span> <span class=variable>a</span> <span class=variable>string</span> <span class=variable>to</span> <span class=variable>the</span> <span class=variable>end</span> <span class=variable>of</span> <span class=variable>the</span> <span class=variable>memory</span> <span class=variable>block</span> <span class=variable>stored</span> <span class=variable>in</span> <span class=variable>reg.</span>
+<span class=variable>Attention:</span> <span class=selfeval>1.</span> <span class=variable>must</span> <span class=variable>use</span> <span class=variable>indexof</span> <span class=variable>for</span> <span class=variable>prefix</span> <span class=variable>of</span> <span class=variable>reg.</span> <span class=selfeval>2.</span> <span class=variable>can</span> <span class=variable>not</span> <span class=variable>use</span> <span class=variable>reg00</span> <span class=variable>for</span> <span class=variable>reg!</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>reg : destination register
+</p>
+<li><p>text : string to append
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>alloc</span> <span class=selfeval>100</span> <span class=variable>bytes</span> <span class=variable>memory</span> <span class=variable>to</span> <span class=variable>reg01</span>
+<span class=variable>invoke</span> <span class=variable>malloc</span><span class=keyword>,</span> <span class=selfeval>100</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span>
+
+<span class=variable>invoke</span> <span class=variable>strcpy</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=selfeval>&quot;test&quot;</span>
+<span class=variable>invoke</span> <span class=variable>strcat</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=selfeval>&quot;1234&quot;</span>
+
+<span class=variable>//</span> <span class=variable>now</span> <span class=variable>free</span> <span class=variable>the</span> <span class=variable>space:</span>
+<span class=variable>invoke</span> <span class=variable>free</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.16.7"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.16.7">4.16.7&nbsp;&nbsp;strlen</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>strlen</span> <span class=variable>mode</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg</span> <span class=variable>/</span> <span class=variable>text</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>strlen</span> <span class=variable>gets</span> <span class=variable>the</span> <span class=variable>length</span> <span class=variable>of</span> <span class=variable>the</span> <span class=variable>string.</span> <span class=variable>The</span> <span class=variable>string</span> <span class=variable>stores</span> <span class=variable>in</span> <span class=variable>memory</span> <span class=variable>block</span> <span class=keyword>or</span> <span class=variable>is</span> <span class=variable>a</span> <span class=variable>text.</span>
+<span class=variable>Attention:</span> <span class=selfeval>1.</span> <span class=variable>must</span> <span class=variable>use</span> <span class=variable>indexof</span> <span class=variable>for</span> <span class=variable>prefix</span> <span class=variable>of</span> <span class=variable>reg.</span> <span class=selfeval>2.</span> <span class=variable>can</span> <span class=variable>not</span> <span class=variable>use</span> <span class=variable>reg00</span> <span class=variable>for</span> <span class=variable>reg!</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>mode : Mode, 0 for register, 1 for text
+</p>
+<li><p>text : string
+</p>
+<li><p>reg : memory block's address stored in
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=variable>string</span><span class=keyword>'</span><span class=variable>s</span> <span class=variable>length</span>
+<span class=variable>Fails:</span> <span class=selfeval>-1</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>alloc</span> <span class=selfeval>100</span> <span class=variable>bytes</span> <span class=variable>memory</span> <span class=variable>to</span> <span class=variable>reg01</span>
+<span class=variable>invoke</span> <span class=variable>malloc</span><span class=keyword>,</span> <span class=selfeval>100</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span>
+
+<span class=variable>invoke</span> <span class=variable>strcpy</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=selfeval>&quot;test&quot;</span>
+<span class=variable>invoke</span> <span class=variable>strlen</span><span class=keyword>,</span> <span class=selfeval>0</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span>     <span class=variable>//</span> <span class=variable>reg</span> <span class=variable>mode</span>
+<span class=variable>invoke</span> <span class=variable>PrintNum</span><span class=keyword>,</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>10</span>
+
+<span class=variable>invoke</span> <span class=variable>strlen</span><span class=keyword>,</span> <span class=selfeval>1</span><span class=keyword>,</span> <span class=selfeval>&quot;1234567890&quot;</span>      <span class=variable>//</span> <span class=variable>text</span> <span class=variable>mode</span>
+<span class=variable>invoke</span> <span class=variable>PrintNum</span><span class=keyword>,</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>10</span>
+
+<span class=variable>//</span> <span class=variable>now</span> <span class=variable>free</span> <span class=variable>the</span> <span class=variable>space:</span>
+<span class=variable>invoke</span> <span class=variable>free</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.16.8"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.16.8">4.16.8&nbsp;&nbsp;ltoa</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>ltoa</span> <span class=variable>value</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg</span><span class=keyword>,</span> <span class=variable>radix</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>ltoa</span> <span class=variable>converts</span> <span class=variable>a</span> <span class=variable>long</span> <span class=variable>integer</span> <span class=variable>to</span> <span class=variable>a</span> <span class=variable>string.</span>
+<span class=variable>The</span> <span class=variable>string</span> <span class=variable>will</span> <span class=variable>be</span> <span class=variable>stored</span> <span class=variable>in</span> <span class=variable>memory</span> <span class=variable>block</span> <span class=variable>that</span> <span class=variable>stored</span> <span class=variable>in</span> <span class=variable>reg.</span>
+<span class=variable>Attention:</span> <span class=selfeval>1.</span> <span class=variable>must</span> <span class=variable>use</span> <span class=variable>indexof</span> <span class=variable>for</span> <span class=variable>prefix</span> <span class=variable>of</span> <span class=variable>reg.</span> <span class=selfeval>2.</span> <span class=variable>can</span> <span class=variable>not</span> <span class=variable>use</span> <span class=variable>reg00</span> <span class=variable>for</span> <span class=variable>reg!</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>value : long integer to convert
+</p>
+<li><p>reg : memory block's address stored in
+</p>
+<li><p>radix : Base of value
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>alloc</span> <span class=selfeval>100</span> <span class=variable>bytes</span> <span class=variable>memory</span> <span class=variable>to</span> <span class=variable>reg01</span>
+<span class=variable>invoke</span> <span class=variable>malloc</span><span class=keyword>,</span> <span class=selfeval>100</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span>
+
+<span class=variable>//</span> <span class=variable>converts</span> <span class=variable>decimal</span> <span class=variable>value</span> <span class=selfeval>874</span> <span class=variable>to</span> <span class=variable>string</span><span class=keyword>,</span> <span class=variable>store</span> <span class=variable>in</span> <span class=variable>reg01</span>
+<span class=variable>invoke</span> <span class=variable>ltoa</span><span class=keyword>,</span> <span class=selfeval>874</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=selfeval>10</span>
+
+<span class=variable>//</span> <span class=variable>what</span> <span class=variable>we</span> <span class=variable>got?</span>
+<span class=variable>invoke</span> <span class=variable>msg</span><span class=keyword>,</span> <span class=variable>reg01</span>
+
+<span class=variable>//</span> <span class=variable>now</span> <span class=variable>free</span> <span class=variable>the</span> <span class=variable>space:</span>
+<span class=variable>invoke</span> <span class=variable>free</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.16.9"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.16.9">4.16.9&nbsp;&nbsp;memcpy</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>memcpy</span> <span class=variable>indexof</span> <span class=variable>reg</span><span class=keyword>,</span> <span class=variable>buffer</span><span class=keyword>,</span> <span class=variable>len</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>memcpy</span> <span class=variable>copies</span> <span class=variable>buffer</span> <span class=variable>to</span> <span class=variable>the</span> <span class=variable>memory</span> <span class=variable>block</span> <span class=variable>which</span> <span class=variable>address</span> <span class=variable>stored</span> <span class=variable>in</span> <span class=variable>reg.</span>
+<span class=variable>Attention:</span> <span class=selfeval>1.</span> <span class=variable>must</span> <span class=variable>use</span> <span class=variable>indexof</span> <span class=variable>for</span> <span class=variable>prefix</span> <span class=variable>of</span> <span class=variable>reg.</span> <span class=selfeval>2.</span> <span class=variable>can</span> <span class=variable>not</span> <span class=variable>use</span> <span class=variable>reg00</span> <span class=variable>for</span> <span class=variable>reg!</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>reg : destination register 
+</p>
+<li><p>buffer : buffer to copy
+</p>
+<li><p>len : length of buffer
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>//</span> <span class=variable>alloc</span> <span class=selfeval>100</span> <span class=variable>bytes</span> <span class=variable>memory</span> <span class=variable>to</span> <span class=variable>reg01</span>
+<span class=variable>invoke</span> <span class=variable>malloc</span><span class=keyword>,</span> <span class=selfeval>100</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span>
+
+<span class=variable>invoke</span> <span class=variable>memcpy</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span><span class=keyword>,</span> <span class=selfeval>&quot;test&quot;</span><span class=keyword>,</span> <span class=selfeval>4</span>
+
+<span class=variable>//</span> <span class=variable>now</span> <span class=variable>free</span> <span class=variable>the</span> <span class=variable>space:</span>
+<span class=variable>invoke</span> <span class=variable>free</span><span class=keyword>,</span> <span class=variable>indexof</span> <span class=variable>reg01</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.17"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_4.17">4.17&nbsp;&nbsp;Debug Assistant API</a></h2>
+<p></p>
+<a name="node_sec_4.17.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.17.1">4.17.1&nbsp;&nbsp;FindProcBegin</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>FindProcBegin</span> <span class=variable>address</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Returns</span> <span class=variable>start</span> <span class=variable>address</span> <span class=variable>of</span> <span class=variable>the</span> <span class=variable>procedure</span> <span class=variable>that</span> <span class=variable>encloses</span> <span class=variable>addr</span><span class=keyword>,</span> <span class=keyword>or</span> <span class=selfeval>0</span> <span class=variable>on</span> <span class=variable>error</span><span class=keyword>,</span>
+<span class=variable>for</span> <span class=variable>example</span><span class=keyword>,</span> <span class=keyword>when</span> <span class=variable>module</span> <span class=variable>is</span> <span class=variable>not</span> <span class=variable>analyzed</span> <span class=keyword>or</span> <span class=variable>address</span> <span class=variable>points</span> <span class=variable>to</span> <span class=variable>no</span> <span class=variable>procedure.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>address : address of any command within the procedure.
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=variable>start</span> <span class=variable>address</span> <span class=variable>of</span> <span class=variable>the</span> <span class=variable>procedure</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>FindProcBegin</span><span class=keyword>,</span> <span class=variable>eip</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.17.2"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.17.2">4.17.2&nbsp;&nbsp;FindProcEnd</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>FindProcEnd</span> <span class=variable>address</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Returns</span> <span class=variable>address</span> <span class=variable>of</span> <span class=variable>the</span> <span class=variable>last</span> <span class=variable>command</span> <span class=variable>of</span> <span class=variable>the</span> <span class=variable>procedure</span> <span class=variable>that</span> <span class=variable>encloses</span> <span class=variable>addr</span><span class=keyword>,</span> <span class=keyword>or</span> <span class=selfeval>0</span> <span class=variable>on</span> <span class=variable>error</span><span class=keyword>,</span>
+<span class=variable>for</span> <span class=variable>example</span><span class=keyword>,</span> <span class=keyword>when</span> <span class=variable>module</span> <span class=variable>is</span> <span class=variable>not</span> <span class=variable>analyzed</span> <span class=keyword>or</span> <span class=variable>address</span> <span class=variable>points</span> <span class=variable>to</span> <span class=variable>no</span> <span class=variable>procedure.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>address : address of any command within the procedure.
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=variable>address</span> <span class=variable>of</span> <span class=variable>the</span> <span class=variable>last</span> <span class=variable>command</span> <span class=variable>of</span> <span class=variable>the</span> <span class=variable>proceduce</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>FindProcEnd</span><span class=keyword>,</span> <span class=variable>eip</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.17.3"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.17.3">4.17.3&nbsp;&nbsp;FindPrevProc</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>FindPrevProc</span> <span class=variable>address</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Returns</span> <span class=variable>start</span> <span class=variable>address</span> <span class=variable>of</span> <span class=variable>the</span> <span class=variable>procedure</span> <span class=variable>that</span> <span class=variable>precedes</span> <span class=keyword>or</span> <span class=variable>encloses</span> <span class=variable>addr</span><span class=keyword>,</span> <span class=keyword>or</span> <span class=selfeval>0</span> <span class=variable>on</span> <span class=variable>error</span><span class=keyword>,</span>
+<span class=variable>for</span> <span class=variable>example</span><span class=keyword>,</span> <span class=keyword>when</span> <span class=variable>module</span> <span class=variable>is</span> <span class=variable>not</span> <span class=variable>analyzed</span> <span class=keyword>or</span> <span class=variable>address</span> <span class=variable>doesn</span><span class=keyword>'</span><span class=variable>t</span> <span class=variable>point</span> <span class=variable>to</span> <span class=variable>executable</span> <span class=variable>code.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>address : address of reference command.
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=variable>start</span> <span class=variable>address</span> <span class=variable>of</span> <span class=variable>the</span> <span class=variable>procedure</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>FindPrevProc</span><span class=keyword>,</span> <span class=variable>eip</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.17.4"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.17.4">4.17.4&nbsp;&nbsp;FindNextProc</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>FindNextProc</span> <span class=variable>address</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Returns</span> <span class=variable>start</span> <span class=variable>address</span> <span class=variable>of</span> <span class=variable>the</span> <span class=variable>procedure</span> <span class=variable>that</span> <span class=variable>is</span> <span class=variable>next</span> <span class=variable>to</span> <span class=variable>addr</span><span class=keyword>,</span> <span class=keyword>or</span> <span class=selfeval>0</span> <span class=variable>on</span> <span class=variable>error</span><span class=keyword>,</span>
+<span class=variable>for</span> <span class=variable>example</span><span class=keyword>,</span> <span class=keyword>when</span> <span class=variable>module</span> <span class=variable>is</span> <span class=variable>not</span> <span class=variable>analyzed</span> <span class=keyword>or</span> <span class=variable>address</span> <span class=variable>doesn</span><span class=keyword>'</span><span class=variable>t</span> <span class=variable>point</span> <span class=variable>to</span> <span class=variable>executable</span> <span class=variable>code.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>address : address of reference command.
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=variable>start</span> <span class=variable>address</span> <span class=variable>of</span> <span class=variable>the</span> <span class=variable>procedure</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>FindNextProc</span><span class=keyword>,</span> <span class=variable>eip</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.17.5"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.17.5">4.17.5&nbsp;&nbsp;FollowCall</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>FollowCall</span> <span class=variable>address</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Follows</span> <span class=variable>sequence</span> <span class=variable>of</span> <span class=variable>jumps</span> (<span class=variable>direct</span> <span class=keyword>or</span> <span class=variable>indirect</span>) <span class=keyword>and</span> <span class=variable>Win95</span> <span class=variable>thunks</span>
+<span class=variable>that</span> <span class=variable>starts</span> <span class=variable>at</span> <span class=variable>specified</span> <span class=variable>address.</span> <span class=variable>Stops</span> <span class=variable>if:</span>
+
+ <span class=variable>-</span> <span class=variable>next</span> <span class=variable>command</span> <span class=variable>is</span> <span class=variable>neither</span> <span class=variable>jump</span> <span class=variable>nor</span> <span class=variable>thunk</span><span class=keyword>,</span> <span class=keyword>or</span>
+ <span class=variable>-</span> <span class=variable>next</span> <span class=variable>command</span> <span class=variable>is</span> <span class=variable>exported</span> <span class=variable>entry</span> <span class=variable>in</span> <span class=variable>difefrent</span> <span class=variable>module</span><span class=keyword>,</span> <span class=keyword>or</span>
+ <span class=variable>-</span> <span class=variable>length</span> <span class=variable>of</span> <span class=variable>sequence</span> <span class=variable>exceeds</span> <span class=selfeval>10</span> <span class=variable>jumps.</span>
+
+<span class=variable>Returns</span> <span class=variable>address</span> <span class=variable>of</span> <span class=variable>final</span> <span class=variable>destination</span><span class=keyword>,</span> <span class=keyword>or</span> <span class=selfeval>0</span> <span class=variable>on</span> <span class=variable>error.</span>
+<span class=variable>Parameter</span> <span class=variable>addr</span> <span class=variable>is</span> <span class=variable>usually</span> <span class=variable>the</span> <span class=variable>destination</span> <span class=variable>of</span> <span class=variable>CALL</span> <span class=variable>command</span><span class=keyword>,</span> <span class=variable>hence</span> <span class=variable>the</span> <span class=variable>name.</span>
+<span class=variable>As</span> <span class=variable>any</span> <span class=variable>access</span> <span class=variable>to</span> <span class=variable>the</span> <span class=variable>debuggee</span><span class=keyword>'</span><span class=variable>s</span> <span class=variable>memory</span> <span class=variable>takes</span> <span class=variable>significant</span> <span class=variable>time</span><span class=keyword>,</span> <span class=variable>this</span> <span class=variable>function</span> <span class=variable>may</span> <span class=variable>be</span> <span class=variable>slow.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>address : address of first command in jump chain.
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=variable>address</span> <span class=variable>of</span> <span class=variable>final</span> <span class=variable>destination.</span>
+<span class=variable>Fails:</span> <span class=selfeval>0</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>FollowCall</span><span class=keyword>,</span> <span class=variable>eip</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.18"></a>
+<h2><a href="index-Z-H-1.htm#node_toc_node_sec_4.18">4.18&nbsp;&nbsp;Misc API</a></h2>
+<p>Misc, because I don't know where to put them...</p>
+<p>
+</p>
+<a name="node_sec_4.18.1"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.18.1">4.18.1&nbsp;&nbsp;IsWinNTKernel</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>IsWinNTKernel</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>To</span> <span class=variable>check</span> <span class=variable>that</span> <span class=variable>whether</span> <span class=variable>the</span> <span class=variable>current</span> <span class=variable>OS</span> <span class=variable>is</span> <span class=variable>NT</span> <span class=variable>kernel.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>None</span>
+</pre><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>Succeeds:</span> <span class=selfeval>1</span> <span class=variable>for</span> <span class=variable>NT</span> <span class=variable>Kernel</span>(<span class=variable>Windows</span> <span class=variable>NT/2000/XP</span>)<span class=keyword>,</span> <span class=selfeval>0</span> <span class=variable>for</span> <span class=variable>Windows</span> <span class=variable>95/98/Me</span>
+<span class=variable>Fails:</span> <span class=variable>There</span> <span class=variable>is</span> <span class=variable>no</span> <span class=variable>fail</span> <span class=variable>return</span> <span class=variable>value</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>IsWinNTKernel</span>
+<span class=variable>cmp</span> <span class=variable>reg00</span><span class=keyword>,</span> <span class=selfeval>1</span>    <span class=variable>//</span> <span class=variable>it</span> <span class=variable>is</span> <span class=variable>NT</span> <span class=variable>kernel!</span>
+<span class=variable>je</span> <span class=variable>WinNT</span>
+<span class=variable>//</span> ...
+<span class=variable>WinNT:</span>
+<span class=variable>//</span> ...
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.18.2"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.18.2">4.18.2&nbsp;&nbsp;GotoCpuAddr</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>GotoCpuAddr</span> <span class=variable>address</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>To</span> <span class=variable>goto</span> <span class=variable>the</span> <span class=variable>address</span> <span class=variable>in</span> <span class=variable>disassembler</span> <span class=variable>window.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>address : address to goto
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>None</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>GotoCpuAddr</span><span class=keyword>,</span> <span class=variable>0x401300</span>
+</pre><p></p>
+<p>
+</p>
+<a name="node_sec_4.18.3"></a>
+<h3><a href="index-Z-H-1.htm#node_toc_node_sec_4.18.3">4.18.3&nbsp;&nbsp;GotoDumpAddr</a></h3>
+<p><strong>Prototype</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>GotoDumpAddr</span> <span class=variable>address</span>
+</pre><p></p>
+<p>
+<strong>Explanation</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>To</span> <span class=variable>goto</span> <span class=variable>the</span> <span class=variable>address</span> <span class=variable>in</span> <span class=variable>dump</span> <span class=variable>window.</span>
+</pre><p></p>
+<p>
+<strong>Parameters</strong>:</p>
+<p>
+</p>
+<ul>
+<li><p>address : address to goto
+</p>
+</ul><p></p>
+<p>
+<strong>Return Value</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>None</span>
+</pre><p></p>
+<p>
+<strong>Example</strong>:</p>
+<p>
+</p>
+<pre class=scheme><span class=variable>invoke</span> <span class=variable>GotoDumpAddr</span><span class=keyword>,</span> <span class=variable>0x401300</span>
+</pre><p>
+</p>
+<p>
+</p>
+<div align=right class=navigation><i>[Go to <span><a href="index.htm">first</a>, <a href="index-Z-H-4.htm">previous</a></span><span class=disable>, next</span> page<span>; &nbsp;&nbsp;</span><span><a href="index-Z-H-1.htm#node_toc_start">contents</a></span>]</i></div><p></p>
+</body>
+</html>

@@ -1,0 +1,42 @@
+/*	
+This is a sample SkyPatch patch script 
+The function lets one batch of buttons expiration
+*/
+@0x00405E64:
+	jmp @start ;Jumps to the patch code start
+@$backinit:  	;Sentence end labeling,marks from the rebound patch code address
+
+@0x00402630:¡¡;String labeling, marking the beginning piece of string
+$str1 "this is the first string"         ;String Label
+		"jjjs this is the first string"
+$str2 #45efe3003455667898df225600990000#
+@$: ;Sentence end labeling, marking the end of string pieces
+
+@start= @$ + 0x4:	;Eip two ways of labeling, The designation of a piece of string end labeling (string end labeling [plus or minus] block a hexadecimal system constant)
+;@0x00401000:;Directly assigns the address of the eip label
+	call 406210 ;;;moved to this operation from Init, the original jump into this jmp 00463EB6
+	push 0 ;When uses this in init,
+	call 463dd0
+	add esp,4
+	test  eax,eax
+	jne @back   ;if 0, ban
+  push esi
+  mov esi,$str2 ;0x463fe0
+@loop3:  
+  xor ecx,ecx
+  mov cx, word ptr [esi]
+  test ecx,ecx
+  je @exitloop3 ;Jump out of loop
+  push 0
+  push ecx
+  mov ecx,dword ptr ss:[ebp-4]
+  call 0045BBB2
+  mov ecx,eax
+  call 0045BBE2
+  inc esi
+  inc esi
+  jmp @loop3  
+@exitloop3:  
+  pop esi
+@back:  
+	jmp @$backinit ; 405E64 ;Jump back to original code

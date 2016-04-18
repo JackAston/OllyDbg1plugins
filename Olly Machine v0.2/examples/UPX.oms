@@ -1,0 +1,28 @@
+///////////////////////////////////////////////////////////////////////////////
+//
+//  FileName    :   UPX.oms
+//  Author      :   Luo Cong
+//  Date        :   2004-11-15
+//  Comment     :   Search "POPA" to get the OEP then dump to PE
+//
+///////////////////////////////////////////////////////////////////////////////
+
+EOB Break1
+
+invoke FindOpcode, eip, 0x61
+mov reg01, reg00
+invoke bphws, reg01, 1
+
+run
+halt
+
+Break1:
+
+invoke bphwc, reg01
+
+stepover
+stepover
+
+invoke msg, "Now will dump to PE, please input full path and filename."
+invoke InputText, "Please input filename for dumpping"
+invoke DumpAsPE, FreeBufferReg, eip

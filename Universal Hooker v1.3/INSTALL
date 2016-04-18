@@ -1,0 +1,25 @@
+Uhooker v1.3
+============
+
+To install uhooker just copy:
+
+uhooker.dll
+server.py
+proxy.py
+
+to ollydbg's directory.
+
+and that's it!.
+
+This package contains some sample SCRIPTS in the '\scripts' directory.
+
+Please remember that all .py files with scripts should be placed on the same directory
+where 'proxy.py' and 'server.py' are, and that is the same directory where 'uhooker.dll'
+is, and that is the directory where ollydbg is installed.
+
+This is very important, otherwise the scripts won't be found by uhooker and they won't work.
+
+
+so just copy everythin in '\scripts' to the ollydbg's directory (both .cfg and .py files,
+although .cfg files can be anywhere).
+

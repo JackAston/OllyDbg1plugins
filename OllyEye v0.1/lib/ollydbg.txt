@@ -1,0 +1,5 @@
+FILE QUARANTINED
+
+Microsoft Forefront Security for Exchange Server removed a file since it was found to match a filter.
+File name: "winmail.dat->Unnamed Attachment->lib\ollydbg.lib"
+Filter name: "FILE FILTER= SMTP List: *.lib"

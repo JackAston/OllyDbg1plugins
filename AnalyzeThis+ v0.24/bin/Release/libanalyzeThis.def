@@ -1,0 +1,5 @@
+EXPORTS
+    _ODBG_Pluginaction @1
+    _ODBG_Plugindata @2
+    _ODBG_Plugininit @3
+    _ODBG_Pluginmenu @4

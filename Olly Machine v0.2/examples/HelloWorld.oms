@@ -1,0 +1,20 @@
+///////////////////////////////////////////////////////////////////////////////
+//
+//  FileName    :   HelloWorld.oms
+//  Author      :   Luo Cong
+//  Date        :   2004-11-15
+//  Comment     :   HelloWorld!!!
+//
+///////////////////////////////////////////////////////////////////////////////
+
+// Method 1:
+lds reg01, "Hello World!"
+push reg01
+msg
+
+// Method 2:
+push "Hello World!"
+msg
+
+// Method 3:
+invoke msg, "Hello World!"
